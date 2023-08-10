@@ -16,4 +16,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, response.getStatus());
     }
 
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthorizationException(AuthorizationException ex) {
+        ErrorResponse response = ErrorResponse.of(ErrorCode.AUTHORIZATION_FAILED);
+        log.debug("Request does not have authorization: {}", ex.getDetail());
+        return new ResponseEntity<>(response, response.getStatus());
+    }
 }
