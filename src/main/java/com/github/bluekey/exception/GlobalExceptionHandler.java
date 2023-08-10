@@ -45,4 +45,18 @@ public class GlobalExceptionHandler {
         log.debug("Argument validation has failed: {}", ex.getMessage());
         return new ResponseEntity<>(response, response.getStatus());
     }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException ex) {
+        ErrorResponse response = ErrorResponse.of(ex.getErrorCode(), ex.getDetail());
+        log.error("Business exception has occurred: {}", ex.getDetail(), ex);
+        return new ResponseEntity<>(response, response.getStatus());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleExceptionHandler(Exception ex) {
+        ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
+        log.error(ex.getMessage(), ex);
+        return new ResponseEntity<>(response, response.getStatus());
+    }
 }
