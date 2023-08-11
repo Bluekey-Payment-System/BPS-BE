@@ -54,7 +54,7 @@ jobs:
         username: ec2-user
         key: ${{ secrets.PRIVATE_KEY }}
         script: |
-          cd /home/ec2-user/bluekey/
+          cd /home/ec2-user/bluekey
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker rm $(docker ps -a -q)
           docker rmi ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
