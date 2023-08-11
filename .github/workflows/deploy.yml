@@ -28,7 +28,7 @@ jobs:
       run: |
         cd ./src/main/resources
         touch ./application-prod.yml
-        echo "${{ secrets.application }}" > ./application-prod.yml
+        echo "${{ secrets.APPLICATION }}" > ./application-prod.yml
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
@@ -39,15 +39,15 @@ jobs:
     - name: Docker build
       run: |
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-        docker build -t ${{ secrets.DOCKER_REPO }}/dashboard .
-        docker push ${{ secrets.DOCKER_REPO }}/dashboard
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }} .
+        docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
 
     - name: Deploy
       uses: appleboy/ssh-action@master
-      host: ${{ secrets.WAS_HOST }}
-        username: ${{ secrets.WAS_USERNAME }}
-        key: ${{ secrets.WAS_KEY }}
-        port: ${{ secrets.WAS_SSH_PORT }}
+      with:
+        host: ${{ secrets.HOST }}
+        username: ec2-user
+        key: ${{ secrets.PRIVATE_KEY }}
         script: |
           cd /home/ubuntu/bluekey/
           sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
