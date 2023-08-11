@@ -2,7 +2,7 @@ version: '3'
 services:
   web:
     container_name: web
-    image: oereo/bluekey:latest
+    image: bluekeymusic/dashboard:latest
     networks:
       - bluekey_network
     expose:
