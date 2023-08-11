@@ -1,0 +1,17 @@
+version: '3'
+services:
+  web:
+    container_name: web
+    image: oereo/bluekey:latest
+    networks:
+      - bluekey_network
+    expose:
+      - 8080
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+
+networks:
+  bluekey_network:
+    driver: bridge
