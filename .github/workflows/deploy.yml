@@ -24,7 +24,7 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
 
-    - Set application.yml
+    - name: Set application.yml
       run: |
         cd ./src/main/resources
         touch ./application-prod.yml
