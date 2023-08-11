@@ -50,7 +50,8 @@ jobs:
         key: ${{ secrets.PRIVATE_KEY }}
         script: |
           cd /home/ec2-user/bluekey/
+          docker stop $(docker ps -a -q)
           docker rm -v $(sudo docker ps -aq -f status=exited)
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
           sudo docker-compose up -d
-          sudo docker image prune -f정
+          sudo docker image prune -f
