@@ -12,11 +12,11 @@ import lombok.RequiredArgsConstructor;
 @Schema(description = "트랙 정산 금액")
 public class TrackSettlementAmountDto {
 	@Schema(description = "트랙 기본 정보")
-	private final CommonDto track;
+	private final TrackBaseDto track;
 	@Schema(description = "앨범 기본 정보")
-	private final CommonDto album;
+	private final AlbumBaseDto album;
 	@Schema(description = "트랙 참여 아티스트들 기본 정보")
-	private final List<CommonDto> artists;
+	private final List<MemberBaseDto> artists;
 	@Schema(description = "트랙 매출액", example = "1000000")
 	private final Long revenue;
 	@Schema(description = "회사 순이익", example = "100000")

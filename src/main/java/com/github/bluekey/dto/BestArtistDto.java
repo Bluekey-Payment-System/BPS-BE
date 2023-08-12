@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Schema(description = "Best Artist 정보")
-public class BestArtistDto extends CommonDto {
+public class BestArtistDto extends MemberBaseDto {
 	@Schema(description = "증감률", example = "0.3")
 	private final Double growthRate;
 	public BestArtistDto(Long id, String koName, String enName, Double growthRate) {

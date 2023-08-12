@@ -12,5 +12,6 @@ import lombok.RequiredArgsConstructor;
 @Builder
 @Schema(description = "월별 Top n 아티스트 매출액과 비율")
 public class ArtistsRevenueProportionReponseDto {
+	@Schema(description = "월별 Top n 아티스트들의 매출액과 비율 정보 리스트")
 	private final List<ArtistRevenueProportionDto> contents;
 }

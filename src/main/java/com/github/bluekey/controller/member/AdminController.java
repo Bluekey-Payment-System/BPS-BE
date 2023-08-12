@@ -6,6 +6,7 @@ import com.github.bluekey.dto.response.MonthlyRevenueTrendResponseDto;
 import com.github.bluekey.dto.response.TracksSettlementAmountResponseDto;
 import com.github.bluekey.exception.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,7 +32,8 @@ public class AdminController {
 	})
 	@GetMapping("/dashboard/artist")
 	public ArtistsRevenueProportionReponseDto getTopRevenueArtistsOfMonth(
-			@RequestParam("monthly") LocalDate monthly, @RequestParam("rank") Integer rank
+			@Parameter(description = "정보를 얻고 싶은 월 (format: yyyy-MM)") @RequestParam("monthly") LocalDate monthly,
+			@Parameter(description = "Top 5위까지 알고 싶은 경우 rank=5") @RequestParam("rank") Integer rank
 	) {
 		return null;
 	}
@@ -43,11 +45,11 @@ public class AdminController {
 	})
 	@GetMapping("/dashboard/track")
 	public TracksSettlementAmountResponseDto getTracksSettlementAmount(
-			@RequestParam("monthly") LocalDate monthly,
+			@Parameter(description = "정보를 얻고 싶은 월 (format: yyyy-MM)") @RequestParam("monthly") LocalDate monthly,
 			@RequestParam("page") Integer page,
 			@RequestParam("size") Integer size,
-			@RequestParam("searchType") String searchType,
-			@RequestParam("keyword") String keyword
+			@Parameter(description = "검색 타입 곡명 or 앨범명") @RequestParam("searchType") String searchType,
+			@Parameter(description = "검색할 키워드") @RequestParam("keyword") String keyword
 	) {
 		return null;
 	}
@@ -59,7 +61,7 @@ public class AdminController {
 	})
 	@GetMapping("/dashboard")
 	public DashboardTotalInfoResponseDto getDashboardTotalInfo(
-			@RequestParam("monthly") LocalDate monthly
+			@Parameter(description = "정보를 얻고 싶은 월 (format: yyyy-MM)") @RequestParam("monthly") LocalDate monthly
 	) {
 		return null;
 	}
@@ -71,8 +73,8 @@ public class AdminController {
 	})
 	@GetMapping("/dashboard/trend")
 	public MonthlyRevenueTrendResponseDto getMonthlyRevenueTrend(
-			@RequestParam("startDate") LocalDate startDate,
-			@RequestParam("endDate") LocalDate endDate
+			@Parameter(description = "월별 추이의 시작일 (format: yyyy-MM)") @RequestParam("startDate") LocalDate startDate,
+			@Parameter(description = "월별 추이의 종료일 (format: yyyy-MM)") @RequestParam("endDate") LocalDate endDate
 	) {
 		return null;
 	}

@@ -4,9 +4,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Builder
 @Schema(description = "월 매출 정보")
 public class MonthlyRevenueDto {
