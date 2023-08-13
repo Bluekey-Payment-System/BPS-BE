@@ -1,9 +1,7 @@
 package com.github.bluekey.controller.album;
 
 import com.github.bluekey.dto.request.AlbumsRequestDto;
-import com.github.bluekey.dto.request.TrackRequestDto;
 import com.github.bluekey.dto.response.AlbumListReponseDto;
-import com.github.bluekey.dto.response.TrackListReponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
