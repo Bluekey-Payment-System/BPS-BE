@@ -1,7 +1,9 @@
 package com.github.bluekey.controller.member;
 
+import com.github.bluekey.dto.response.*;
+import com.github.bluekey.dto.request.AdminArtistProfileRequestDto;
+import com.github.bluekey.dto.request.ArtistProfileRequestDto;
 import com.github.bluekey.dto.request.ArtistRequestDto;
-import com.github.bluekey.dto.response.ArtistListReponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -16,15 +18,13 @@ import java.time.LocalDate;
 @RequestMapping("/api/v1/artist")
 @RequiredArgsConstructor
 public class ArtistController {
-
-
     @Operation(summary = "아티스트 정보 변경" , description = "아티스트 정보 변경")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "아티스트 정보 변경 성공"),
             @ApiResponse(responseCode = "400", description = "유효하지 않는 아티스트ID 입니다.")
     })
     @PatchMapping("/profile")
-    public void artistUpdate(@RequestBody ArtistRequestDto dto) {
+    public void artistProfileUpdate(@RequestBody ArtistProfileRequestDto dto) {
 
     }
 
@@ -44,64 +44,62 @@ public class ArtistController {
             @ApiResponse(responseCode = "400", description = "error")
     })
     @GetMapping("/{memberId}/albums")
-    public ArtistListReponseDto getDashboard1(
+    public ArtistAlbumsListReponseDto getArtistAlbumsList(
             @RequestParam("page") Integer page,
             @RequestParam("size") Integer size
     ) {
         return null;
     }
 
-//    // TODO dashboard List 조회 API 수정 가능성 있음.
-//    @Operation(summary = "당월 아티스트가 트랙별 정산 내역", description = "당월 아티스트가 트랙별 정산 내역")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "당월 아티스트가 트랙별 정산 내역 조회 완료"),
-//            @ApiResponse(responseCode = "400", description = "error")
-//    })
-//    @GetMapping("/{memberId}/dashboard/track")
-//    public ArtistListReponseDto getDashboard2(
-//            @RequestParam("monthly") LocalDate monthly,
-//            @RequestParam("page") Integer page,
-//            @RequestParam("size") Integer size,
-//            @RequestParam("sortBy") String sortBy,
-//            @RequestParam("searchBy") String searchBy,
-//            @RequestParam("keyword") String keyword
-//    ) {
-//        return null;
-//    }
-//
-//    @Operation(summary = "아티스트 기준 당월 TOP N 트랙 매출 비중 LIST", description = "아티스트 기준 당월 TOP N 트랙 매출 비중 LIST")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "아티스트 기준 당월 TOP N 트랙 매출 비중 LIST 조회 완료"),
-//            @ApiResponse(responseCode = "400", description = "error")
-//    })
-//    @GetMapping("/{memberId}/dashboard/track")
-//    public ArtistListReponseDto getDashboard3(
-//            @RequestParam("monthly") LocalDate monthly,
-//            @RequestParam("rank") Integer rank
-//    ) {
-//        return null;
-//    }
-//
-//    @Operation(summary = "아티스트 대쉬보드 LIST", description = "아티스트 대쉬보드 LIST")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "아티스트 대쉬보드 조회 완료"),
-//            @ApiResponse(responseCode = "400", description = "error")
-//    })
-//    @GetMapping("/{memberId}/dashboard")
-//    public ArtistListReponseDto getDashboard4(
-//            @RequestParam("monthly") LocalDate monthly
-//    ) {
-//        return null;
-//    }
+    @Operation(summary = "당월 아티스트가 트랙별 정산 내역", description = "당월 아티스트가 트랙별 정산 내역")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "당월 아티스트가 트랙별 정산 내역 조회 완료"),
+            @ApiResponse(responseCode = "400", description = "error")
+    })
+    @GetMapping("/{memberId}/dashboard/track")
+    public ArtistMonthlyTrackListReponseDto getArtistMonthlyTrackList(
+            @RequestParam("monthly") LocalDate monthly,
+            @RequestParam("page") Integer page,
+            @RequestParam("size") Integer size,
+            @RequestParam("sortBy") String sortBy,
+            @RequestParam("searchBy") String searchBy,
+            @RequestParam("keyword") String keyword
+    ) {
+        return null;
+    }
 
-    // TODO dashboard List 조회 API 수정 가능성 있음.
-    @Operation(summary = "아티스트 대쉬보드 LIST", description = "아티스트 대쉬보드 LIST")
+    @Operation(summary = "아티스트 기준 당월 TOP N 트랙 매출 LIST", description = "아티스트 기준 당월 TOP N 트랙 매출 LIST")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "아티스트 기준 당월 TOP N 트랙 매출 LIST 조회 완료"),
+            @ApiResponse(responseCode = "400", description = "error")
+    })
+    @GetMapping("/{memberId}/dashboard/track")
+    public ArtistTopReponseDto getArtistTop(
+            @RequestParam("monthly") LocalDate monthly,
+            @RequestParam("rank") Integer rank
+    ) {
+        return null;
+    }
+
+    @Operation(summary = "아티스트 대쉬보드 기본정보", description = "아티스트 대쉬보드 기본정보")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "아티스트 대쉬보드 조회 완료"),
             @ApiResponse(responseCode = "400", description = "error")
     })
     @GetMapping("/{memberId}/dashboard")
-    public ArtistListReponseDto getDashboard(
+    public ArtistListReponseDto getArtistList(
+            @RequestParam("monthly") LocalDate monthly
+    ) {
+        return null;
+    }
+
+    @Operation(summary = "아티스트 대쉬보드 월별 정산액 LIST", description = "아티스트 대쉬보드 월별 정산액 LIST")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "아티스트 대쉬보드 월별 정산액 조회 완료"),
+            @ApiResponse(responseCode = "400", description = "error")
+    })
+    @GetMapping("/{memberId}/dashboard")
+    public ArtistMonthlyAccountsReponseDto getArtistMonthlyAccounts(
             @RequestParam("startDate") LocalDate startDate,
             @RequestParam("endDate") LocalDate endDate
     ) {
@@ -114,7 +112,7 @@ public class ArtistController {
             @ApiResponse(responseCode = "400", description = "error")
     })
     @PatchMapping("/{memberId}/profile")
-    public void ArtistProfileUpdate(@RequestBody ArtistRequestDto dto) {
+    public void AdminArtistProfileUpdate(@RequestBody AdminArtistProfileRequestDto dto) {
 
     }
 
@@ -124,7 +122,7 @@ public class ArtistController {
             @ApiResponse(responseCode = "400", description = "error")
     })
     @GetMapping
-    public ArtistListReponseDto getArtistProfileListDto(
+    public AdminArtistProfileListReponseDto getAdminArtistProfileListDto(
             @RequestParam("page") Integer page,
             @RequestParam("size") Integer size,
             @RequestParam("monthly") LocalDate monthly
