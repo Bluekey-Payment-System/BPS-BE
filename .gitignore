@@ -38,4 +38,4 @@ out/
 
 .env
 
-/**/resources/application.properties
+/**/resources/application-aws.yml

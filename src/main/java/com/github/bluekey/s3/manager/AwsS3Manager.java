@@ -24,7 +24,7 @@ public class AwsS3Manager implements ResourceManager {
 	 * s3에 파일을 업로드 합니다.
 	 *
 	 * @param multipartFile 업로드할 파일
-	 * @param key 		 s3에 저장될 파일의 이름 혹은 경로 포함 이름
+	 * @param key s3에 저장될 파일의 이름 혹은 경로 포함 이름
 	 */
 	public void upload(MultipartFile multipartFile, String key) {
 		log.info("uploading file to s3: {}", key);
@@ -38,20 +38,6 @@ public class AwsS3Manager implements ResourceManager {
 			log.error("s3 upload error: {}", e.getMessage());
 			e.getStackTrace();
 		}
-	}
-
-	/**
-	 * s3에 업로드할 파일의 메타데이터를 생성합니다.
-	 *
-	 * @param multipartFile 업로드할 파일
-	 * @return 업로드할 파일의 메타데이터
-	 */
-	// TODO: File size는 application.properties에서 관리
-	private ObjectMetadata createObjectMetadata(MultipartFile multipartFile) {
-		ObjectMetadata objectMetadata = new ObjectMetadata();
-		objectMetadata.setContentType(multipartFile.getContentType());
-		objectMetadata.setContentLength(multipartFile.getSize());
-		return objectMetadata;
 	}
 
 	/**
@@ -69,4 +55,17 @@ public class AwsS3Manager implements ResourceManager {
 		}
 	}
 
+	/**
+	 * s3에 업로드할 파일의 메타데이터를 생성합니다.
+	 *
+	 * @param multipartFile 업로드할 파일
+	 * @return 업로드할 파일의 메타데이터
+	 */
+	// TODO: File size는 application.properties에서 관리
+	private ObjectMetadata createObjectMetadata(MultipartFile multipartFile) {
+		ObjectMetadata objectMetadata = new ObjectMetadata();
+		objectMetadata.setContentType(multipartFile.getContentType());
+		objectMetadata.setContentLength(multipartFile.getSize());
+		return objectMetadata;
+	}
 }

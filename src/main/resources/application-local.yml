@@ -1,4 +1,7 @@
 spring:
+  config:
+    activate:
+      on-profile: aws
   h2:
     console:
       enabled: true
