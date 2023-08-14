@@ -1,4 +1,4 @@
-package com.github.bluekey.processor;
+package com.github.bluekey.processor.type;
 
 import com.github.bluekey.processor.provider.AtoDistributorExcelFileProvider;
 import lombok.Getter;
