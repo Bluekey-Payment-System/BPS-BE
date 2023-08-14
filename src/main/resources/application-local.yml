@@ -1,3 +1,36 @@
+spring:
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/bluekey;MODE=MySQL;NON_KEYWORDS=value;
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  batch:
+    jdbc:
+      initialize-schema: ALWAYS
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        #        globally_quoted_identifiers: true
+        #        globally_quoted_identifiers_skip_column_definitions: true
+        show_sql: true
+        format_sql:
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+      schema-locations:
+        - classpath:sql/schema-h2.sql
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+
 springdoc:
   packages-to-scan: com.github.bluekey
   default-consumes-media-type: application/json;charset=UTF-8
