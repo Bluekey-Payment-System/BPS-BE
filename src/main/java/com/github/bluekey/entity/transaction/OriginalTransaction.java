@@ -1,5 +1,6 @@
 package com.github.bluekey.entity.transaction;
 
+import com.github.bluekey.exception.transaction.TransactionAlreadyUploadException;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import javax.persistence.*;
 
 @Getter
 @Entity
+@Table(name="original_transactions")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OriginalTransaction {
 	@Id
@@ -38,7 +40,7 @@ public class OriginalTransaction {
 
 	public void updateBatchScheduleCompleted() {
 		if (this.isCompleted) {
-			throw new IllegalStateException("이미 배치 작업이 완료된 transaction 입니다.");
+			throw new TransactionAlreadyUploadException(this.fileName);
 		}
 		this.isCompleted = true;
 	}
