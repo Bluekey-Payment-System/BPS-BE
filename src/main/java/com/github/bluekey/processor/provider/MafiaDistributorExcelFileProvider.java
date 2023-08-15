@@ -3,7 +3,7 @@ package com.github.bluekey.processor.provider;
 import com.github.bluekey.processor.ExcelRowException;
 import org.apache.poi.ss.usermodel.Sheet;
 
-import java.util.Map;
+import java.util.List;
 
 public class MafiaDistributorExcelFileProvider implements ExcelFileProvider{
     @Override
@@ -22,7 +22,7 @@ public class MafiaDistributorExcelFileProvider implements ExcelFileProvider{
     }
 
     @Override
-    public Map<Integer, ExcelRowException> getErrors() {
+    public List<ExcelRowException> getErrors() {
         return null;
     }
 }

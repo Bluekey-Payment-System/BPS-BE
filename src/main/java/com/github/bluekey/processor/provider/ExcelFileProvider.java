@@ -3,7 +3,7 @@ package com.github.bluekey.processor.provider;
 import com.github.bluekey.processor.ExcelRowException;
 import org.apache.poi.ss.usermodel.Sheet;
 
-import java.util.Map;
+import java.util.List;
 
 public interface ExcelFileProvider {
     Sheet getActiveSheet();
@@ -12,5 +12,5 @@ public interface ExcelFileProvider {
 
     boolean hasValidSheetName();
 
-    Map<Integer, ExcelRowException> getErrors();
+    List<ExcelRowException> getErrors();
 }
