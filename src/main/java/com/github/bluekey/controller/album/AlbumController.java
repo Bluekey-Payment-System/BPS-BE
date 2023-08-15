@@ -2,7 +2,10 @@ package com.github.bluekey.controller.album;
 
 import com.github.bluekey.dto.request.AlbumsRequestDto;
 import com.github.bluekey.dto.response.*;
+import com.github.bluekey.dto.response.transaction.OriginalTransactionResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,8 +22,13 @@ public class AlbumController {
 
     @Operation(summary = "신규 앨범 등록" , description = "신규 앨범 등록")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "신규 앨범 등록 성공"),
-            @ApiResponse(responseCode = "400", description = "error")
+            @ApiResponse(responseCode = "200",
+                    description = "리스트 형태로 정상적으로 업로드가 완료된 엑셀 파일 내역중 해당 pk에 해당하는 인스턴스를 삭제하고 반환합니다.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = OriginalTransactionResponseDto.class)
+                    )
+            )
     })
     @PostMapping
     public void albumsInsert(@RequestBody AlbumsRequestDto dto) {
@@ -86,16 +94,6 @@ public class AlbumController {
             @RequestParam("endDate") LocalDate endDate
     ) {
         return null;
-    }
-
-    @Operation(summary = "앨범의 트랙 등록" , description = "앨범의 트랙 등록")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "앨범의 트랙 등록 성공"),
-            @ApiResponse(responseCode = "400", description = "error")
-    })
-    @PostMapping("/{albumId}/tracks")
-    public void tracksInsert(@RequestBody TrackReponseDto dto) {
-
     }
 
     @Operation(summary = "앨범의 트랙 리스트 조회", description = "앨범의 트랙 리스트 조회")
