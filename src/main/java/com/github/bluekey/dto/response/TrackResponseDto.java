@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class TrackReponseDto {
+public class TrackResponseDto {
     @Schema(description = "앨범ID", example = "1")
     private final Long albumId;
 

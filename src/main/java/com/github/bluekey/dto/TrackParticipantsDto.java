@@ -14,5 +14,5 @@ public class TrackParticipantsDto {
     private final String enName;
 
     @Schema(description = "요율", example = "15")
-    private final int commissionRate;
+    private final double commissionRate;
 }

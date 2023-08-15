@@ -11,5 +11,5 @@ public class TrackCommissionRateDto {
     private final Long memberId;
 
     @Schema(description = "요율")
-    private final int commissionRate;
+    private final double commissionRate;
 }

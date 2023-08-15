@@ -20,11 +20,14 @@ public class ArtistMonthlyTrackListDto {
     private final List<ArtistMonthlyArtistsDto> artists;
 
     @Schema(description = "매출액", example = "123314")
-    private final int revenue;
+    private final long revenue;
+
     @Schema(description = "수익", example = "1234")
-    private final int netIncome;
+    private final long netIncome;
+
     @Schema(description = "정산액", example = "1234")
-    private final int settlementAmount;
+    private final long settlementAmount;
+
     @Schema(description = "요율", example = "60")
-    private final int commissionRate;
+    private final double commissionRate;
 }

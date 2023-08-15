@@ -8,7 +8,8 @@ import lombok.Getter;
 @Builder
 public class AlbumMonthlySettlementInfoDto {
     @Schema(description = "총정산액", example = "100000")
-    private final int totalAmount;
+    private final double totalAmount;
+
     @Schema(description = "이익률", example = "10.2")
-    private final int growthRate;
+    private final double growthRate;
 }

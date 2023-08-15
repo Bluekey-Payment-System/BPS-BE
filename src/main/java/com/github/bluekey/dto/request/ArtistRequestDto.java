@@ -29,5 +29,5 @@ public class ArtistRequestDto {
     private final String profileImage;
 
     @Schema(description = "기본요율", example = "40")
-    private final int commissionRate;
+    private final double commissionRate;
 }

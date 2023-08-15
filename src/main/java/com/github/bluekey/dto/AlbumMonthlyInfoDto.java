@@ -17,5 +17,5 @@ public class AlbumMonthlyInfoDto {
     private final String enAlbumName;
 
     @Schema(description = "성장률", example = "2.5")
-    private final String growthRate;
+    private final double growthRate;
 }

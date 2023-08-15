@@ -9,8 +9,10 @@ import lombok.Getter;
 public class ArtistMonthlyAlbumDto {
     @Schema(description = "앨범ID", example = "1")
     private final long albumId;
+
     @Schema(description = "앨범한글명", example = "앨범1")
     private final String koAlbumName;
+
     @Schema(description = "앨범영어명", example = "albumName1")
     private final String enAlbumName;
 }

@@ -14,8 +14,10 @@ import java.util.List;
 public class AlbumBaseDto {
 	@Schema(description = "앨범ID", example = "1")
 	private final Long albumId;
+
 	@Schema(description = "한글 이름", example = "앨범 이름")
 	private final String koAlbumName;
+
 	@Schema(description = "영문 이름", example = "Album name")
 	private final String enAlbumName;
 

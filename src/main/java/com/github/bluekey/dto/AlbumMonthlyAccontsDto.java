@@ -9,8 +9,10 @@ import lombok.Getter;
 public class AlbumMonthlyAccontsDto {
     @Schema(description = "월", example = "7")
     private final int month;
+
     @Schema(description = "합", example = "2142344")
-    private final int settlement;
+    private final long settlement;
+
     @Schema(description = "수익", example = "732143")
-    private final int revenue;
+    private final long revenue;
 }
