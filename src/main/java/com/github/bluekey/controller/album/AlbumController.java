@@ -117,7 +117,7 @@ public class AlbumController {
             @ApiResponse(responseCode = "400", description = "error")
     })
     @GetMapping
-    public ArtistAlbumListReponseDto getArtistAlbumListDto(
+    public ArtistAlbumsListReponseDto getArtistAlbumListDto(
             @RequestParam("page") Integer page,
             @RequestParam("size") Integer size,
             @RequestParam("keyword") String keyword
