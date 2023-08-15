@@ -12,7 +12,7 @@ public class ExcelUploadException extends RuntimeException{
     private final List<ExcelRowException> errors;
 
     public ExcelUploadException(List<ExcelRowException> errors) {
-        this.errorCode = ErrorCode.TRANSACTION_ALREADY_BATCH;
+        this.errorCode = ErrorCode.TRANSACTION_INVALID_EXCEL_READER_VALUE;
         this.errors = errors;
     }
 }
