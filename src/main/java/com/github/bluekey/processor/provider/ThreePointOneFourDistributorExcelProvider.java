@@ -1,6 +1,9 @@
 package com.github.bluekey.processor.provider;
 
+import com.github.bluekey.processor.ExcelRowException;
 import org.apache.poi.ss.usermodel.Sheet;
+
+import java.util.Map;
 
 public class ThreePointOneFourDistributorExcelProvider implements ExcelFileProvider{
     @Override
@@ -16,5 +19,10 @@ public class ThreePointOneFourDistributorExcelProvider implements ExcelFileProvi
     @Override
     public boolean hasValidSheetName() {
         return false;
+    }
+
+    @Override
+    public Map<Integer, ExcelRowException> getErrors() {
+        return null;
     }
 }
