@@ -1,23 +1,27 @@
 package com.github.bluekey.service.transaction;
 
+import com.github.bluekey.dto.request.transaction.OriginalTransactionRequestDto;
 import com.github.bluekey.dto.response.ListResponse;
 import com.github.bluekey.dto.response.transaction.OriginalTransactionResponseDto;
 import com.github.bluekey.entity.transaction.OriginalTransaction;
+import com.github.bluekey.exception.transaction.ExcelUploadException;
 import com.github.bluekey.processor.ExcelFileProcessManager;
+import com.github.bluekey.processor.ExcelRowException;
+import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.repository.transaction.OriginalTransactionRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TransactionService {
+    private static final int ERROR_THRESHOLD = 0;
     private final OriginalTransactionRepository originalTransactionRepository;
+    private final MemberRepository memberRepository;
 
     public ListResponse<OriginalTransactionResponseDto> getOriginalTransactions(String uploadAt) {
         List<OriginalTransaction> originalTransactions = originalTransactionRepository.findAllByUploadAt(uploadAt);
@@ -32,33 +36,19 @@ public class TransactionService {
         return OriginalTransactionResponseDto.from(originalTransaction);
     }
 
-    public void saveOriginalTransaction(MultipartFile file) {
-        ExcelFileProcessManager excelFileProcessManager = new ExcelFileProcessManager(file);
+    public OriginalTransactionResponseDto saveOriginalTransaction(MultipartFile file, OriginalTransactionRequestDto requestDto) {
+        ExcelFileProcessManager excelFileProcessManager = new ExcelFileProcessManager(file, memberRepository);
         excelFileProcessManager.process();
-        // 임시 코드
-//        Long id = 1L;
-//        OriginalTransaction originalTransaction = originalTransactionRepository.findByIdOrElseThrow(id);
+        List<ExcelRowException> errors = excelFileProcessManager.getErrors();
+        if (errors.size() > ERROR_THRESHOLD) {
+            throw new ExcelUploadException(errors);
+        }
 
-        // validation logic
-//        try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
-//            int numberOfSheets = workbook.getNumberOfSheets();
-//            for (int sheetIndex = 1; sheetIndex < numberOfSheets; sheetIndex++) {
-//                Sheet sheet = workbook.getSheetAt(sheetIndex);
-//                System.out.println(sheet.getSheetName());
-//                for(int i = 0; i<50; i++) {
-//                    Row row = sheet.getRow(i);
-//                    for(int j = 0; j<50; j++) {
-//                        Cell cell = row.getCell(j);
-//                        System.out.println(row.getRowNum() + " " + cell);
-//                    }
-//
-//                }
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            throw new RuntimeException("Error processing excel file");
-//        }
-
-//        return OriginalTransactionResponseDto.from(originalTransaction);
+        OriginalTransaction originalTransaction = OriginalTransaction.builder()
+                .uploadAt(requestDto.getUploadAt())
+                .fileName(file.getOriginalFilename())
+                .build();
+        originalTransactionRepository.save(originalTransaction);
+        return OriginalTransactionResponseDto.from(originalTransaction);
     }
 }
