@@ -19,6 +19,7 @@ public class UploadErrorResponse {
     private HttpStatus status;
     private String code;
     private String message;
+    private int totalErrorNums;
     private List<ExcelRowException> errors = new ArrayList<>();
 
     @Builder
@@ -26,6 +27,7 @@ public class UploadErrorResponse {
         this.status = status;
         this.code = code;
         this.message = message;
+        this.totalErrorNums = errors.size();
         this.errors = errors;
     }
 
