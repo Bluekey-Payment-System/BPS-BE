@@ -69,11 +69,19 @@ public class TransactionController {
                     )
             )
     })
+//    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<OriginalTransactionResponseDto> saveOriginalTransactionHistory(
+//            @Parameter(description = "multipart/form-data 형식의 엑셀 파일 데이터, key 값은 file 입니다.")
+//            @RequestParam("file") MultipartFile file
+//    ) {
+//        return ResponseEntity.ok(transactionService.saveOriginalTransaction(file));
+//    }
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<OriginalTransactionResponseDto> saveOriginalTransactionHistory(
+    public ResponseEntity saveOriginalTransactionHistory(
             @Parameter(description = "multipart/form-data 형식의 엑셀 파일 데이터, key 값은 file 입니다.")
             @RequestParam("file") MultipartFile file
     ) {
-        return ResponseEntity.ok(transactionService.saveOriginalTransaction());
+        transactionService.saveOriginalTransaction(file);
+        return ResponseEntity.ok().build();
     }
 }

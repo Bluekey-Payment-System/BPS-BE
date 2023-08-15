@@ -9,7 +9,7 @@ public class MafiaDistributorExcelFileProvider implements ExcelFileProvider{
     }
 
     @Override
-    public void process() {
+    public void process(Sheet sheet) {
 
     }
 

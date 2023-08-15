@@ -9,7 +9,7 @@ public class ThreePointOneFourDistributorExcelProvider implements ExcelFileProvi
     }
 
     @Override
-    public void process() {
+    public void process(Sheet sheet) {
 
     }
 
