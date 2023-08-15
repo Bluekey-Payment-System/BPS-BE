@@ -3,9 +3,11 @@ package com.github.bluekey.processor;
 import com.github.bluekey.processor.provider.AtoDistributorExcelFileProvider;
 import com.github.bluekey.processor.provider.ExcelFileProvider;
 import com.github.bluekey.processor.type.MusicDistributorType;
+import com.github.bluekey.repository.member.MemberRepository;
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,15 +18,21 @@ public class ExcelFileProcessManager {
     private final ExcelFileProvider excelFileProvider;
     private String filetype;
     private String fileName;
+    private final MemberRepository memberRepository;
 
-    public ExcelFileProcessManager(MultipartFile file) {
+    public ExcelFileProcessManager(MultipartFile file, MemberRepository memberRepository) {
         setExcelFileBasicInformation(file);
         this.file = file;
+        this.memberRepository = memberRepository;
         this.excelFileProvider = setProvider();
     }
 
     public void process() {
         excelFileProvider.process(excelFileProvider.getActiveSheet());
+    }
+
+    public List<ExcelRowException> getErrors() {
+        return excelFileProvider.getErrors();
     }
 
     private void setExcelFileBasicInformation(MultipartFile file) {
@@ -46,7 +54,7 @@ public class ExcelFileProcessManager {
 
     private ExcelFileProvider determineExcelFileProviderWithMusicDistributorType(MusicDistributorType type) {
         if (type.getCls().equals(AtoDistributorExcelFileProvider.class)) {
-            return new AtoDistributorExcelFileProvider(file);
+            return new AtoDistributorExcelFileProvider(file, memberRepository);
         }
         throw new IllegalArgumentException("Excel File Provider exception");
     }
