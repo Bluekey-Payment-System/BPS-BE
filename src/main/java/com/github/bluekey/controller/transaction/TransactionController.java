@@ -1,8 +1,10 @@
 package com.github.bluekey.controller.transaction;
 
+import com.github.bluekey.dto.request.transaction.OriginalTransactionRequestDto;
 import com.github.bluekey.dto.response.ListResponse;
 import com.github.bluekey.dto.response.transaction.OriginalTransactionPaginationResponseDto;
 import com.github.bluekey.dto.response.transaction.OriginalTransactionResponseDto;
+import com.github.bluekey.exception.UploadErrorResponse;
 import com.github.bluekey.service.transaction.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,6 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -67,13 +71,22 @@ public class TransactionController {
                             mediaType = "application/json",
                             schema = @Schema(implementation = OriginalTransactionResponseDto.class)
                     )
+            ),
+            @ApiResponse(responseCode = "400",
+                    description = "엑셀 파일을 업로드 하는 과정 중에 셀의 값에서 문제가 있는 경우 반환",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UploadErrorResponse.class)
+                    )
             )
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OriginalTransactionResponseDto> saveOriginalTransactionHistory(
+            @Parameter(schema = @Schema(implementation = OriginalTransactionRequestDto.class), description = "엑셀 파일을 업로드 할 때 함께 필요한 요청 데이터 입니다. - OriginalTransactionRequestDto 스키마 참고")
+            @RequestPart("data") @Valid OriginalTransactionRequestDto requestDto,
             @Parameter(description = "multipart/form-data 형식의 엑셀 파일 데이터, key 값은 file 입니다.")
             @RequestParam("file") MultipartFile file
     ) {
-        return ResponseEntity.ok(transactionService.saveOriginalTransaction());
+        return ResponseEntity.ok(transactionService.saveOriginalTransaction(file, requestDto));
     }
 }
