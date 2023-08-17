@@ -47,8 +47,9 @@ public class TransactionService {
         OriginalTransaction originalTransaction = OriginalTransaction.builder()
                 .uploadAt(requestDto.getUploadAt())
                 .fileName(file.getOriginalFilename())
+                .fileUrl("s3")
                 .build();
         originalTransactionRepository.save(originalTransaction);
-        return OriginalTransactionResponseDto.from(originalTransaction);
+        return OriginalTransactionResponseDto.fromWithWarning(originalTransaction, excelFileProcessManager.getWarnings());
     }
 }

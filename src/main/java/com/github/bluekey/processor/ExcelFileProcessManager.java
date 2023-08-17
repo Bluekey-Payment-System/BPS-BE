@@ -35,6 +35,8 @@ public class ExcelFileProcessManager {
         return excelFileProvider.getErrors();
     }
 
+    public List<ExcelRowException> getWarnings() {return excelFileProvider.getWarnings();}
+
     private void setExcelFileBasicInformation(MultipartFile file) {
         String[] originalFileNameInformation = file.getOriginalFilename().split(FILE_SEPARATOR);
         this.fileName = originalFileNameInformation[0];

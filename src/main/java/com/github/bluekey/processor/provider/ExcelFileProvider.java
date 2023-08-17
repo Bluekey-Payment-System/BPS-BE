@@ -11,4 +11,6 @@ public interface ExcelFileProvider {
     void process(Sheet sheet);
 
     List<ExcelRowException> getErrors();
+
+    List<ExcelRowException> getWarnings();
 }

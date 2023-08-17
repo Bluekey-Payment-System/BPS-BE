@@ -23,4 +23,8 @@ public enum AtoExcelColumnType {
         this.columnName = columnName;
         this.index = index;
     }
+
+    public static AtoExcelColumnType valueOfIndex(int index) {
+        return values()[index];
+    }
 }
