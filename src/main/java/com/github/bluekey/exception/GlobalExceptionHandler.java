@@ -1,5 +1,6 @@
 package com.github.bluekey.exception;
 
+import com.github.bluekey.exception.transaction.ExcelUploadException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -51,6 +52,13 @@ public class GlobalExceptionHandler {
         ErrorResponse response = ErrorResponse.of(ex.getErrorCode(), ex.getDetail());
         log.error("Business exception has occurred: {}", ex.getDetail(), ex);
         return new ResponseEntity<>(response, response.getStatus());
+    }
+
+    @ExceptionHandler(ExcelUploadException.class)
+    public ResponseEntity<UploadErrorResponse> handleExcelUploadException(ExcelUploadException ex) {
+        UploadErrorResponse response = UploadErrorResponse.of(ex.getErrorCode(), ex.getErrors());
+        return new ResponseEntity<>(response, response.getStatus());
+
     }
 
     @ExceptionHandler(Exception.class)

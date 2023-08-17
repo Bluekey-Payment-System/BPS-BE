@@ -39,3 +39,4 @@ out/
 .env
 
 /**/resources/application-aws.yml
+
