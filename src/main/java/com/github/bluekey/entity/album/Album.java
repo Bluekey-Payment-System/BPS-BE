@@ -1,11 +1,15 @@
 package com.github.bluekey.entity.album;
 
+import com.github.bluekey.entity.member.Member;
+import com.github.bluekey.entity.track.Track;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -20,7 +24,11 @@ public class Album {
 	@Column(name = "album_id")
 	private Long id;
 
+	@OneToMany(mappedBy = "album", cascade = CascadeType.ALL)
+	private List<Track> tracks = new ArrayList<>();
+
 	private Long artistId;
+	private String artistName;
 
 	@Column(nullable = false)
 	private String name;
@@ -38,8 +46,9 @@ public class Album {
 	}
 
 	@Builder(builderClassName = "ByAlbumWithRepresentativeArtistBuilder", builderMethodName = "ByAlbumWithRepresentativeArtistBuilder")
-	public Album(Long artistId, String name, String enName, String profileImage) {
-		this.artistId = artistId;
+	public Album(Member member, String name, String enName, String profileImage) {
+		this.artistId = member.getId();
+		this.artistName = member.getName();
 		this.name = name;
 		this.enName = enName;
 		this.profileImage = profileImage;
