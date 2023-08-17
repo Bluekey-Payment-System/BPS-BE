@@ -1,12 +1,15 @@
 package com.github.bluekey.entity.track;
 
 import com.github.bluekey.entity.member.Member;
+import com.github.bluekey.entity.transaction.Transaction;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -22,6 +25,9 @@ public class TrackMember {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "track_id")
 	private Track track;
+
+	@OneToMany(mappedBy = "track_member", cascade = CascadeType.ALL)
+	private List<Transaction> transactions = new ArrayList<>();
 
 	private Long memberId;
 
