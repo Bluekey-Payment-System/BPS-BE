@@ -1,7 +1,6 @@
 spring:
   config:
-    activate:
-      on-profile: aws
+    import: classpath:application-aws.yml
   h2:
     console:
       enabled: true
@@ -29,10 +28,15 @@ spring:
       mode: always
       schema-locations:
         - classpath:sql/schema-h2.sql
+        - classpath:sql/data.sql
 
 logging:
   level:
     org.hibernate.SQL: debug
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error
 
 springdoc:
   packages-to-scan: com.github.bluekey
