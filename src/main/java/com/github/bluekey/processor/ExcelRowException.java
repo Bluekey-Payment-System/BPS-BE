@@ -16,20 +16,30 @@ public class ExcelRowException {
 
     @Schema(description = "에러가 발생한 열의 인덱스", example = "4")
     private int columnIndex;
+
+    @Schema(description = "에러가 발생한 열의 이름", example = "앨범명")
     private String columnName;
-    private String columnValue;
+
+    @Schema(description = "에러가 발생한 셀의 값", example = "0.0")
+    private String cellValue;
+
+    @Schema(description = "에러 타입", example = "NULL_CELL")
     private ExcelRowExceptionType type;
+
+    @Schema(description = "에러 심각도")
     private String severity;
+
+    @Schema(description = "에러 메시지", example = "값이 비어 있는 셀입니다.")
     private String message;
 
     @Builder
-    public ExcelRowException(final int rowIndex, final int columnIndex, final String columnName, final ExcelRowExceptionType type, final String columnValue) {
+    public ExcelRowException(final int rowIndex, final int columnIndex, final String columnName, final ExcelRowExceptionType type, final String cellValue) {
         this.rowIndex = rowIndex;
         this.columnIndex = columnIndex;
         this.columnName = columnName;
-        this.columnValue = columnValue;
+        this.cellValue = cellValue;
         this.type = type;
         this.severity = type.getType().name();
-        this.message = String.format(type.getMessage(), columnValue);
+        this.message = String.format(type.getMessage(), cellValue);
     }
 }
