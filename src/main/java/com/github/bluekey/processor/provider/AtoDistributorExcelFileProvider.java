@@ -161,16 +161,16 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
         String artistName = cell.getStringCellValue();
         List<String> artistExtractedNames = NameExtractor.getExtractedNames(artistName);
 
-        for (String artistExtractedName : artistExtractedNames) {
-            Optional<Member> memberFindByEnName = memberRepository.findMemberByEnName(artistExtractedName);
-            if (memberFindByEnName.isPresent()) {
-                return false;
-            }
-            Optional<Member> memberFindByKoName = memberRepository.findMemberByName(artistExtractedName);
-            if (memberFindByKoName.isPresent()) {
-                return false;
-            }
-        }
+//        for (String artistExtractedName : artistExtractedNames) {
+//            Optional<Member> memberFindByEnName = memberRepository.findMemberByEnName(artistExtractedName);
+//            if (memberFindByEnName.isPresent()) {
+//                return false;
+//            }
+//            Optional<Member> memberFindByKoName = memberRepository.findMemberByName(artistExtractedName);
+//            if (memberFindByKoName.isPresent()) {
+//                return false;
+//            }
+//        }
         return true;
     }
 }

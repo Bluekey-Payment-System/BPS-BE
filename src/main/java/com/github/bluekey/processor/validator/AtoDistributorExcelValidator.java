@@ -46,7 +46,7 @@ public class AtoDistributorExcelValidator implements ExcelValidator<AtoExcelColu
                 .columnIndex(cell.getColumnIndex())
                 .columnName(columnType.getColumnName())
                 .type(type)
-                .columnValue(columnValue)
+                .cellValue(columnValue)
                 .build();
 
     }
