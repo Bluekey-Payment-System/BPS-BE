@@ -9,9 +9,11 @@ import javax.persistence.*;
 
 @Getter
 @Entity
-@Table(name="albums")
+@Table(name="album")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Album {
+
+	private static final int ARTIST_ID_THRESHOLD = 0;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,8 +66,8 @@ public class Album {
 	}
 
 	public void updateArtistId(Long artistId) {
-		if (artistId <= 0) {
-			throw new IllegalArgumentException("Invalid artistId");
+		if (artistId <= ARTIST_ID_THRESHOLD) {
+			throw new IllegalArgumentException("Invalid artistId format.");
 		}
 		this.artistId = artistId;
 	}
