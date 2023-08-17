@@ -91,7 +91,7 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
             validateAlbumNameCell(cell, row);
         }
         if (TRACK_NAME.getIndex() == cell.getColumnIndex()) {
-
+            validateTrackNameCell(cell, row);
         }
     }
 
@@ -147,6 +147,14 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
 //                    .build();
 //            errorRows.add(excelRowException);
 //        }
+    }
+
+    private void validateTrackNameCell(Cell cell, Row row) {
+        // 엑셀파일에서 트랙명이 null인 경우
+        if (atoDistributorCellValidator.hasCellNullValue(cell)) {
+            ExcelRowException excelRowException = atoDistributorCellValidator.generateException(TRACK_NAME, NULL_CELL, cell, row.getRowNum());
+            errorRows.add(excelRowException);
+        }
     }
 
     private boolean hasNotExistedArtist(Cell cell) {

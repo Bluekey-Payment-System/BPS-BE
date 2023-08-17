@@ -12,9 +12,7 @@ public class MafiaDistributorExcelFileProvider implements ExcelFileProvider{
     }
 
     @Override
-    public void process(Sheet sheet) {
-
-    }
+    public void process(Sheet sheet) {}
 
     @Override
     public List<ExcelRowException> getErrors() {
