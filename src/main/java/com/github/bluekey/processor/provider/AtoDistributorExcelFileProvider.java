@@ -5,6 +5,7 @@ import com.github.bluekey.processor.ExcelRowException;
 import com.github.bluekey.processor.NameExtractor;
 import com.github.bluekey.processor.type.AtoExcelColumnType;
 import com.github.bluekey.processor.type.ExcelRowExceptionType;
+import com.github.bluekey.processor.validator.AtoDistributorCellValidator;
 import com.github.bluekey.repository.member.MemberRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
     private static final int HEADER_ROW_INDEX = 3;
     private static final int DATA_ROW_START_INDEX = 5;
     private final List<ExcelRowException> errorRows = new ArrayList<>();
+    private final AtoDistributorCellValidator atoDistributorCellValidator;
 
     private final Workbook workbook;
     private final MemberRepository memberRepository;
@@ -31,6 +33,7 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
     public AtoDistributorExcelFileProvider(MultipartFile file, MemberRepository memberRepository) {
         this.workbook = setWorkBook(file);
         this.memberRepository = memberRepository;
+        this.atoDistributorCellValidator = new AtoDistributorCellValidator();
     }
 
     @Override
@@ -50,8 +53,7 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
         System.out.println(errorRows);
     }
 
-    @Override
-    public boolean hasValidSheetName() {
+    private boolean hasValidSheetName() {
         Sheet sheet = workbook.getSheetAt(ACTIVE_EXCEL_SHEET_INDEX);
         return sheet.getSheetName().equals(ACTIVE_EXCEL_SHEET_NAME);
     }

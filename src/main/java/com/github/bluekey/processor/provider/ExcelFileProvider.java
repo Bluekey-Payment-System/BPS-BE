@@ -10,7 +10,5 @@ public interface ExcelFileProvider {
 
     void process(Sheet sheet);
 
-    boolean hasValidSheetName();
-
     List<ExcelRowException> getErrors();
 }
