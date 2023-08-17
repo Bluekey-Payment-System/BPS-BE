@@ -17,4 +17,6 @@ public class LoginMemberDto {
 	private final String loginId;
 	@Schema(description = "회원 타입", example = "ARTIST")
 	private final MemberType type;
+	@Schema(description = "회원 프로필 사진", example = "https://bluekey.com/profile.png")
+	private final String profileImage;
 }

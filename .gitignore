@@ -37,3 +37,6 @@ out/
 .vscode/
 
 .env
+
+/**/resources/application-aws.yml
+
