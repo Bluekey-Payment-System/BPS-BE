@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class AtoDistributorExcelValidator implements ExcelValidator<AtoExcelColumnType> {
+    private static final int ROW_DIFFERENCE_ADJUSTMENT = 1;
     private static final int ACTIVE_EXCEL_SHEET_INDEX = 1;
     private static final String ACTIVE_EXCEL_SHEET_NAME = "전체매출내역";
 
@@ -42,7 +43,7 @@ public class AtoDistributorExcelValidator implements ExcelValidator<AtoExcelColu
     public ExcelRowException generateException(AtoExcelColumnType columnType, ExcelRowExceptionType type, Cell cell, int rowIndex) {
         String columnValue = getCellValueAsString(cell);
         return ExcelRowException.builder()
-                .rowIndex(rowIndex + 1)
+                .rowIndex(rowIndex + ROW_DIFFERENCE_ADJUSTMENT)
                 .columnIndex(cell.getColumnIndex())
                 .columnName(columnType.getColumnName())
                 .type(type)
