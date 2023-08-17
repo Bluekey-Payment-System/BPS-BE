@@ -26,7 +26,7 @@ public class TrackMember {
 	@JoinColumn(name = "track_id")
 	private Track track;
 
-	@OneToMany(mappedBy = "track_member", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "trackMember", cascade = CascadeType.ALL)
 	private List<Transaction> transactions = new ArrayList<>();
 
 	private Long memberId;

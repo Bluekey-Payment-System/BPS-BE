@@ -20,7 +20,7 @@ public class OriginalTransaction {
 	@Column(name = "original_transaction_id")
 	private Long id;
 
-	@OneToMany(mappedBy = "original_transaction", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "originalTransaction", cascade = CascadeType.ALL)
 	private List<Transaction> transactions = new ArrayList<>();
 
 	@Column(nullable = false)
