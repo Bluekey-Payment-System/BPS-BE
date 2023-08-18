@@ -35,7 +35,6 @@ public class Member extends BaseTimeEntity {
 	@Column(name = "en_name")
 	private String enName;
 
-	// commission rate은 int가 맞는지?
 	@Column(name = "commission_rate")
 	private Integer commissionRate;
 
@@ -65,7 +64,7 @@ public class Member extends BaseTimeEntity {
 	}
 
 	@Builder(builderClassName = "ByAdminBuilder", builderMethodName = "ByAdminBuilder")
-	public Member(String email, String loginId, String password, String name, MemberRole role, String profileImage) {
+	public Member(String email, String loginId, String password, String name, MemberRole role) {
 		this.email = new Email(email);;
 		this.loginId = loginId;
 		this.password = password;
@@ -73,7 +72,6 @@ public class Member extends BaseTimeEntity {
 		this.commissionRate = 0;
 		this.type = MemberType.ADMIN;
 		this.role = role;
-		this.profileImage = profileImage;
 	}
 
 	private void validateCommissionRate(Integer commissionRate) {
