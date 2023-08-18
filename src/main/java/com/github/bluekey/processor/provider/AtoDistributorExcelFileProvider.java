@@ -111,6 +111,14 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
             ExcelRowException excelRowException = atoDistributorCellValidator.generateException(ARTIST_NAME, NULL_CELL, cell, row.getRowNum());
             errorRows.add(excelRowException);
         }
+
+        // 가창자의 경우 Artist에도 없고 TrackMember에도 없을 경우 exception 반환
+        if (dbPersistenceValidator.hasNotExistedArtist(cell)) {
+            if(dbPersistenceValidator.hasNotExistedTrackMember(cell, row.getCell(TRACK_NAME.getIndex()))) {
+                ExcelRowException excelRowException = atoDistributorCellValidator.generateException(ARTIST_NAME, NOT_EXIST, cell, row.getRowNum());
+                errorRows.add(excelRowException);
+            }
+        }
     }
 
     private void validateAlbumNameCell(Cell cell, Row row) {
@@ -141,6 +149,11 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
         // 엑셀파일에서 트랙명이 null인 경우
         if (atoDistributorCellValidator.hasCellNullValue(cell)) {
             ExcelRowException excelRowException = atoDistributorCellValidator.generateException(TRACK_NAME, NULL_CELL, cell, row.getRowNum());
+            errorRows.add(excelRowException);
+        }
+
+        if (dbPersistenceValidator.hasNotExistedTrack(cell, row.getCell(ALBUM_NAME.getIndex()))) {
+            ExcelRowException excelRowException = atoDistributorCellValidator.generateException(TRACK_NAME, NOT_EXIST, cell, row.getRowNum());
             errorRows.add(excelRowException);
         }
     }
