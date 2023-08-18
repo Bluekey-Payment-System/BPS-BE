@@ -46,14 +46,14 @@ public class JwtProvider {
 		claims.put("roles", "USER");
 		return Jwts.builder()
 				.setClaims(claims)
-				.setExpiration(new Date(System.currentTimeMillis() + tokenValidMilisecond))
+				.setExpiration(new Date(System.currentTimeMillis() + tokenValidMilisecond * 1000))
 				.signWith(secretKey)
 				.compact();
 	}
 
 	public Authentication getAuthentication (String token) {
 		UserDetails userDetails = userDetailsService.loadUserByUsername(this.getAccount(token));
-		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+		return new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword());
 	}
 
 	public String resolveToken(HttpServletRequest request) {
@@ -62,12 +62,15 @@ public class JwtProvider {
 
 	public boolean validateToken(String token) {
 		try {
-			if (!token.substring(0, "BEARER ".length()).equalsIgnoreCase("BEARER ")) {
+			if (!token.startsWith("Bearer ")) {
 				return false;
-			} else {
-				token = token.split(" ")[1].trim();
 			}
-			Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
+			token = token.substring(7); // Remove "Bearer " prefix
+
+			Jws<Claims> claims = Jwts.parserBuilder()
+					.setSigningKey(secretKey)
+					.build()
+					.parseClaimsJws(token);
 			return !claims.getBody().getExpiration().before(new Date());
 		} catch (Exception e) {
 			return false;
