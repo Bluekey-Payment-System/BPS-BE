@@ -1,5 +1,6 @@
 package com.github.bluekey.repository.member;
 
+import com.github.bluekey.entity.member.Email;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.member.MemberType;
@@ -14,4 +15,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
 	// Type 조건에 따른 Member 조회
 	Optional<Member> findMemberByEmailAndType(String email, MemberType type);
+	Optional<Member> findMemberByNameAndType(String name, MemberType type);
+	Optional<Member> findMemberByEnNameAndType(String enName, MemberType type);
 }

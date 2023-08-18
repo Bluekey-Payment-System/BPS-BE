@@ -23,8 +23,7 @@ public class MemberService {
 		if (memberRepository.findMemberByEmailAndType(dto.getEmail(), MemberType.ADMIN).isPresent()) {
 			throw new BusinessException(ErrorCode.INVALID_EMAIL_VALUE);
 		}
-		// 중복 닉네임에 대한 검사를 ADMIN / USER를 나눠서 해야하나?
-		if (memberRepository.findMemberByName(dto.getNickname()).isPresent()) {
+		if (!validateAdminNickname(dto.getNickname())) {
 			throw new BusinessException(ErrorCode.INVALID_NICKNAME_VALUE);
 		}
 		Member admin = Member.ByAdminBuilder()
@@ -34,5 +33,14 @@ public class MemberService {
 				.email(dto.getEmail())
 				.build();
 		memberRepository.save(admin);
+	}
+
+	private boolean validateAdminNickname(String nickname) {
+		// 아티스트의 활동 예명을 닉네임으로 사용할 수 없다.
+		if (memberRepository.findMemberByNameAndType(nickname, MemberType.USER).isPresent() ||
+				memberRepository.findMemberByEnNameAndType(nickname, MemberType.USER).isPresent()) {
+			return false;
+		}
+		return true;
 	}
 }
