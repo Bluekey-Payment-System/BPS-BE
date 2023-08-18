@@ -1,14 +1,21 @@
 package com.github.bluekey.processor.provider;
 
+import com.github.bluekey.entity.album.Album;
 import com.github.bluekey.entity.member.Member;
+import com.github.bluekey.entity.track.TrackMember;
 import com.github.bluekey.processor.ExcelRowException;
 import com.github.bluekey.processor.NameExtractor;
 
 import com.github.bluekey.processor.validator.AtoDistributorExcelValidator;
+import com.github.bluekey.processor.validator.DBPersistenceValidator;
+import com.github.bluekey.repository.album.AlbumRepository;
 import com.github.bluekey.repository.member.MemberRepository;
+import com.github.bluekey.repository.track.TrackMemberRepository;
+import com.github.bluekey.repository.track.TrackRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -31,12 +38,15 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
     private final AtoDistributorExcelValidator atoDistributorCellValidator;
 
     private final Workbook workbook;
-    private final MemberRepository memberRepository;
+    private final DBPersistenceValidator dbPersistenceValidator;
 
-    public AtoDistributorExcelFileProvider(MultipartFile file, MemberRepository memberRepository) {
+    public AtoDistributorExcelFileProvider(
+            MultipartFile file,
+            DBPersistenceValidator dbPersistenceValidator
+    ) {
         this.workbook = setWorkBook(file);
-        this.memberRepository = memberRepository;
         this.atoDistributorCellValidator = new AtoDistributorExcelValidator();
+        this.dbPersistenceValidator = dbPersistenceValidator;
     }
 
     @Override
@@ -95,6 +105,14 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
         }
     }
 
+    private void validateArtistNameCell(Cell cell, Row row) {
+        // 엑셀파일에서 아티스트명이 null인 경우
+        if (atoDistributorCellValidator.hasCellNullValue(cell)) {
+            ExcelRowException excelRowException = atoDistributorCellValidator.generateException(ARTIST_NAME, NULL_CELL, cell, row.getRowNum());
+            errorRows.add(excelRowException);
+        }
+    }
+
     private void validateAlbumNameCell(Cell cell, Row row) {
         // 엑셀파일에서 앨범명이 null인 경우
         if (atoDistributorCellValidator.hasCellNullValue(cell)) {
@@ -119,58 +137,11 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
         }
     }
 
-    private void validateArtistNameCell(Cell cell, Row row) {
-        // 엑셀파일에서 아티스트명이 null인 경우
-        if (atoDistributorCellValidator.hasCellNullValue(cell)) {
-            ExcelRowException excelRowException = atoDistributorCellValidator.generateException(ARTIST_NAME, NULL_CELL, cell, row.getRowNum());
-            errorRows.add(excelRowException);
-        }
-        // Entity와 Repository가 도입되면 추가
-//        if (cell.getCellType().equals(CellType.STRING)) {
-//            if (hasNotExistedArtist(cell)) {
-//                ExcelRowException excelRowException = ExcelRowException.builder()
-//                        .rowIndex(index + 1)
-//                        .columnIndex(cell.getColumnIndex())
-//                        .columnName(ARTIST_NAME.getColumnName())
-//                        .type(NOT_EXIST)
-//                        .columnValue(cell.getStringCellValue())
-//                        .build();
-//                errorRows.add(excelRowException);
-//            }
-//
-//        } else {
-//            ExcelRowException excelRowException = ExcelRowException.builder()
-//                    .rowIndex(index + 1)
-//                    .columnIndex(cell.getColumnIndex())
-//                    .columnName(ARTIST_NAME.getColumnName())
-//                    .type(INVALID_CELL_VALUE_TYPE)
-//                    .build();
-//            errorRows.add(excelRowException);
-//        }
-    }
-
     private void validateTrackNameCell(Cell cell, Row row) {
         // 엑셀파일에서 트랙명이 null인 경우
         if (atoDistributorCellValidator.hasCellNullValue(cell)) {
             ExcelRowException excelRowException = atoDistributorCellValidator.generateException(TRACK_NAME, NULL_CELL, cell, row.getRowNum());
             errorRows.add(excelRowException);
         }
-    }
-
-    private boolean hasNotExistedArtist(Cell cell) {
-        String artistName = cell.getStringCellValue();
-        List<String> artistExtractedNames = NameExtractor.getExtractedNames(artistName);
-
-//        for (String artistExtractedName : artistExtractedNames) {
-//            Optional<Member> memberFindByEnName = memberRepository.findMemberByEnName(artistExtractedName);
-//            if (memberFindByEnName.isPresent()) {
-//                return false;
-//            }
-//            Optional<Member> memberFindByKoName = memberRepository.findMemberByName(artistExtractedName);
-//            if (memberFindByKoName.isPresent()) {
-//                return false;
-//            }
-//        }
-        return true;
     }
 }
