@@ -1,7 +1,6 @@
 spring:
   config:
-    activate:
-      on-profile: aws
+    import: classpath:application-aws.yml, classpath:application-auth.yml
   h2:
     console:
       enabled: true
