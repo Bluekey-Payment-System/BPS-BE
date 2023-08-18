@@ -16,7 +16,7 @@ public class Email {
     private static final Pattern EMAIL_REGEX = Pattern.compile(
             "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,6}$");
 
-    @Column(nullable = false)
+    @Column(name="email", nullable = false)
     private String value;
 
     public Email(final String value) {
