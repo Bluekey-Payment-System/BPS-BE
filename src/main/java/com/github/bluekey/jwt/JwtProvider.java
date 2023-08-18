@@ -1,5 +1,7 @@
 package com.github.bluekey.jwt;
 
+import com.github.bluekey.exception.AuthenticationException;
+import com.github.bluekey.exception.ErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
