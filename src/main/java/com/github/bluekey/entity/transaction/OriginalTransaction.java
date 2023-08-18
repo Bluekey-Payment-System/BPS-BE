@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -17,6 +19,9 @@ public class OriginalTransaction {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "original_transaction_id")
 	private Long id;
+
+	@OneToMany(mappedBy = "originalTransaction", cascade = CascadeType.ALL)
+	private List<Transaction> transactions = new ArrayList<>();
 
 	@Column(nullable = false)
 	private String fileName;
