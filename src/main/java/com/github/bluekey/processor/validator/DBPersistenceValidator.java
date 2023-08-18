@@ -2,6 +2,7 @@ package com.github.bluekey.processor.validator;
 
 import com.github.bluekey.entity.album.Album;
 import com.github.bluekey.entity.member.Member;
+import com.github.bluekey.entity.track.Track;
 import com.github.bluekey.entity.track.TrackMember;
 import com.github.bluekey.processor.NameExtractor;
 import com.github.bluekey.repository.album.AlbumRepository;
@@ -67,4 +68,31 @@ public class DBPersistenceValidator {
         return true;
     }
 
+    public boolean hasNotExistedTrack(Cell cell, Cell cellAlbum) {
+        String trackName = cell.getStringCellValue();
+        String albumName = cellAlbum.getStringCellValue();
+        List<String> trackExtractedNames = NameExtractor.getExtractedNames(trackName);
+        List<String> albumExtractedNames = NameExtractor.getExtractedNames(albumName);
+
+        for(String trackExtractedName : trackExtractedNames) {
+            for (String albumExtractedName : albumExtractedNames) {
+                Optional<Album> albumFindByEnName = albumRepository.findAlbumByEnName(albumExtractedName);
+                if (albumFindByEnName.isPresent()) {
+                    List<Track> trackFindByEnName = trackRepository.findTracksByEnNameAndAlbum(trackExtractedName, albumFindByEnName.get());
+                    if (trackFindByEnName.size() > 0) {
+                        return false;
+                    }
+                }
+
+                Optional<Album> albumFindByName = albumRepository.findAlbumByName(albumExtractedName);
+                if (albumFindByName.isPresent()) {
+                    List<Track> trackFindByKoName = trackRepository.findTracksByNameAndAlbum(trackExtractedName, albumFindByName.get());
+                    if (trackFindByKoName.size() > 0) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
 }
