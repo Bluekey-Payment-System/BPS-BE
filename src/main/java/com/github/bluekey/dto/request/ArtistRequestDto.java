@@ -14,7 +14,7 @@ public class ArtistRequestDto {
     private final String loginId;
 
     @Schema(description = "한글명", example = "김블루")
-    private final String koName;
+    private final String name;
 
     @Schema(description = "영어명", example = "kimBlue")
     private final String enName;

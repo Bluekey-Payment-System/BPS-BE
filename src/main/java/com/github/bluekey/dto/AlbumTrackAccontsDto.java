@@ -13,10 +13,10 @@ public class AlbumTrackAccontsDto {
     private final int trackId;
 
     @Schema(description = "한글트랙명", example = "곡제목111")
-    private final int koTrackName;
+    private final int name;
 
     @Schema(description = "영문트랙명", example = "track111")
-    private final int enTrackName;
+    private final int enName;
 
     @Schema(description = "월별 트랙 정산 정보")
     private final List<AlbumTrackMonthlyTrendInfoDto> monthlyTrend;

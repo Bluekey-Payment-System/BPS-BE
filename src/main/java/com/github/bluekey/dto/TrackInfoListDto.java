@@ -10,10 +10,10 @@ import java.util.List;
 @Builder
 public class TrackInfoListDto {
     @Schema(description = "한글명", example = "봄이온다")
-    private final String koTrackName;
+    private final String name;
 
     @Schema(description = "영어명", example = "Spring comes")
-    private final String enTrackName;
+    private final String enName;
 
     @Schema(description = "???", example = "true")
     private final boolean bluekeyOriginalTrack;

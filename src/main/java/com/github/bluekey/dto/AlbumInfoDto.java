@@ -14,5 +14,5 @@ public class AlbumInfoDto {
     private final String albumImage;
 
     @Schema(description = "앨범명", example = "앨범명2")
-    private final String koAlbumName;
+    private final String koName;
 }
