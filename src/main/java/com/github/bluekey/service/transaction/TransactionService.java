@@ -7,7 +7,10 @@ import com.github.bluekey.entity.transaction.OriginalTransaction;
 import com.github.bluekey.exception.transaction.ExcelUploadException;
 import com.github.bluekey.processor.ExcelFileProcessManager;
 import com.github.bluekey.processor.ExcelRowException;
+import com.github.bluekey.repository.album.AlbumRepository;
 import com.github.bluekey.repository.member.MemberRepository;
+import com.github.bluekey.repository.track.TrackMemberRepository;
+import com.github.bluekey.repository.track.TrackRepository;
 import com.github.bluekey.repository.transaction.OriginalTransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,9 @@ public class TransactionService {
     private static final int ERROR_THRESHOLD = 0;
     private final OriginalTransactionRepository originalTransactionRepository;
     private final MemberRepository memberRepository;
+    private final AlbumRepository albumRepository;
+    private final TrackRepository trackRepository;
+    private final TrackMemberRepository trackMemberRepository;
 
     public ListResponse<OriginalTransactionResponseDto> getOriginalTransactions(String uploadAt) {
         List<OriginalTransaction> originalTransactions = originalTransactionRepository.findAllByUploadAt(uploadAt);
@@ -37,7 +43,13 @@ public class TransactionService {
     }
 
     public OriginalTransactionResponseDto saveOriginalTransaction(MultipartFile file, OriginalTransactionRequestDto requestDto) {
-        ExcelFileProcessManager excelFileProcessManager = new ExcelFileProcessManager(file, memberRepository);
+        ExcelFileProcessManager excelFileProcessManager = new ExcelFileProcessManager(
+                file,
+                memberRepository,
+                albumRepository,
+                trackRepository,
+                trackMemberRepository
+        );
         excelFileProcessManager.process();
         List<ExcelRowException> errors = excelFileProcessManager.getErrors();
         if (errors.size() > ERROR_THRESHOLD) {
