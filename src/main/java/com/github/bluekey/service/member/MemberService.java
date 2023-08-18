@@ -34,7 +34,7 @@ public class MemberService {
 				.loginId(newMember.getLoginId())
 				.nickname(newMember.getName())
 				.email(newMember.getEmail().getValue())
-				.password(newMember.getPassword())
+				.password(newMember.getPassword().getValue())
 				.build();
 	}
 

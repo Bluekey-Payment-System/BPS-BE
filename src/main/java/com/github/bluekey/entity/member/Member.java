@@ -4,6 +4,8 @@ import com.github.bluekey.entity.BaseTimeEntity;
 
 import javax.persistence.*;
 
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,8 +28,8 @@ public class Member extends BaseTimeEntity {
 	@Column(name = "login_id", nullable = false, unique = true)
 	private String loginId;
 
-	@Column(name = "password", nullable = false)
-	private String password;
+	@Embedded
+	private Password password;
 
 	@Column(name = "name", nullable = false)
 	private String name;
@@ -54,7 +56,7 @@ public class Member extends BaseTimeEntity {
 		validateCommissionRate(commissionRate);
 		this.email = new Email(email);
 		this.loginId = loginId;
-		this.password = password;
+		this.password = new Password(password);
 		this.name = name;
 		this.enName = enName;
 		this.commissionRate = commissionRate;
@@ -67,7 +69,7 @@ public class Member extends BaseTimeEntity {
 	public Member(String email, String loginId, String password, String name, MemberRole role) {
 		this.email = new Email(email);;
 		this.loginId = loginId;
-		this.password = password;
+		this.password = new Password(password);
 		this.name = name;
 		this.commissionRate = 0;
 		this.type = MemberType.ADMIN;
