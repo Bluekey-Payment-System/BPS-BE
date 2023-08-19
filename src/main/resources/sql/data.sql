@@ -5,6 +5,8 @@ VALUES ('artist1@example.com', 'artist1', 'password123!', '혁기', 'hucki', 10,
 INSERT INTO member (value, login_id, password, name, en_name, commission_rate, type, role, profile_image)
 VALUES ('artist2@example.com', 'artist2', 'password123!', '53X', '53X', 20, 'USER', 'ARTIST', 'artist.jpg');
 
+INSERT INTO member (value, login_id, password, name, en_name, commission_rate, type, role, profile_image)
+VALUES ('artist3@example.com', 'artist3', 'password123!', '덤프', 'dump', 20, 'USER', 'ARTIST', 'artist.jpg');
 -- Admin Member
 INSERT INTO member (value, login_id, password, name, role, type, profile_image)
 VALUES ('admin@example.com', 'admin123', 'password123!', 'bluekey', 'ADMIN', 'SUPER_ADMIN', 'admin.jpg');
@@ -97,27 +99,87 @@ VALUES (5, 'Can you read my heart', 'Can you read my heart', false);
 
 -- 15
 INSERT INTO track (album_id, name, en_name, is_original_track)
-VALUES (4, 'Praha', 'Praha', false);
+VALUES (1, '내 마음 모르죠 (Acoustic ver.)', '내 마음 모르죠 (Acoustic ver.)', false);
 
 -- 16
 INSERT INTO track (album_id, name, en_name, is_original_track)
-VALUES (1, '내 마음 모르죠 (Acoustic ver.)', '내 마음 모르죠 (Acoustic ver.)', false);
-
--- 17
-INSERT INTO track (album_id, name, en_name, is_original_track)
 VALUES (2, 'Come to me', 'Come to me', false);
 
--- 18
+-- 17
 INSERT INTO track (album_id, name, en_name, is_original_track)
 VALUES (2, 'Come to me (inst.)', 'Come to me (inst.)', false);
 
 
 -- TrackMember
+
+-- 1
 INSERT INTO track_member (track_id, member_id, name, commission_rate)
 VALUES (1, 1, '혁기', 50);
 
+-- 2
 INSERT INTO track_member (track_id, member_id, name, commission_rate)
-VALUES (1, 2, '53X', 30);
+VALUES (1, 3, '덤프', 50);
 
+-- 3
+INSERT INTO track_member (track_id, member_id, name, commission_rate)
+VALUES (2, 1, '혁기', 30);
+
+-- 4
+INSERT INTO track_member (track_id, member_id, name, commission_rate)
+VALUES (3, 1, '혁기', 60);
+
+-- 5
+INSERT INTO track_member (track_id, member_id, name, commission_rate)
+VALUES (4, 1, '혁기', 30);
+
+-- 6
+INSERT INTO track_member (track_id, member_id, name, commission_rate)
+VALUES (5, 1, '혁기', 30);
+
+-- 7
+INSERT INTO track_member (track_id, member_id, name, commission_rate)
+VALUES (6, 2, '53X', 10);
+
+-- 8
+INSERT INTO track_member (track_id, member_id, name, commission_rate)
+VALUES (7, 2, '53X', 30);
+
+-- 9
+INSERT INTO track_member (track_id, member_id, name, commission_rate)
+VALUES (8, 1, '혁기', 30);
+
+-- 10
+INSERT INTO track_member (track_id, member_id, name, commission_rate)
+VALUES (9, 1, '혁기', 20);
+
+-- 11
+INSERT INTO track_member (track_id, member_id, name, commission_rate)
+VALUES (10, 1, '혁기', 35);
+
+-- 12
 INSERT INTO track_member (track_id, member_id, name, commission_rate)
 VALUES (11, null, '김여름', 0);
+
+-- 13
+INSERT INTO track_member (track_id, member_id, name, commission_rate)
+VALUES (12, 1, '혁기', 40);
+
+-- 14
+INSERT INTO track_member (track_id, member_id, name, commission_rate)
+VALUES (13, 1, '혁기', 10);
+
+-- 15
+INSERT INTO track_member (track_id, member_id, name, commission_rate)
+VALUES (14, 1, '혁기', 40);
+
+-- 16
+INSERT INTO track_member (track_id, member_id, name, commission_rate)
+VALUES (15, null, '김여름', 0);
+
+-- 17
+INSERT INTO track_member (track_id, member_id, name, commission_rate)
+VALUES (16, 1, '혁기', 40);
+
+-- 18
+INSERT INTO track_member (track_id, member_id, name, commission_rate)
+VALUES (17, 1, '혁기', 30);
