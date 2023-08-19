@@ -56,12 +56,27 @@ public class DBPersistenceValidator {
     }
 
     public boolean hasNotExistedTrackMember(Cell cellTrackMember, Cell cellTrack) {
+        DataFormatter dataFormatter = new DataFormatter();
         String artistName = cellTrackMember.getStringCellValue();
+        String trackName = dataFormatter.formatCellValue(cellTrack);
+
         List<String> artistExtractedNames = NameExtractor.getExtractedNames(artistName);
+
         for (String artistExtractedName : artistExtractedNames) {
-            Optional<TrackMember> trackMemberFindByEnName = trackMemberRepository.findTrackMemberByName(artistExtractedName);
-            if (trackMemberFindByEnName.isPresent()) {
-                return false;
+
+            Optional<Track> trackFindByEnName = trackRepository.findTrackByEnNameIgnoreCase(trackName);
+            if(trackFindByEnName.isPresent()) {
+                Optional<TrackMember> trackMemberFindByEnName = trackMemberRepository.findTrackMemberByNameAndTrack(artistExtractedName, trackFindByEnName.get());
+                if (trackMemberFindByEnName.isPresent()) {
+                    return false;
+                }
+            }
+            Optional<Track> trackFindByName = trackRepository.findTrackByNameIgnoreCase(trackName);
+            if(trackFindByName.isPresent()) {
+                Optional<TrackMember> trackMemberFindByEnName = trackMemberRepository.findTrackMemberByNameAndTrack(artistExtractedName, trackFindByName.get());
+                if (trackMemberFindByEnName.isPresent()) {
+                    return false;
+                }
             }
         }
         return true;
