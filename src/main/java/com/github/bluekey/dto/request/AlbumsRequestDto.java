@@ -7,15 +7,11 @@ import lombok.Getter;
 @Getter
 @Builder
 public class AlbumsRequestDto {
-
-    @Schema(description = "앨범ID", example = "1")
-    private final Long albumId;
-
     @Schema(description = "한글명", example = "사랑")
-    private final String koAlbumName;
+    private final String name;
 
     @Schema(description = "영어명", example = "love")
-    private final String enAlbumName;
+    private final String enName;
 
     @Schema(description = "고유ID", example = "1")
     private final Long memberId;
@@ -25,5 +21,4 @@ public class AlbumsRequestDto {
 
     @Schema(description = "이미지", example = "https://s3...")
     private final String albumImage;
-
 }

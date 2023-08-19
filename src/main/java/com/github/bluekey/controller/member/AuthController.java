@@ -8,6 +8,7 @@ import com.github.bluekey.dto.response.LoginTokenResponseDto;
 import com.github.bluekey.dto.response.SignupResponseDto;
 import com.github.bluekey.exception.ErrorResponse;
 import com.github.bluekey.service.member.AuthService;
+import com.github.bluekey.service.member.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
 	private final AuthService authService;
+	private final MemberService memberService;
 
 	@Operation(summary = "admin 로그인", description = "admin 로그인")
 	@ApiResponses(value = {
@@ -53,7 +55,7 @@ public class AuthController {
 	})
 	@PostMapping("/admin/signup")
 	public SignupResponseDto adminSignup(@RequestBody SignupRequestDto dto) {
-		return null;
+		return memberService.createAdmin(dto);
 	}
 
 	@Operation(summary = "member 로그인", description = "member 로그인")

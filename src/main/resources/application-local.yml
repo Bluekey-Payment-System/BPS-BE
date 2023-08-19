@@ -17,7 +17,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
     properties:
       hibernate:
 #        globally_quoted_identifiers: true
@@ -30,6 +30,7 @@ spring:
       mode: always
       schema-locations:
         - classpath:sql/schema-h2.sql
+#        - classpath:sql/quartz-h2.sql
         - classpath:sql/data.sql
 
 logging:

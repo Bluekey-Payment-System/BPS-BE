@@ -11,10 +11,10 @@ public class AlbumMonthlyTrackInfoDto {
     private final long trackId;
 
     @Schema(description = "앨범한글명", example = "트랙명2")
-    private final String koTrackName;
+    private final String name;
 
     @Schema(description = "앨범영어명", example = "track2")
-    private final String enTrackName;
+    private final String enName;
 
     @Schema(description = "성장률", example = "2.5")
     private final double growthRate;

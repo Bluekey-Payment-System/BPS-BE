@@ -11,12 +11,12 @@ import java.util.List;
 @Builder
 public class TrackRequestDto {
     @Schema(description = "한글 트랙명", example = "아이엠")
-    private final String koTrackName;
+    private final String name;
 
     @Schema(description = "영문 트랙명", example = "I AM")
-    private final String enTrackName;
+    private final String enName;
 
-    @Schema(description = "???", example = "false")
+    @Schema(description = "블루키 오리지널 트랙", example = "false")
     private final boolean isOriginalTrack;
 
     @Schema(description = "트랙별 요율정보")

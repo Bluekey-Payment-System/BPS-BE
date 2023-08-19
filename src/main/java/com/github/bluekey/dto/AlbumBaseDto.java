@@ -12,9 +12,9 @@ public class AlbumBaseDto {
 	private final Long albumId;
 
 	@Schema(description = "한글 이름", example = "앨범 이름")
-	private final String koAlbumName;
+	private final String koName;
 
 	@Schema(description = "영문 이름", example = "Album name")
-	private final String enAlbumName;
+	private final String enName;
 
 }

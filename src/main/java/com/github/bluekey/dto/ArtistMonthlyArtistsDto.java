@@ -11,8 +11,8 @@ public class ArtistMonthlyArtistsDto {
     private final long memberId;
 
     @Schema(description = "아티스트한글명", example = "혁기")
-    private final String koArtistName;
+    private final String name;
 
     @Schema(description = "아티스트영어명", example = "hyunki")
-    private final String enArtistName;
+    private final String enName;
 }

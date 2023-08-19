@@ -11,8 +11,8 @@ public class ArtistMonthlyAlbumDto {
     private final long albumId;
 
     @Schema(description = "앨범한글명", example = "앨범1")
-    private final String koAlbumName;
+    private final String name;
 
     @Schema(description = "앨범영어명", example = "albumName1")
-    private final String enAlbumName;
+    private final String enName;
 }

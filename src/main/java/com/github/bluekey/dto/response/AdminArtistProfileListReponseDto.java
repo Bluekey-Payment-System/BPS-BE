@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Builder
 public class AdminArtistProfileListReponseDto {
-    @Schema(description = "???", example = "300")
+    @Schema(description = "총 아이템 개수", example = "300")
     private final int totalItems;
 
     @Schema(description = "아티스트 상세 정보")

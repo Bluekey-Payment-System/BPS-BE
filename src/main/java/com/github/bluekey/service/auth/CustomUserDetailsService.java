@@ -17,11 +17,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String loginId) {
-		Member member = memberRepository.findByLoginId(loginId)
+		Member member = memberRepository.findMemberByLoginId(loginId)
 				.orElseThrow(()-> new UsernameNotFoundException("Member not found"));
 
 		return User.withUsername(member.getId().toString())
-				.password(member.getPassword())
+				.password(member.getPassword().getValue())
 				.roles(member.getRole().toString())
 				.build();
 	}

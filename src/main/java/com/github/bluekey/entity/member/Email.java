@@ -1,5 +1,8 @@
 package com.github.bluekey.entity.member;
 
+import com.github.bluekey.exception.AuthenticationException;
+import com.github.bluekey.exception.BusinessException;
+import com.github.bluekey.exception.ErrorCode;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +30,7 @@ public class Email {
     private void validateEmail(final String email) {
         Assert.hasText(email, "Email must not be null or empty.");
         if (!EMAIL_REGEX.matcher(email).matches()) {
-            throw new IllegalArgumentException("Invalid email format.");
+            throw new BusinessException(ErrorCode.INVALID_EMAIL_VALUE);
         }
     }
 }
