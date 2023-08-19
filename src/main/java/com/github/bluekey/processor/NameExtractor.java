@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class NameExtractor {
-    private static final String regex = "[a-zA-Z가-힣]+";
+    private static final String regex = "[a-zA-Z가-힣0-9]+";
 
     private NameExtractor() {}
 
