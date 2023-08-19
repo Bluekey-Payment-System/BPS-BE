@@ -129,19 +129,14 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
         }
 
         // 앨범 값이 0인 경우
-        if (atoDistributorCellValidator.hasCellZeroValue(ALBUM_NAME, cell)) {
-            Cell cellArtist = row.getCell(ARTIST_NAME.getIndex());
-            Cell cellTrack = row.getCell(TRACK_NAME.getIndex());
-            Cell cellServiceName = row.getCell(SERVICE_NAME.getIndex());
+        if (isAlbumExceptionAllowCase(cell, row)) {
+            ExcelRowException excelRowException = atoDistributorCellValidator.generateException(ALBUM_NAME, ALLOW_EXCEPTION_CASE, cell, row.getRowNum());
+            warningRows.add(excelRowException);
+        }
 
-            // 아티스트명, 트랙명이 존재하고, 서비스명이 유튜브일 경우 경고 데이터로 종속
-            if (!atoDistributorCellValidator.hasCellNullValue(cellArtist) &&
-                    !atoDistributorCellValidator.hasCellNullValue(cellTrack) &&
-                    cellServiceName.getStringCellValue().equals(ALLOW_EXCEPTION_SERVICE_NAME_THRESHOLD)
-            ) {
-                ExcelRowException excelRowException = atoDistributorCellValidator.generateException(ALBUM_NAME, ALLOW_EXCEPTION_CASE, cell, row.getRowNum());
-                warningRows.add(excelRowException);
-            }
+        if(!isAlbumExceptionAllowCase(cell, row) && dbPersistenceValidator.hasNotExistedAlbum(cell) && !atoDistributorCellValidator.hasCellNullValue(cell)) {
+            ExcelRowException excelRowException = atoDistributorCellValidator.generateException(ALBUM_NAME, NOT_EXIST, cell, row.getRowNum());
+            errorRows.add(excelRowException);
         }
     }
 
@@ -152,9 +147,27 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
             errorRows.add(excelRowException);
         }
 
-        if (dbPersistenceValidator.hasNotExistedTrack(cell, row.getCell(ALBUM_NAME.getIndex()))) {
+        if (dbPersistenceValidator.hasNotExistedTrack(cell, row.getCell(ALBUM_NAME.getIndex())) && isAlbumExceptionAllowCase(cell, row)) {
             ExcelRowException excelRowException = atoDistributorCellValidator.generateException(TRACK_NAME, NOT_EXIST, cell, row.getRowNum());
             errorRows.add(excelRowException);
         }
+    }
+
+    private boolean isAlbumExceptionAllowCase(Cell cell, Row row) {
+        if (atoDistributorCellValidator.hasCellZeroValue(ALBUM_NAME, cell)) {
+            Cell cellArtist = row.getCell(ARTIST_NAME.getIndex());
+            Cell cellTrack = row.getCell(TRACK_NAME.getIndex());
+            Cell cellServiceName = row.getCell(SERVICE_NAME.getIndex());
+
+            // 아티스트명, 트랙명이 존재하고, 서비스명이 유튜브일 경우 경고 데이터로 종속
+            if (!atoDistributorCellValidator.hasCellNullValue(cellArtist) &&
+                    !atoDistributorCellValidator.hasCellNullValue(cellTrack) &&
+                    cellServiceName.getStringCellValue().equals(ALLOW_EXCEPTION_SERVICE_NAME_THRESHOLD)
+            ) {
+                return true;
+            }
+            return false;
+        }
+        return false;
     }
 }
