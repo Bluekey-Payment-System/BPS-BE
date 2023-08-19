@@ -27,11 +27,9 @@ public class MemberController {
 
 	@Operation(summary = "관리자 계정 관리", description = "관리자가 관리하는 계정들을 불러온다.")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "사이트 이용자 계정 정보 LIST 반환 (일반 관리자)",
-					content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistAccountResponseDto.class))),
-			@ApiResponse(responseCode = "200", description = "사이트 이용자 계정 정보 LIST 반환 (최고 관리자)",
-					content = @Content(mediaType = "application/json", schema = @Schema(implementation = AdminAndArtistAccountResponseDto.class))),
-
+		@ApiResponse(responseCode = "200", description = "사이트 이용자 계정 정보 LIST 반환",
+			content = @Content(mediaType = "application/json", schema = @Schema(
+					oneOf = {ArtistAccountResponseDto.class, AdminAndArtistAccountResponseDto.class}))),
 	})
 	@GetMapping
 	public ResponseEntity<?> getMemberList(
