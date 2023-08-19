@@ -45,7 +45,7 @@ public class SecurityConfig {
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and()
 				.authorizeRequests()
-				.antMatchers("/api/v1/auth/admin/**", "api/v1/auth/member/login").permitAll()
+				.antMatchers("/api/v1/auth/admin/**", "api/v1/auth/member/login", "/h2-console/**").permitAll() //h2 콘솔 접근 허용
 				.antMatchers("/api/v1/admin/**").hasRole("ADMIN")
 				.anyRequest().authenticated()
 				.and()
@@ -59,4 +59,6 @@ public class SecurityConfig {
 				);
 		return http.build();
 	}
+
+
 }
