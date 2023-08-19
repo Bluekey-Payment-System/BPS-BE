@@ -56,7 +56,7 @@ public class JwtProvider {
 
 	public Authentication getAuthentication (String token) {
 		UserDetails userDetails = userDetailsService.loadUserByUsername(this.getClaims(token).getSubject());
-		return new UsernamePasswordAuthenticationToken(userDetails.getUsername(), "", userDetails.getAuthorities());
+		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
 	}
 
 	public String resolveToken(HttpServletRequest request) {

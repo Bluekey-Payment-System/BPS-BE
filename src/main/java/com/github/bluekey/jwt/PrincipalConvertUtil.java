@@ -1,14 +1,18 @@
 package com.github.bluekey.jwt;
 
-import org.springframework.security.core.Authentication;
+import com.github.bluekey.exception.AuthorizationException;
+import com.github.bluekey.exception.ErrorCode;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-public class ContextConvertUtil {
-
+public class PrincipalConvertUtil {
 	public static Long getMemberId() {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		UserDetails user = (UserDetails) auth.getPrincipal();
-		return Long.parseLong(user.getUsername());
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		UserDetails userDetails = (UserDetails) principal;
+		if (userDetails.getUsername() == null) {
+			throw new AuthorizationException(ErrorCode.AUTHORIZATION_FAILED);
+		}
+		return Long.parseLong(userDetails.getUsername());
 	}
 }
