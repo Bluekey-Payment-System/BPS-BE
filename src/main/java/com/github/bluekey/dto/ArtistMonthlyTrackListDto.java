@@ -22,9 +22,6 @@ public class ArtistMonthlyTrackListDto {
     @Schema(description = "매출액", example = "123314")
     private final long revenue;
 
-    @Schema(description = "수익", example = "1234")
-    private final long netIncome;
-
     @Schema(description = "정산액", example = "1234")
     private final long settlementAmount;
 

@@ -10,7 +10,6 @@ import java.util.List;
 @Getter
 @Builder
 public class ArtistTopReponseDto {
-
     @Schema(description = "앨범의 당월 매출 TOP n 트랙 LIST")
     private final List<AlbumTopDto> contents;
 }

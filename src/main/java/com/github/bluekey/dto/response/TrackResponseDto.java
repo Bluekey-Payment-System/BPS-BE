@@ -14,10 +14,10 @@ public class TrackResponseDto {
     private final Long albumId;
 
     @Schema(description = "앨범한글명", example = "사랑")
-    private final String koAlbumName;
+    private final String name;
 
     @Schema(description = "앨범영어명", example = "love")
-    private final String enAlbumName;
+    private final String enName;
 
     @Schema(description = "???", example = "true")
     private final boolean isOriginalTrack;

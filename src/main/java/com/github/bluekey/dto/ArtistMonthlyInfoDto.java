@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class AlbumMonthlyInfoDto {
+public class ArtistMonthlyInfoDto {
     @Schema(description = "앨범ID", example = "1")
     private final long albumId;
 
