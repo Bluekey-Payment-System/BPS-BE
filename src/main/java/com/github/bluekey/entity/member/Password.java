@@ -30,7 +30,7 @@ public class Password {
 
 	private void validatePassword(final String password) {
 		Assert.hasText(password, "password must not be null or empty.");
-		// Business Exception?
+		// TODO: Exception class 새로 만들기
 		if (password.length() < 8 || password.length() > 16) {
 			throw new BusinessException(ErrorCode.INVALID_PWD_VALUE);
 		}

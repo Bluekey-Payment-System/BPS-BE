@@ -21,21 +21,9 @@ public class MemberService {
 	@Transactional
 	public SignupResponseDto createAdmin(SignupRequestDto dto) {
 		validateSignUpRequest(dto);
-		Member admin = Member.ByAdminBuilder()
-				.loginId(dto.getLoginId())
-				.password(dto.getPassword())
-				.name(dto.getNickname())
-				.email(dto.getEmail())
-				.role(MemberRole.ADMIN) //TODO: 추후 PENDING 상태의 어드민 ROLE로 변경
-				.build();
+		Member admin = dto.toMember();
 		Member newMember = memberRepository.save(admin);
-		return SignupResponseDto.builder()
-				.id(newMember.getId())
-				.loginId(newMember.getLoginId())
-				.nickname(newMember.getName())
-				.email(newMember.getEmail().getValue())
-				.password(newMember.getPassword().getValue())
-				.build();
+		return SignupResponseDto.from(newMember);
 	}
 
 	private void validateSignUpRequest(SignupRequestDto dto) {
@@ -45,15 +33,13 @@ public class MemberService {
 	}
 
 	private void validateAdminLoginId(String loginId) {
-		if (memberRepository.findMemberByLoginId(loginId).isPresent()) {
-			throw new BusinessException(ErrorCode.INVALID_LOGIN_ID_VALUE);
-		}
+		memberRepository.findMemberByLoginId(loginId)
+				.orElseThrow(() -> new BusinessException(ErrorCode.INVALID_LOGIN_ID_VALUE));
 	}
 
 	private void validateAdminEmail(String email) {
-		if (memberRepository.findMemberByEmailAndType(email, MemberType.ADMIN).isPresent()) {
-			throw new BusinessException(ErrorCode.INVALID_EMAIL_VALUE);
-		}
+		memberRepository.findMemberByEmailAndType(email, MemberType.ADMIN)
+				.orElseThrow(() -> new BusinessException(ErrorCode.INVALID_EMAIL_VALUE));
 	}
 
 	private void validateAdminNickname(String nickname) {
