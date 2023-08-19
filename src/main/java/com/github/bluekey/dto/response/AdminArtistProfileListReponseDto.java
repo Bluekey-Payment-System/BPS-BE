@@ -1,6 +1,6 @@
 package com.github.bluekey.dto.response;
 
-import com.github.bluekey.dto.AdminArtistProfileListDto;
+import com.github.bluekey.dto.base.artist.AdminArtistProfileListDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;

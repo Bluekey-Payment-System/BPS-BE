@@ -1,6 +1,6 @@
 package com.github.bluekey.dto.response;
 
-import com.github.bluekey.dto.TrackSettlementAmountDto;
+import com.github.bluekey.dto.base.track.TrackSettlementAmountDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.Builder;

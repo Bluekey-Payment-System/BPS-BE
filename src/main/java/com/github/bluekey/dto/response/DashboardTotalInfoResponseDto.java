@@ -1,7 +1,7 @@
 package com.github.bluekey.dto.response;
 
-import com.github.bluekey.dto.BestArtistDto;
-import com.github.bluekey.dto.TotalAndGrowthDto;
+import com.github.bluekey.dto.base.artist.BestArtistDto;
+import com.github.bluekey.dto.base.TotalAndGrowthDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
