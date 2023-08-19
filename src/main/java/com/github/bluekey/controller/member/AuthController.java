@@ -16,8 +16,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,7 +41,7 @@ public class AuthController {
 	@PostMapping("/admin/login")
 	public LoginTokenResponseDto adminLogin(@RequestBody LoginRequestDto dto) {
 		log.debug("adminLogin Controller : {}", dto.getLoginId());
-		return authService.adminLogin(dto);
+		return authService.login(dto);
 	}
 
 	//TODO: 400 bad request가 필드마다 다르게 나올 수 있음, 아직 처리 못 했으나 나중에 처리할 것
@@ -65,11 +63,7 @@ public class AuthController {
 	})
 	@PostMapping("/member/login")
 	public LoginTokenResponseDto memberLogin(@RequestBody LoginRequestDto dto) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
-			System.out.println("admin");
-		}
-		return null;
+		return authService.login(dto);
 	}
 
 	@Operation(summary = "member 비밀번호 변경", description = "member 비밀번호 변경")

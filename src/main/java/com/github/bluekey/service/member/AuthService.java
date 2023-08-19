@@ -24,14 +24,25 @@ public class AuthService {
 	private final PasswordEncoder passwordEncoder;
 	private final JwtProvider jwtProvider;
 
-	public LoginTokenResponseDto adminLogin(LoginRequestDto dto) {
+	public final String AUTHENTICATION_ERROR_MESSAGE = "아이디 또는 비밀번호가 일치하지 않습니다.";
+
+	public LoginTokenResponseDto login(LoginRequestDto dto) {
 		log.info("adminLogin: {}", dto.getLoginId());
-		Member member = memberRepository.findByLoginId(dto.getLoginId())
-				.orElseThrow(() -> new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED, "아이디 또는 비밀번호가 일치하지 않습니다."));
-		if (!passwordEncoder.matches(dto.getPassword(), member.getPassword())) {
-			throw new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED, "아이디 또는 비밀번호가 일치하지 않습니다.");
-		}
+		Member member = validateLogin(dto);
 		String token = jwtProvider.generateAccessToken(member.getLoginId(), member.getType(), member.getRole());
+		return generateLoginTokenResponseDto(member, token);
+	}
+
+	private Member validateLogin(LoginRequestDto dto){
+		Member member = memberRepository.findByLoginId(dto.getLoginId())
+				.orElseThrow(() -> new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED, AUTHENTICATION_ERROR_MESSAGE));
+		if (!passwordEncoder.matches(dto.getPassword(), member.getPassword())) {
+			throw new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED, AUTHENTICATION_ERROR_MESSAGE);
+		}
+		return member;
+	}
+
+	private LoginTokenResponseDto generateLoginTokenResponseDto(Member member, String token){
 		return LoginTokenResponseDto.builder()
 				.member(LoginMemberDto.from(member))
 				.jwtInformation(JwtInfoDto.builder().accessToken(token).build())
