@@ -1,5 +1,7 @@
 package com.github.bluekey.jwt;
 
+import com.github.bluekey.entity.member.MemberRole;
+import com.github.bluekey.entity.member.MemberType;
 import com.github.bluekey.exception.AuthenticationException;
 import com.github.bluekey.exception.ErrorCode;
 import io.jsonwebtoken.Claims;
@@ -41,9 +43,10 @@ public class JwtProvider {
 		secretKey = Keys.hmacShaKeyFor(keyBytes);
 	}
 
-	public String generateAccessToken(String username) {
+	public String generateAccessToken(String username, MemberType memberType, MemberRole memberRole) {
 		Claims claims = Jwts.claims().setSubject(username);
-		claims.put("roles", "USER");
+		claims.put("type", memberType);
+		claims.put("role", memberRole);
 		return Jwts.builder()
 				.setClaims(claims)
 				.setExpiration(new Date(System.currentTimeMillis() + tokenValidMilisecond * 1000))
@@ -52,8 +55,8 @@ public class JwtProvider {
 	}
 
 	public Authentication getAuthentication (String token) {
-		UserDetails userDetails = userDetailsService.loadUserByUsername(this.getAccount(token));
-		return new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword());
+		UserDetails userDetails = userDetailsService.loadUserByUsername(this.getClaims(token).getSubject());
+		return new UsernamePasswordAuthenticationToken(userDetails.getUsername(), "", userDetails.getAuthorities());
 	}
 
 	public String resolveToken(HttpServletRequest request) {
@@ -65,24 +68,18 @@ public class JwtProvider {
 			if (!token.startsWith("Bearer ")) {
 				return false;
 			}
-			token = token.substring(7); // Remove "Bearer " prefix
-
-			Jws<Claims> claims = Jwts.parserBuilder()
-					.setSigningKey(secretKey)
-					.build()
-					.parseClaimsJws(token);
-			return !claims.getBody().getExpiration().before(new Date());
+			Claims claims = getClaims(token.substring(7)); // Remove Bearer prefix
+			return !claims.getExpiration().before(new Date());
 		} catch (Exception e) {
 			return false;
 		}
 	}
 
-	public String getAccount(String token) {
+	public Claims getClaims(String token) {
 		return Jwts.parserBuilder()
 				.setSigningKey(secretKey)
 				.build()
 				.parseClaimsJws(token)
-				.getBody()
-				.getSubject();
+				.getBody();
 	}
 }

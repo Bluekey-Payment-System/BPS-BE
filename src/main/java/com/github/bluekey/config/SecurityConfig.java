@@ -45,8 +45,8 @@ public class SecurityConfig {
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and()
 				.authorizeRequests()
-				.antMatchers("/api/v1/auth/admin/**", "api/v1/auth/member/login", "/h2-console/**").permitAll() //h2 콘솔 접근 허용
-				.antMatchers("/api/v1/admin/**").hasRole("ADMIN")
+				.antMatchers("/api/v1/auth/admin/**", "/api/v1/auth/member/login", "/h2-console/**").permitAll() //h2 콘솔 접근 허용
+				.antMatchers("/api/v1/**").hasRole("ADMIN")
 				.anyRequest().authenticated()
 				.and()
 				.addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)

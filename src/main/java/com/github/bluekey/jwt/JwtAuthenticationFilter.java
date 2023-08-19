@@ -20,7 +20,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		String token = jwtProvider.resolveToken(request);
 		if (token != null && jwtProvider.validateToken(token)) {
-			Authentication authentication = jwtProvider.getAuthentication(token);
+			Authentication authentication = jwtProvider.getAuthentication(token.substring(7));
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 		}
 		filterChain.doFilter(request, response);

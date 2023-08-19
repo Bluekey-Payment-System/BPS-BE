@@ -1,6 +1,8 @@
 spring:
   config:
-    import: classpath:application-aws.yml, classpath:application-auth.yml
+    import:
+      - classpath:application-aws.yml
+      - classpath:application-auth.yml
   h2:
     console:
       enabled: true

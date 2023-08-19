@@ -1,15 +1,21 @@
 package com.github.bluekey.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Schema(description = "jwt 정보")
 public class JwtInfoDto {
 	@Schema(description = "jwt 토큰", example = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJibHVla2V5Iiwia")
-	private final String accessToken;
+	private String accessToken;
+
+	public JwtInfoDto(String accessToken) {
+		this.accessToken = accessToken;
+	}
 }
