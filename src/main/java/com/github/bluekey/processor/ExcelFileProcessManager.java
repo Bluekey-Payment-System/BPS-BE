@@ -41,8 +41,8 @@ public class ExcelFileProcessManager {
         this.albumRepository = albumRepository;
         this.trackRepository = trackRepository;
         this.trackMemberRepository = trackMemberRepository;
-        this.excelFileProvider = setProvider();
         this.dbPersistenceValidator = new DBPersistenceValidator(memberRepository, albumRepository, trackRepository, trackMemberRepository);
+        this.excelFileProvider = setProvider();
     }
 
     public void process() {
