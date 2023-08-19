@@ -1,7 +1,7 @@
 package com.github.bluekey.dto.response;
 
-import com.github.bluekey.dto.JwtInfoDto;
-import com.github.bluekey.dto.LoginMemberDto;
+import com.github.bluekey.dto.base.auth.JwtInfoDto;
+import com.github.bluekey.dto.base.auth.LoginMemberDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;

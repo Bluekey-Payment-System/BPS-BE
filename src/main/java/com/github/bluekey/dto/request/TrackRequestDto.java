@@ -1,6 +1,6 @@
 package com.github.bluekey.dto.request;
 
-import com.github.bluekey.dto.TrackCommissionRateDto;
+import com.github.bluekey.dto.base.track.TrackCommissionRateDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;

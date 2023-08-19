@@ -1,6 +1,8 @@
 package com.github.bluekey.dto.response;
 
-import com.github.bluekey.dto.*;
+import com.github.bluekey.dto.base.artist.ArtistMonthlyInfoDto;
+import com.github.bluekey.dto.base.artist.ArtistMonthlySettlementInfoDto;
+import com.github.bluekey.dto.base.artist.ArtistMonthlyTrackInfoDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;

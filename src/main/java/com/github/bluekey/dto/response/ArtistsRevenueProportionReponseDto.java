@@ -1,6 +1,6 @@
 package com.github.bluekey.dto.response;
 
-import com.github.bluekey.dto.ArtistRevenueProportionDto;
+import com.github.bluekey.dto.base.artist.ArtistRevenueProportionDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.Builder;
