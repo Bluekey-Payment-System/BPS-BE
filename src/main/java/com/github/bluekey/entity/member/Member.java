@@ -4,6 +4,8 @@ import com.github.bluekey.entity.BaseTimeEntity;
 
 import javax.persistence.*;
 
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "member")
+@Table(name = "members")
 public class Member extends BaseTimeEntity {
 
 	@Id
@@ -26,8 +28,8 @@ public class Member extends BaseTimeEntity {
 	@Column(name = "login_id", nullable = false, unique = true)
 	private String loginId;
 
-	@Column(name = "password", nullable = false)
-	private String password;
+	@Embedded
+	private Password password;
 
 	@Column(name = "name", nullable = false)
 	private String name;
@@ -35,7 +37,6 @@ public class Member extends BaseTimeEntity {
 	@Column(name = "en_name")
 	private String enName;
 
-	// commission rate은 int가 맞는지?
 	@Column(name = "commission_rate")
 	private Integer commissionRate;
 
@@ -55,7 +56,7 @@ public class Member extends BaseTimeEntity {
 		validateCommissionRate(commissionRate);
 		this.email = new Email(email);
 		this.loginId = loginId;
-		this.password = password;
+		this.password = new Password(password);
 		this.name = name;
 		this.enName = enName;
 		this.commissionRate = commissionRate;
@@ -65,15 +66,14 @@ public class Member extends BaseTimeEntity {
 	}
 
 	@Builder(builderClassName = "ByAdminBuilder", builderMethodName = "ByAdminBuilder")
-	public Member(String email, String loginId, String password, String name, MemberRole role, String profileImage) {
+	public Member(String email, String loginId, String password, String name, MemberRole role) {
 		this.email = new Email(email);;
 		this.loginId = loginId;
-		this.password = password;
+		this.password = new Password(password);
 		this.name = name;
 		this.commissionRate = 0;
 		this.type = MemberType.ADMIN;
 		this.role = role;
-		this.profileImage = profileImage;
 	}
 
 	private void validateCommissionRate(Integer commissionRate) {

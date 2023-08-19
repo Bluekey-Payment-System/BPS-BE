@@ -1,12 +1,12 @@
 package com.github.bluekey.dto.response;
 
+import com.github.bluekey.entity.member.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
 @Builder
 @Schema(description = "회원가입 응답")
 public class SignupResponseDto {
@@ -20,4 +20,23 @@ public class SignupResponseDto {
 	private final String nickname;
 	@Schema(description = "회원 비밀번호", example = "blueblue123")
 	private final String password;
+
+	@Builder
+	private SignupResponseDto(final Long id, final String email, final String loginId, final String nickname, final String password) {
+		this.id = id;
+		this.email = email;
+		this.loginId = loginId;
+		this.nickname = nickname;
+		this.password = password;
+	}
+
+	public static SignupResponseDto from(Member member) {
+		return SignupResponseDto.builder()
+			.id(member.getId())
+			.email(member.getEmail().getValue())
+			.loginId(member.getLoginId())
+			.nickname(member.getName())
+			.password(member.getPassword().getValue())
+			.build();
+	}
 }
