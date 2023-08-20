@@ -1,5 +1,6 @@
 package com.github.bluekey.entity.transaction;
 
+import com.github.bluekey.entity.BaseTimeEntity;
 import com.github.bluekey.entity.track.TrackMember;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -13,7 +14,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "transaction")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Transaction {
+public class Transaction extends BaseTimeEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

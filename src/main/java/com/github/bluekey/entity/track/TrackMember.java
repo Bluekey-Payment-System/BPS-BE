@@ -1,5 +1,6 @@
 package com.github.bluekey.entity.track;
 
+import com.github.bluekey.entity.BaseTimeEntity;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.transaction.Transaction;
 import lombok.AccessLevel;
@@ -15,7 +16,7 @@ import java.util.List;
 @Entity
 @Table(name="track_member")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TrackMember {
+public class TrackMember extends BaseTimeEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
