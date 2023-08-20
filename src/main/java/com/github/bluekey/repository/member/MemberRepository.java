@@ -1,12 +1,9 @@
 package com.github.bluekey.repository.member;
-
-import com.github.bluekey.entity.member.Email;
 import com.github.bluekey.entity.member.Member;
-import com.github.bluekey.entity.member.MemberRole;
-import com.github.bluekey.entity.member.MemberType;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import com.github.bluekey.entity.member.MemberType;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 

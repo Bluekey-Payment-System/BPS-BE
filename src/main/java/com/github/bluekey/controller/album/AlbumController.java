@@ -103,7 +103,7 @@ public class AlbumController {
     })
     @GetMapping("/{albumId}")
     public AlbumListReponseDto getAlbumListDto(
-            @RequestParam("albumId") String albumId
+            @PathVariable("albumId") Long albumId
     ) {
         return null;
     }
