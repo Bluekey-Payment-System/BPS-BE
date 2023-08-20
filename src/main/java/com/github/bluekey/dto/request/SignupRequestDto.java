@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @Schema(description = "회원가입 요청")
 public class SignupRequestDto {
 
-	// TODO: Validation 추가
 	@Schema(description = "회원 Email", example = "bluekey1@gmail.com")
 	private String email;
 	@Schema(description = "회원 id", example = "bluekey1")

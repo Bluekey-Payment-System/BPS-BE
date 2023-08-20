@@ -18,16 +18,13 @@ public class SignupResponseDto {
 	private final String loginId;
 	@Schema(description = "회원 닉네임", example = "블루키1")
 	private final String nickname;
-	@Schema(description = "회원 비밀번호", example = "blueblue123")
-	private final String password;
 
 	@Builder
-	private SignupResponseDto(final Long id, final String email, final String loginId, final String nickname, final String password) {
+	private SignupResponseDto(final Long id, final String email, final String loginId, final String nickname) {
 		this.id = id;
 		this.email = email;
 		this.loginId = loginId;
 		this.nickname = nickname;
-		this.password = password;
 	}
 
 	public static SignupResponseDto from(Member member) {
@@ -36,7 +33,6 @@ public class SignupResponseDto {
 			.email(member.getEmail().getValue())
 			.loginId(member.getLoginId())
 			.nickname(member.getName())
-			.password(member.getPassword())
 			.build();
 	}
 }
