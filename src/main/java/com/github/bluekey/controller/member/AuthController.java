@@ -77,7 +77,7 @@ public class AuthController {
 			@ApiResponse(responseCode = "500", description = "internal server error", content = {})
 	})
 	@PatchMapping("/member/password")
-	public void passwordChange(@RequestBody PasswordRequestDto dto) {
+	public void passwordChange(@Validated @RequestBody PasswordRequestDto dto) {
 		authService.changePassword(dto, PrincipalConvertUtil.getMemberId());
 	}
 
