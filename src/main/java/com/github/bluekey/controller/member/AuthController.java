@@ -7,7 +7,7 @@ import com.github.bluekey.dto.request.SignupRequestDto;
 import com.github.bluekey.dto.response.LoginTokenResponseDto;
 import com.github.bluekey.dto.response.SignupResponseDto;
 import com.github.bluekey.exception.ErrorResponse;
-import com.github.bluekey.service.member.AuthService;
+import com.github.bluekey.service.auth.AuthService;
 import com.github.bluekey.service.member.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -55,7 +55,7 @@ public class AuthController {
 	})
 	@PostMapping("/admin/signup")
 	public SignupResponseDto adminSignup(@Validated @RequestBody SignupRequestDto dto) {
-		return memberService.createAdmin(dto);
+		return authService.createAdmin(dto);
 	}
 
 	@Operation(summary = "member 로그인", description = "member 로그인")
