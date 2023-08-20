@@ -10,8 +10,6 @@ import javax.persistence.Table;
 
 import javax.persistence.*;
 
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

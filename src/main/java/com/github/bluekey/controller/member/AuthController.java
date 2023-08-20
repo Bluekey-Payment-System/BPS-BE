@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,7 +54,7 @@ public class AuthController {
 			@ApiResponse(responseCode = "500", description = "internal server error", content = {})
 	})
 	@PostMapping("/admin/signup")
-	public SignupResponseDto adminSignup(@RequestBody SignupRequestDto dto) {
+	public SignupResponseDto adminSignup(@Validated @RequestBody SignupRequestDto dto) {
 		return memberService.createAdmin(dto);
 	}
 
