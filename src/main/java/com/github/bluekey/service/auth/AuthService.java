@@ -55,6 +55,13 @@ public class AuthService {
 		return passwordEncoder.matches(dto.getPassword(), member.getPassword());
 	}
 
+	public void changePassword(PasswordRequestDto dto, Long memberId) {
+		Member member = memberRepository.findById(memberId)
+				.orElseThrow(MemberException::new);
+		member.updatePassword(getEncodePassword(dto.getPassword()));
+		memberRepository.save(member);
+	}
+
 	public String getEncodePassword(String password) {
 		return passwordEncoder.encode(password);
 	}
@@ -104,6 +111,4 @@ public class AuthService {
 				.jwtInformation(JwtInfoDto.builder().accessToken(token).build())
 				.build();
 	}
-
-
 }

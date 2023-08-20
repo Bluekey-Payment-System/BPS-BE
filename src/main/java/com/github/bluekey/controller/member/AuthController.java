@@ -37,7 +37,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
 	private final AuthService authService;
-	private final MemberService memberService;
 
 	@Operation(summary = "admin 로그인", description = "admin 로그인")
 	@ApiResponses(value = {
@@ -78,8 +77,8 @@ public class AuthController {
 			@ApiResponse(responseCode = "500", description = "internal server error", content = {})
 	})
 	@PatchMapping("/member/password")
-	public void passwordChange(@RequestBody PasswordRequestDto dtd) {
-
+	public void passwordChange(@RequestBody PasswordRequestDto dto) {
+		authService.changePassword(dto, PrincipalConvertUtil.getMemberId());
 	}
 
 	@Operation(summary = "member 비밀번호 확인", description = "member 비밀번호 확인")
