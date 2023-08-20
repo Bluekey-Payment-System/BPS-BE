@@ -1,17 +1,13 @@
 package com.github.bluekey.controller.member;
 
 import com.github.bluekey.dto.response.AdminAndArtistAccountResponseDto;
-import com.github.bluekey.dto.response.ArtistAccountResponseDto;
-import com.github.bluekey.dto.response.ArtistAlbumsListReponseDto;
-import com.github.bluekey.entity.member.MemberRole;
-import com.github.bluekey.exception.ErrorResponse;
+import com.github.bluekey.dto.response.ArtistAccountsResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +25,7 @@ public class MemberController {
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "사이트 이용자 계정 정보 LIST 반환",
 			content = @Content(mediaType = "application/json", schema = @Schema(
-					oneOf = {ArtistAccountResponseDto.class, AdminAndArtistAccountResponseDto.class}))),
+					oneOf = {ArtistAccountsResponseDto.class, AdminAndArtistAccountResponseDto.class}))),
 	})
 	@GetMapping
 	public ResponseEntity<?> getMemberList(

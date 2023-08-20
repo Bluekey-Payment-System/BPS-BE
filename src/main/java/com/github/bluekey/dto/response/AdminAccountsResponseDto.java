@@ -1,6 +1,6 @@
 package com.github.bluekey.dto.response;
 
-import com.github.bluekey.dto.ArtistAccountDto;
+import com.github.bluekey.dto.AdminAccountDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,17 +11,17 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Schema(description = "아티스트 계정 리스트")
-public class ArtistAccountResponseDto {
+@Schema(description = "어드민 계정 리스트")
+public class AdminAccountsResponseDto {
 
 	@Schema(description = "총 아티스트 계정 수")
 	private Long totalItems;
 
 	@Schema(description = "아티스트 계정 리스트")
-	private List<ArtistAccountDto> contents = new ArrayList<>();
+	private List<AdminAccountDto> contents = new ArrayList<>();
 
 	@Builder
-	public ArtistAccountResponseDto(final Long totalItems, final List<ArtistAccountDto> contents) {
+	public AdminAccountsResponseDto(final Long totalItems, final List<AdminAccountDto> contents) {
 		this.totalItems = totalItems;
 		this.contents = contents;
 	}
