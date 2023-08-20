@@ -1,33 +1,49 @@
 package com.github.bluekey.dto.request;
 
+import com.github.bluekey.entity.member.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ArtistRequestDto {
     @Schema(description = "이메일", example = "example@bluekey_domain.com")
-    private final String email;
+    private String email;
 
     @Schema(description = "로그인ID", example = "example@bluekey_domain.com")
-    private final String loginId;
+    private String loginId;
 
     @Schema(description = "한글명", example = "김블루")
-    private final String name;
+    private String name;
 
     @Schema(description = "영어명", example = "kimBlue")
-    private final String enName;
+    private String enName;
 
     @Schema(description = "비밀번호", example = "test1234!")
-    private final String password;
-
-    @Schema(description = "영문과 동일 여부", example = "false")
-    private final boolean isSameKoNameWithEnName;
-
-    @Schema(description = "이미지", example = "https://s3...")
-    private final String profileImage;
+    private String password;
 
     @Schema(description = "기본요율", example = "40")
-    private final double commissionRate;
+    private Integer commissionRate;
+
+    public ArtistRequestDto(String email, String loginId, String name, String enName, String password, String profileImage, Integer commissionRate) {
+        this.email = email;
+        this.loginId = loginId;
+        this.name = name;
+        this.enName = enName;
+        this.password = password;
+        this.commissionRate = commissionRate;
+    }
+
+    public Member toArtist() {
+        return Member.ByArtistBuilder()
+                .email(email)
+                .loginId(loginId)
+                .name(name)
+                .enName(enName)
+                .password(password)
+                .commissionRate(commissionRate)
+                .build();
+    }
 }
