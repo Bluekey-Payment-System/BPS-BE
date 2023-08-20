@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 public class MemberService {
+	private static final String S3_PROFILE_IMAGE_PREFIX = "profile/";
 
 	private final MemberRepository memberRepository;
 	private final AwsS3Manager awsS3Manager;
@@ -39,8 +40,9 @@ public class MemberService {
 		if (file.isEmpty()) {
 			return ArtistAccountDto.from(member);
 		}
+
 		// S3 업로드 로직
-		String fileUrl = awsS3Manager.upload(file, "profile/" + member.getId() + "/" + file.getOriginalFilename()+ "-" +member.getCreatedAt(),  S3PrefixType.IMAGE);
+		String fileUrl = awsS3Manager.upload(file, S3_PROFILE_IMAGE_PREFIX + member.getId() + "/" + file.getOriginalFilename()+ "-" +member.getCreatedAt(),  S3PrefixType.IMAGE);
 		member.updateProfileImage(fileUrl);
 		memberRepository.save(member);
 		return ArtistAccountDto.from(member);
