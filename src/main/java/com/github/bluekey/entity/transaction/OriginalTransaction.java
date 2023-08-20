@@ -1,5 +1,6 @@
 package com.github.bluekey.entity.transaction;
 
+import com.github.bluekey.entity.BaseTimeEntity;
 import com.github.bluekey.exception.transaction.TransactionAlreadyUploadException;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -14,7 +15,7 @@ import java.util.List;
 @Entity
 @Table(name="original_transactions")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OriginalTransaction {
+public class OriginalTransaction extends BaseTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "original_transaction_id")
