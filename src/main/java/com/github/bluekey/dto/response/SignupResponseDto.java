@@ -36,7 +36,7 @@ public class SignupResponseDto {
 			.email(member.getEmail().getValue())
 			.loginId(member.getLoginId())
 			.nickname(member.getName())
-			.password(member.getPassword().getValue())
+			.password(member.getPassword())
 			.build();
 	}
 }

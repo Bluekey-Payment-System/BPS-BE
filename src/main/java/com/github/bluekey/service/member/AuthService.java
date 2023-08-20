@@ -35,7 +35,7 @@ public class AuthService {
 	private Member validateLogin(LoginRequestDto dto){
 		Member member = memberRepository.findMemberByLoginId(dto.getLoginId())
 				.orElseThrow(() -> new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED, AUTHENTICATION_ERROR_MESSAGE));
-		if (!passwordEncoder.matches(dto.getPassword(), member.getPassword().getValue())) {
+		if (!passwordEncoder.matches(dto.getPassword(), member.getPassword())) {
 			throw new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED, AUTHENTICATION_ERROR_MESSAGE);
 		}
 		return member;
