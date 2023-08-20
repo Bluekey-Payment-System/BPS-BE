@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -56,7 +57,7 @@ public class AuthController {
 			@ApiResponse(responseCode = "500", description = "internal server error", content = {})
 	})
 	@PostMapping("/admin/signup")
-	public SignupResponseDto adminSignup(@Validated @RequestBody SignupRequestDto dto) {
+	public SignupResponseDto adminSignup(@Valid @RequestBody SignupRequestDto dto) {
 		return authService.createAdmin(dto);
 	}
 
@@ -77,7 +78,7 @@ public class AuthController {
 			@ApiResponse(responseCode = "500", description = "internal server error", content = {})
 	})
 	@PatchMapping("/member/password")
-	public void passwordChange(@Validated @RequestBody PasswordRequestDto dto) {
+	public void passwordChange(@Valid @RequestBody PasswordRequestDto dto) {
 		authService.changePassword(dto, PrincipalConvertUtil.getMemberId());
 	}
 
