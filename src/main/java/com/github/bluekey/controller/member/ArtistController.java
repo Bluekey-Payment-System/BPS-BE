@@ -1,19 +1,26 @@
 package com.github.bluekey.controller.member;
 
+import com.github.bluekey.dto.ArtistAccountDto;
 import com.github.bluekey.dto.response.*;
 import com.github.bluekey.dto.request.AdminArtistProfileRequestDto;
 import com.github.bluekey.dto.request.ArtistProfileRequestDto;
 import com.github.bluekey.dto.request.ArtistRequestDto;
 import com.github.bluekey.exception.ErrorResponse;
+import com.github.bluekey.service.member.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 
 @Tag(name = "Artist", description = "Artist 관련 API")
@@ -21,6 +28,8 @@ import java.time.LocalDate;
 @RequestMapping("/api/v1/artist")
 @RequiredArgsConstructor
 public class ArtistController {
+
+    private final MemberService memberService;
     @Operation(summary = "아티스트 정보 변경" , description = "아티스트 정보 변경")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "아티스트 정보 변경 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))),
@@ -33,12 +42,17 @@ public class ArtistController {
 
     @Operation(summary = "아티스트 등록" , description = "아티스트 등록")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "아티스트 등록 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))),
+            @ApiResponse(responseCode = "200", description = "아티스트 등록 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistAccountDto.class))),
             @ApiResponse(responseCode = "400", description = "error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
     })
-    @PostMapping
-    public void artistInsert(@RequestBody ArtistRequestDto dto) {
-
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ArtistAccountDto> createArtist(
+            @Parameter(schema = @Schema(implementation = ArtistRequestDto.class), description = "Artist 등록 API 입니다.")
+            @RequestPart("data") @Valid ArtistRequestDto requestDto,
+            @Parameter(description = "multipart/form-data 형식의 엑셀 파일 데이터, key 값은 file 입니다.")
+            @RequestParam("file") MultipartFile file
+            ) {
+        return ResponseEntity.ok(memberService.createArtist(file, requestDto));
     }
 
     @Operation(summary = "관리자가 등록한 아티스트의 앨범 LIST", description = "관리자가 등록한 아티스트의 앨범 LIST")
