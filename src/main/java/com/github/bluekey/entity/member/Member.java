@@ -58,7 +58,6 @@ public class Member extends BaseTimeEntity {
 
 	@Builder(builderClassName = "ByArtistBuilder", builderMethodName = "ByArtistBuilder")
 	public Member(String email, String loginId, String password, String name, String enName, Integer commissionRate, String profileImage) {
-		validateCommissionRate(commissionRate);
 		this.email = new Email(email);
 		this.loginId = loginId;
 		this.password = new Password(password);
@@ -81,13 +80,7 @@ public class Member extends BaseTimeEntity {
 		this.role = role;
 	}
 
-	private void validateCommissionRate(Integer commissionRate) {
-		if (commissionRate < 0) {
-			throw new IllegalArgumentException("Percentage value must not be negative.");
-		}
-
-		if (commissionRate > 100) {
-			throw new IllegalArgumentException("Percentage value cannot exceed 100.");
-		}
+	public void updateProfileImage(String profileImage) {
+		this.profileImage = profileImage;
 	}
 }
