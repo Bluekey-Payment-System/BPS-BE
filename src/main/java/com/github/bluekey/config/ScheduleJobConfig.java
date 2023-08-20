@@ -16,7 +16,7 @@ import static org.quartz.JobBuilder.newJob;
 @RequiredArgsConstructor
 public class ScheduleJobConfig {
     private static final String EXCEL_TO_DATABASE_CRON_CONFIG = "0 1 1 * *";
-    private static final String EXCEL_TO_DATABASE_CRON_CONFIG_LOCAL_VER = "0/10 * * * * ?";
+    private static final String EXCEL_TO_DATABASE_CRON_CONFIG_LOCAL_VER = "0 3 * * * ?";
     private final Scheduler scheduler;
 
     @PostConstruct
