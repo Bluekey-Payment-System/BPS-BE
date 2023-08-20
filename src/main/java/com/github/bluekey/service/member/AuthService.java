@@ -27,7 +27,6 @@ public class AuthService {
 	public final String AUTHENTICATION_ERROR_MESSAGE = "아이디 또는 비밀번호가 일치하지 않습니다.";
 
 	public LoginTokenResponseDto login(LoginRequestDto dto) {
-		log.info("adminLogin: {}", dto.getLoginId());
 		Member member = validateLogin(dto);
 		String token = jwtProvider.generateAccessToken(member.getLoginId(), member.getType(), member.getRole());
 		return generateLoginTokenResponseDto(member, token);

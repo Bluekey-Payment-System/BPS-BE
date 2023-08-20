@@ -42,7 +42,6 @@ public class AuthController {
 	})
 	@PostMapping("/admin/login")
 	public LoginTokenResponseDto adminLogin(@RequestBody LoginRequestDto dto) {
-		log.debug("adminLogin Controller : {}", dto.getLoginId());
 		return authService.login(dto);
 	}
 
