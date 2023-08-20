@@ -1,7 +1,7 @@
 package com.github.bluekey.dto;
 
+import com.github.bluekey.entity.member.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.math.BigDecimal;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,15 +19,30 @@ public class ArtistAccountDto {
 	@Schema(description = "이메일", example = "bluekey@gmail.com")
 	private String email;
 	@Schema(description = "요율", example = "50")
-	private BigDecimal commissionRate;
+	private Integer commissionRate;
+
+	@Schema(description = "프로필 이미지", example = "artist.jpg")
+	private String profileImage;
 
 	@Builder
-	public ArtistAccountDto(final String name, final String enName,
-			final String loginId, final String email, final BigDecimal commissionRate) {
+	private ArtistAccountDto(final String name, final String enName,
+			final String loginId, final String email, final Integer commissionRate, final String profileImage) {
 		this.name = name;
 		this.enName = enName;
 		this.loginId = loginId;
 		this.email = email;
 		this.commissionRate = commissionRate;
+		this.profileImage = profileImage;
+	}
+
+	public static ArtistAccountDto from(Member member) {
+		return ArtistAccountDto.builder()
+				.name(member.getName())
+				.enName(member.getEnName())
+				.loginId(member.getLoginId())
+				.email(member.getEmail().getValue())
+				.commissionRate(member.getCommissionRate())
+				.profileImage(member.getProfileImage())
+				.build();
 	}
 }
