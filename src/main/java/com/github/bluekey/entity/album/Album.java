@@ -1,5 +1,6 @@
 package com.github.bluekey.entity.album;
 
+import com.github.bluekey.entity.BaseTimeEntity;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.track.Track;
 import lombok.AccessLevel;
@@ -15,7 +16,7 @@ import java.util.List;
 @Entity
 @Table(name="album")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Album {
+public class Album extends BaseTimeEntity {
 
 	private static final int ARTIST_ID_THRESHOLD = 0;
 

@@ -34,12 +34,14 @@ public class MemberService {
 
 	private void validateAdminLoginId(String loginId) {
 		memberRepository.findMemberByLoginId(loginId)
-				.orElseThrow(() -> new BusinessException(ErrorCode.INVALID_LOGIN_ID_VALUE));
+				.ifPresent(member -> {throw new BusinessException(ErrorCode.INVALID_LOGIN_ID_VALUE);
+				});
 	}
 
 	private void validateAdminEmail(String email) {
 		memberRepository.findMemberByEmailAndType(email, MemberType.ADMIN)
-				.orElseThrow(() -> new BusinessException(ErrorCode.INVALID_EMAIL_VALUE));
+				.ifPresent(member -> {throw new BusinessException(ErrorCode.INVALID_EMAIL_VALUE);
+				});
 	}
 
 	private void validateAdminNickname(String nickname) {
