@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -45,7 +45,7 @@ public class SecurityConfig {
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and()
 				.authorizeRequests()
-				.antMatchers("/api/v1/auth/admin/**", "/api/v1/auth/member/login", "/h2-console/**", "/docs").permitAll() //h2 콘솔 접근 허용
+				.antMatchers("/api/v1/auth/admin/**", "/api/v1/auth/member/login", "/h2-console/**").permitAll() //h2 콘솔 접근 허용
 				.antMatchers("/api/v1/**").hasRole("ADMIN")
 				.anyRequest().authenticated()
 				.and()
@@ -60,5 +60,9 @@ public class SecurityConfig {
 		return http.build();
 	}
 
+	@Bean
+	public WebSecurityCustomizer ignoringCustomizer() {
+		return (web) -> web.ignoring().antMatchers("/swagger-ui/**", "/api-docs/**");
+	}
 
 }
