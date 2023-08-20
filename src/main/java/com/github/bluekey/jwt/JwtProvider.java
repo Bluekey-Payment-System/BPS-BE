@@ -29,11 +29,12 @@ import org.springframework.stereotype.Component;
 public class JwtProvider {
 	@Value("${jwt.secret}")
 	private String secret;
-
 	private Key secretKey;
-
 	@Value("${jwt.token-validity-in-seconds}")
 	private Long tokenValidMilisecond;
+	private static final String AUTHORIZE_TYPE = "Bearer ";
+	private static final String AUTHORIZE_HEADER = "Authorization";
+	private static final int BEARER_TOKEN_PREFIX = 7;
 
 	private final UserDetailsService userDetailsService;
 
@@ -60,15 +61,15 @@ public class JwtProvider {
 	}
 
 	public String resolveToken(HttpServletRequest request) {
-		return request.getHeader("Authorization");
+		return request.getHeader(AUTHORIZE_HEADER);
 	}
 
 	public boolean validateToken(String token) {
 		try {
-			if (!token.startsWith("Bearer ")) {
+			if (!token.startsWith(AUTHORIZE_TYPE)) {
 				return false;
 			}
-			Claims claims = getClaims(token.substring(7)); // Remove Bearer prefix
+			Claims claims = getClaims(token.substring(BEARER_TOKEN_PREFIX)); // Remove Bearer prefix
 			return !claims.getExpiration().before(new Date());
 		} catch (Exception e) {
 			return false;
