@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 @Builder
 @Schema(description = "로그인 회원 정보")
 public class LoginMemberDto {
+	private final Long id;
 	@Schema(description = "회원 Email", example = "bluekey@gmail.com")
 	private final String email;
 	@Schema(description = "회원 이름", example = "bluekey")
@@ -26,6 +27,7 @@ public class LoginMemberDto {
 
 	public static LoginMemberDto from(Member member) {
 		return LoginMemberDto.builder()
+				.id(member.getId())
 				.loginId(member.getLoginId())
 				.email(member.getEmail().getValue())
 				.type(member.getType())
