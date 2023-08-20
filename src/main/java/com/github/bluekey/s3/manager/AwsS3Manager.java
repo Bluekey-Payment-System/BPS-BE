@@ -5,7 +5,10 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+
 import java.io.IOException;
+
+import com.amazonaws.services.s3.model.S3Object;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,11 +29,11 @@ public class AwsS3Manager implements ResourceManager {
 	 * @param multipartFile 업로드할 파일
 	 * @param key s3에 저장될 파일의 이름 혹은 경로 포함 이름
 	 */
-	public void upload(MultipartFile multipartFile, String key) {
-		log.info("uploading file to s3: {}", key);
+	public String upload(MultipartFile multipartFile, String key, S3PrefixType type) {
+		log.info("uploading file to s3: {}", type.getValue() + key);
 		ObjectMetadata objectMetadata = createObjectMetadata(multipartFile);
 		try {
-			PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, key, multipartFile.getInputStream(), objectMetadata);
+			PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, type.getValue() + key, multipartFile.getInputStream(), objectMetadata);
 			amazonS3Client.putObject(putObjectRequest);
 		}
 		catch (AmazonS3Exception | IOException e) {
@@ -38,6 +41,11 @@ public class AwsS3Manager implements ResourceManager {
 			log.error("s3 upload error: {}", e.getMessage());
 			e.getStackTrace();
 		}
+		return "https://" + bucket + "/" + type.getValue() + key;
+	}
+
+	public String getS3Key(String s3Url, S3PrefixType type) {
+		return s3Url.split(type.getValue())[1];
 	}
 
 	/**
@@ -53,6 +61,10 @@ public class AwsS3Manager implements ResourceManager {
 			log.error("s3 delete error: {}", e.getMessage());
 			e.getStackTrace();
 		}
+	}
+
+	public S3Object getS3Value(String fileName) {
+		return amazonS3Client.getObject(bucket, fileName);
 	}
 
 	/**

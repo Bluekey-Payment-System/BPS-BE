@@ -30,7 +30,6 @@ spring:
       mode: always
       schema-locations:
         - classpath:sql/schema-h2.sql
-        - classpath:sql/quartz-h2.sql
         - classpath:sql/data.sql
 
 logging:

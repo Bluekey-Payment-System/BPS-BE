@@ -3,6 +3,6 @@ package com.github.bluekey.s3.manager;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface ResourceManager {
-	void upload(MultipartFile multipartFile, String key);
+	String upload(MultipartFile multipartFile, String key, S3PrefixType type);
 	void delete(String key);
 }

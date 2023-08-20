@@ -1,21 +1,12 @@
 package com.github.bluekey.processor.provider;
 
-import com.github.bluekey.entity.album.Album;
-import com.github.bluekey.entity.member.Member;
-import com.github.bluekey.entity.track.TrackMember;
 import com.github.bluekey.processor.ExcelRowException;
-import com.github.bluekey.processor.NameExtractor;
 
 import com.github.bluekey.processor.validator.AtoDistributorExcelValidator;
 import com.github.bluekey.processor.validator.DBPersistenceValidator;
-import com.github.bluekey.repository.album.AlbumRepository;
-import com.github.bluekey.repository.member.MemberRepository;
-import com.github.bluekey.repository.track.TrackMemberRepository;
-import com.github.bluekey.repository.track.TrackRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -37,7 +28,7 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
     private final List<ExcelRowException> warningRows = new ArrayList<>();
     private final AtoDistributorExcelValidator atoDistributorCellValidator;
 
-    private final Workbook workbook;
+    private Workbook workbook;
     private final DBPersistenceValidator dbPersistenceValidator;
 
     public AtoDistributorExcelFileProvider(
@@ -76,6 +67,10 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
     @Override
     public List<ExcelRowException> getWarnings() {
         return warningRows;
+    }
+
+    public void updateWorkbook(Workbook workbook) {
+        this.workbook = workbook;
     }
 
     private Workbook setWorkBook(MultipartFile file) {
