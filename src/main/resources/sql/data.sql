@@ -1,14 +1,13 @@
 -- Artist Member
 INSERT INTO member (email, login_id, password, name, en_name, commission_rate, type, role, profile_image)
-
 VALUES ('artist1@example.com', 'artist1', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxmyJE0mKuAnt.KXBq6zYro33S', '혁기', 'hucki', 10, 'USER', 'ARTIST', 'artist.jpg');
 
 INSERT INTO member (email, login_id, password, name, en_name, commission_rate, type, role, profile_image)
 VALUES ('artist2@example.com', 'artist2', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxmyJE0mKuAnt.KXBq6zYro33S', '53X', '53X', 20, 'USER', 'ARTIST', 'artist.jpg');
 
-
 INSERT INTO member (email, login_id, password, name, en_name, commission_rate, type, role, profile_image)
 VALUES ('artist3@example.com', 'artist3', 'password123!', '덤프', 'dump', 20, 'USER', 'ARTIST', 'artist.jpg');
+
 
 -- Admin Member
 INSERT INTO member (email, login_id, password, name, role, type, profile_image)
@@ -16,6 +15,7 @@ VALUES ('admin@example.com', 'admin123', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxmy
 
 INSERT INTO member (email, login_id, password, name, role, type, profile_image)
 VALUES ('admin1@example.com', 'admin1234', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxmyJE0mKuAnt.KXBq6zYro33S', 'bluekey1', 'ADMIN', 'ADMIN', 'admin.jpg');
+
 
 -- Album
 -- 1
