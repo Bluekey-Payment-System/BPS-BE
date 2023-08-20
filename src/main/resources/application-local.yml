@@ -1,6 +1,8 @@
 spring:
   config:
-    import: classpath:application-aws.yml
+    import:
+      - classpath:application-aws.yml
+      - classpath:application-auth.yml
   h2:
     console:
       enabled: true
@@ -18,8 +20,8 @@ spring:
       ddl-auto: create
     properties:
       hibernate:
-        #        globally_quoted_identifiers: true
-        #        globally_quoted_identifiers_skip_column_definitions: true
+#        globally_quoted_identifiers: true
+#        globally_quoted_identifiers_skip_column_definitions: true
         show_sql: true
         format_sql:
     defer-datasource-initialization: true
