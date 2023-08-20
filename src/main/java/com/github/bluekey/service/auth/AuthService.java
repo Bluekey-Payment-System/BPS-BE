@@ -3,6 +3,7 @@ package com.github.bluekey.service.auth;
 import com.github.bluekey.dto.JwtInfoDto;
 import com.github.bluekey.dto.LoginMemberDto;
 import com.github.bluekey.dto.request.LoginRequestDto;
+import com.github.bluekey.dto.request.PasswordRequestDto;
 import com.github.bluekey.dto.request.SignupRequestDto;
 import com.github.bluekey.dto.response.LoginTokenResponseDto;
 import com.github.bluekey.dto.response.LoginTokenResponseDto;
@@ -12,8 +13,10 @@ import com.github.bluekey.entity.member.MemberType;
 import com.github.bluekey.exception.AuthenticationException;
 import com.github.bluekey.exception.BusinessException;
 import com.github.bluekey.exception.ErrorCode;
+import com.github.bluekey.exception.member.MemberException;
 import com.github.bluekey.jwt.JwtProvider;
 import com.github.bluekey.repository.member.MemberRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,6 +47,12 @@ public class AuthService {
 		encodeMemberPassword(admin);
 		Member newMember = memberRepository.save(admin);
 		return SignupResponseDto.from(newMember);
+	}
+
+	public boolean matchPassword(PasswordRequestDto dto, Long memberId) {
+		Member member = memberRepository.findById(memberId)
+				.orElseThrow(MemberException::new);
+		return passwordEncoder.matches(dto.getPassword(), member.getPassword());
 	}
 
 	public String getEncodePassword(String password) {

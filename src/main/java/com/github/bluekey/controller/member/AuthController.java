@@ -6,7 +6,10 @@ import com.github.bluekey.dto.request.LoginRequestDto;
 import com.github.bluekey.dto.request.SignupRequestDto;
 import com.github.bluekey.dto.response.LoginTokenResponseDto;
 import com.github.bluekey.dto.response.SignupResponseDto;
+import com.github.bluekey.exception.BusinessException;
+import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.exception.ErrorResponse;
+import com.github.bluekey.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.auth.AuthService;
 import com.github.bluekey.service.member.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -70,7 +73,7 @@ public class AuthController {
 
 	@Operation(summary = "member 비밀번호 변경", description = "member 비밀번호 변경")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "204", description = "비밀번호 변경 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))),
+			@ApiResponse(responseCode = "200", description = "비밀번호 변경 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))),
 			@ApiResponse(responseCode = "400", description = "유효하지 않은 비밀번호", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
 			@ApiResponse(responseCode = "500", description = "internal server error", content = {})
 	})
@@ -81,12 +84,15 @@ public class AuthController {
 
 	@Operation(summary = "member 비밀번호 확인", description = "member 비밀번호 확인")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "204", description = "비밀번호 확인 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))),
+			@ApiResponse(responseCode = "200", description = "비밀번호 확인 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))),
 			@ApiResponse(responseCode = "400", description = "비밀번호 일치하지 않음", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
 			@ApiResponse(responseCode = "500", description = "internal server error", content = {})
 	})
 	@PostMapping("/member/password/confirm")
 	public void passwordCheck(@RequestBody PasswordRequestDto dto) {
+		if (!authService.matchPassword(dto, PrincipalConvertUtil.getMemberId())) {
+			throw new BusinessException(ErrorCode.NO_MATCH_PWD_VALUE);
+		}
 	}
 
 	@Operation(summary = "member 퇴출", description = "Super Admin이 member에 대해 탈퇴를 진행")
