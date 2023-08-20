@@ -45,7 +45,7 @@ public class SecurityConfig {
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and()
 				.authorizeRequests()
-				.antMatchers("/api/v1/auth/admin/**", "/api/v1/auth/member/login", "/h2-console/**").permitAll() //h2 콘솔 접근 허용
+				.antMatchers("/api/v1/auth/admin/**", "/api/v1/auth/member/login", "/h2-console/**").permitAll()
 				.antMatchers("/api/v1/**").hasRole("ADMIN")
 				.anyRequest().authenticated()
 				.and()
@@ -64,5 +64,4 @@ public class SecurityConfig {
 	public WebSecurityCustomizer ignoringCustomizer() {
 		return (web) -> web.ignoring().antMatchers("/swagger-ui/**", "/api-docs/**");
 	}
-
 }
