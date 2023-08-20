@@ -1,14 +1,14 @@
 -- Artist Member
-INSERT INTO member (value, login_id, password, name, en_name, commission_rate, type, role, profile_image)
+INSERT INTO member (email, login_id, password, name, en_name, commission_rate, type, role, profile_image)
 VALUES ('artist1@example.com', 'artist1', 'password123!', '혁기', 'hucki', 10, 'USER', 'ARTIST', 'artist.jpg');
 
-INSERT INTO member (value, login_id, password, name, en_name, commission_rate, type, role, profile_image)
+INSERT INTO member (email, login_id, password, name, en_name, commission_rate, type, role, profile_image)
 VALUES ('artist2@example.com', 'artist2', 'password123!', '53X', '53X', 20, 'USER', 'ARTIST', 'artist.jpg');
 
-INSERT INTO member (value, login_id, password, name, en_name, commission_rate, type, role, profile_image)
+INSERT INTO member (email, login_id, password, name, en_name, commission_rate, type, role, profile_image)
 VALUES ('artist3@example.com', 'artist3', 'password123!', '덤프', 'dump', 20, 'USER', 'ARTIST', 'artist.jpg');
 -- Admin Member
-INSERT INTO member (value, login_id, password, name, role, type, profile_image)
+INSERT INTO member (email, login_id, password, name, role, type, profile_image)
 VALUES ('admin@example.com', 'admin123', 'password123!', 'bluekey', 'ADMIN', 'SUPER_ADMIN', 'admin.jpg');
 
 -- Album
