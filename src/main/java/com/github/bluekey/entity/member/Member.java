@@ -83,6 +83,10 @@ public class Member extends BaseTimeEntity {
 		this.password = password;
 	}
 
+	public void memberRemoved() {
+		this.remove();
+	}
+
 	private void validateCommissionRate(Integer commissionRate) {
 		if (commissionRate < 0) {
 			throw new IllegalArgumentException("Percentage value must not be negative.");

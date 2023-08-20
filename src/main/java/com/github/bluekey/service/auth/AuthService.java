@@ -60,6 +60,13 @@ public class AuthService {
 		memberRepository.save(member);
 	}
 
+	public void deleteMember(Long memberId) {
+		Member member = memberRepository.findById(memberId)
+				.orElseThrow(MemberNotFoundException::new);
+		member.memberRemoved();
+		memberRepository.save(member);
+	}
+
 	public String getEncodePassword(String password) {
 		return passwordEncoder.encode(password);
 	}
