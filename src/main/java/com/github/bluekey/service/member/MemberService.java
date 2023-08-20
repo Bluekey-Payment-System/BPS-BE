@@ -9,6 +9,7 @@ import com.github.bluekey.exception.BusinessException;
 import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,12 +19,20 @@ public class MemberService {
 
 	private final MemberRepository memberRepository;
 
+	private final PasswordEncoder passwordEncoder;
+
+
 	@Transactional
 	public SignupResponseDto createAdmin(SignupRequestDto dto) {
 		validateSignUpRequest(dto);
 		Member admin = dto.toMember();
+		encodePassword(admin);
 		Member newMember = memberRepository.save(admin);
 		return SignupResponseDto.from(newMember);
+	}
+
+	private void encodePassword(Member member) {
+		member.updatePassword(passwordEncoder.encode(member.getPassword()));
 	}
 
 	private void validateSignUpRequest(SignupRequestDto dto) {

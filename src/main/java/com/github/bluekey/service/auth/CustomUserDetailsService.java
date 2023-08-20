@@ -21,7 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 				.orElseThrow(()-> new UsernameNotFoundException("Member not found"));
 
 		return User.withUsername(member.getId().toString())
-				.password(member.getPassword().getValue())
+				.password(member.getPassword())
 				.roles(member.getRole().toString())
 				.build();
 	}

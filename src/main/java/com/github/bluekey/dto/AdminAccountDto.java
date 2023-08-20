@@ -2,12 +2,13 @@ package com.github.bluekey.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Schema(description = "어드민 계정 정보")
 public class AdminAccountDto {
 	@Schema(description = "어드민 닉네임", example = "admin")

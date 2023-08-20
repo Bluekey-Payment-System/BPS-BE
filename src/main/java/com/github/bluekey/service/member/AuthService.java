@@ -27,7 +27,6 @@ public class AuthService {
 	public final String AUTHENTICATION_ERROR_MESSAGE = "아이디 또는 비밀번호가 일치하지 않습니다.";
 
 	public LoginTokenResponseDto login(LoginRequestDto dto) {
-		log.info("adminLogin: {}", dto.getLoginId());
 		Member member = validateLogin(dto);
 		String token = jwtProvider.generateAccessToken(member.getLoginId(), member.getType(), member.getRole());
 		return generateLoginTokenResponseDto(member, token);
@@ -36,7 +35,7 @@ public class AuthService {
 	private Member validateLogin(LoginRequestDto dto){
 		Member member = memberRepository.findMemberByLoginId(dto.getLoginId())
 				.orElseThrow(() -> new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED, AUTHENTICATION_ERROR_MESSAGE));
-		if (!passwordEncoder.matches(dto.getPassword(), member.getPassword().getValue())) {
+		if (!passwordEncoder.matches(dto.getPassword(), member.getPassword())) {
 			throw new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED, AUTHENTICATION_ERROR_MESSAGE);
 		}
 		return member;

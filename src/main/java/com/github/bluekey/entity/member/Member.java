@@ -10,8 +10,6 @@ import javax.persistence.Table;
 
 import javax.persistence.*;
 
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,8 +31,8 @@ public class Member extends BaseTimeEntity {
 	@Column(name = "login_id", nullable = false, unique = true)
 	private String loginId;
 
-	@Embedded
-	private Password password;
+	@Column(name = "password", nullable = false)
+	private String password;
 
 	@Column(name = "name", nullable = false)
 	private String name;
@@ -61,7 +59,7 @@ public class Member extends BaseTimeEntity {
 		validateCommissionRate(commissionRate);
 		this.email = new Email(email);
 		this.loginId = loginId;
-		this.password = new Password(password);
+		this.password = password;
 		this.name = name;
 		this.enName = enName;
 		this.commissionRate = commissionRate;
@@ -74,11 +72,15 @@ public class Member extends BaseTimeEntity {
 	public Member(String email, String loginId, String password, String name, MemberRole role) {
 		this.email = new Email(email);;
 		this.loginId = loginId;
-		this.password = new Password(password);
+		this.password = password;
 		this.name = name;
 		this.commissionRate = 0;
 		this.type = MemberType.ADMIN;
 		this.role = role;
+	}
+
+	public void updatePassword(String password) {
+		this.password = password;
 	}
 
 	private void validateCommissionRate(Integer commissionRate) {

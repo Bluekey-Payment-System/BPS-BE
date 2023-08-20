@@ -14,13 +14,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtProvider jwtProvider;
+	private static final int BEARER_TOKEN_PREFIX = 7;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		String token = jwtProvider.resolveToken(request);
 		if (token != null && jwtProvider.validateToken(token)) {
-			Authentication authentication = jwtProvider.getAuthentication(token.substring(7));
+			Authentication authentication = jwtProvider.getAuthentication(token.substring(BEARER_TOKEN_PREFIX));
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 		}
 		filterChain.doFilter(request, response);

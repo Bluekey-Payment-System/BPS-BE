@@ -15,7 +15,7 @@ public class JwtInfoDto {
 	@Schema(description = "jwt 토큰", example = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJibHVla2V5Iiwia")
 	private String accessToken;
 
-	public JwtInfoDto(String accessToken) {
+	public JwtInfoDto(final String accessToken) {
 		this.accessToken = accessToken;
 	}
 }
