@@ -23,7 +23,7 @@ public class SignupRequestDto {
 	private String password;
 
 	@Builder
-	private SignupRequestDto(String email, String loginId, String nickname, String password) {
+	public SignupRequestDto(String email, String loginId, String nickname, String password) {
 		this.email = email;
 		this.loginId = loginId;
 		this.nickname = nickname;
