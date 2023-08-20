@@ -1,22 +1,27 @@
 package com.github.bluekey.service.member;
 
+import com.github.bluekey.dto.ArtistAccountDto;
+import com.github.bluekey.dto.request.ArtistRequestDto;
 import com.github.bluekey.dto.request.SignupRequestDto;
 import com.github.bluekey.dto.response.SignupResponseDto;
 import com.github.bluekey.entity.member.Member;
-import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.member.MemberType;
 import com.github.bluekey.exception.BusinessException;
 import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.repository.member.MemberRepository;
+import com.github.bluekey.s3.manager.AwsS3Manager;
+import com.github.bluekey.s3.manager.S3PrefixType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
 
 	private final MemberRepository memberRepository;
+	private final AwsS3Manager awsS3Manager;
 
 	@Transactional
 	public SignupResponseDto createAdmin(SignupRequestDto dto) {
@@ -26,6 +31,20 @@ public class MemberService {
 		return SignupResponseDto.from(newMember);
 	}
 
+	@Transactional
+	public ArtistAccountDto createArtist(MultipartFile file, ArtistRequestDto dto) {
+
+		Member member = memberRepository.save(dto.toArtist());
+
+		if (file.isEmpty()) {
+			return ArtistAccountDto.from(member);
+		}
+		// S3 업로드 로직
+		String fileUrl = awsS3Manager.upload(file, "profile/" + member.getId() + "/" + file.getOriginalFilename()+ "-" +member.getCreatedAt(),  S3PrefixType.IMAGE);
+		member.updateProfileImage(fileUrl);
+		memberRepository.save(member);
+		return ArtistAccountDto.from(member);
+	}
 	private void validateSignUpRequest(SignupRequestDto dto) {
 		validateAdminLoginId(dto.getLoginId());
 		validateAdminEmail(dto.getEmail());
