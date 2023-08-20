@@ -1,6 +1,7 @@
 package com.github.bluekey.dto;
 
 import com.github.bluekey.entity.member.Member;
+import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.member.MemberType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -18,6 +19,8 @@ public class LoginMemberDto {
 	private final String loginId;
 	@Schema(description = "회원 타입", example = "ARTIST")
 	private final MemberType type;
+	@Schema(description ="회원 역할", example = "ADMIN")
+	private final MemberRole role;
 	@Schema(description = "회원 프로필 사진", example = "https://bluekey.com/profile.png")
 	private final String profileImage;
 
@@ -26,6 +29,7 @@ public class LoginMemberDto {
 				.loginId(member.getLoginId())
 				.email(member.getEmail().getValue())
 				.type(member.getType())
+				.role(member.getRole())
 				.profileImage(member.getProfileImage())
 				.build();
 	}
