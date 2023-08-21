@@ -89,9 +89,7 @@ public class AuthController {
 	})
 	@PostMapping("/member/password/confirm")
 	public void passwordCheck(@RequestBody PasswordRequestDto dto) {
-		if (!authService.matchPassword(dto, PrincipalConvertUtil.getMemberId())) {
-			throw new BusinessException(ErrorCode.NO_MATCH_PWD_VALUE);
-		}
+		authService.matchPassword(dto, PrincipalConvertUtil.getMemberId());
 	}
 
 	@Operation(summary = "member 퇴출", description = "Super Admin이 member에 대해 탈퇴를 진행")

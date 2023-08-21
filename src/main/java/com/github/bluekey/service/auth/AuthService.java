@@ -47,10 +47,12 @@ public class AuthService {
 		return SignupResponseDto.from(newMember);
 	}
 
-	public boolean matchPassword(PasswordRequestDto dto, Long memberId) {
+	public void matchPassword(PasswordRequestDto dto, Long memberId) {
 		Member member = memberRepository.findById(memberId)
 				.orElseThrow(MemberNotFoundException::new);
-		return passwordEncoder.matches(dto.getPassword(), member.getPassword());
+		if (!passwordEncoder.matches(dto.getPassword(), member.getPassword())) {
+			throw new BusinessException(ErrorCode.NO_MATCH_PWD_VALUE);
+		}
 	}
 
 	public void changePassword(PasswordRequestDto dto, Long memberId) {
