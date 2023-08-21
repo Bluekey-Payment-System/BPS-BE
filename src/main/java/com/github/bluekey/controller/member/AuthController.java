@@ -11,7 +11,6 @@ import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.exception.ErrorResponse;
 import com.github.bluekey.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.auth.AuthService;
-import com.github.bluekey.service.member.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -102,6 +101,6 @@ public class AuthController {
 	})
 	@DeleteMapping("/members/{memberId}/withdrawal")
 	public void withdrawal(@PathVariable("memberId") Long memberId) {
-
+		authService.deleteMember(memberId);
 	}
 }
