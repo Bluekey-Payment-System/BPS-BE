@@ -88,6 +88,10 @@ public class Member extends BaseTimeEntity {
 		this.password = password;
 	}
 
+	public void updateEmail(String email) {
+		this.email = new Email(email);
+	}
+
 	public void memberRemoved() {
 		if (isRemoved()) {
 			throw new BusinessException(ErrorCode.MEMBER_ALREADY_REMOVED);

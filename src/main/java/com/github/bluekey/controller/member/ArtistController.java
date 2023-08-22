@@ -6,6 +6,7 @@ import com.github.bluekey.dto.request.AdminArtistProfileRequestDto;
 import com.github.bluekey.dto.request.ArtistProfileRequestDto;
 import com.github.bluekey.dto.request.ArtistRequestDto;
 import com.github.bluekey.exception.ErrorResponse;
+import com.github.bluekey.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.auth.AuthService;
 import com.github.bluekey.service.member.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,8 +40,8 @@ public class ArtistController {
             @ApiResponse(responseCode = "400", description = "유효하지 않는 아티스트ID 입니다.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
     })
     @PatchMapping("/profile")
-    public void artistProfileUpdate(@RequestBody ArtistProfileRequestDto dto) {
-
+    public void artistProfileUpdate(@ModelAttribute ArtistProfileRequestDto dto) {
+        memberService.updateArtistProfile(dto, PrincipalConvertUtil.getMemberId());
     }
 
     @Operation(summary = "아티스트 등록" , description = "아티스트 등록")

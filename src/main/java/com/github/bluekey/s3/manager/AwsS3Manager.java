@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
+import com.github.bluekey.s3.config.S3Configuration;
 import java.io.IOException;
 
 import com.amazonaws.services.s3.model.S3Object;
@@ -21,8 +22,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class AwsS3Manager implements ResourceManager {
 	@Value("${cloud.aws.s3.excel-bucket}")
 	private String excelBucket;
-	@Value("{cloud.aws.s3.image-bucket}")
+	@Value("${cloud.aws.s3.image-bucket}")
 	private String imageBucket;
+	@Value("${cloud.aws.region.static}")
+	private String region;
+
 	private final AmazonS3Client amazonS3Client;
 
 	/**
@@ -44,7 +48,7 @@ public class AwsS3Manager implements ResourceManager {
 			log.error("s3 upload error: {}", e.getMessage());
 			e.getStackTrace();
 		}
-		return "https://" + bucket + "/" + type.getValue() + key;
+		return "https://" + bucket +".s3." + region + ".amazonaws.com/" + type.getValue() + key;
 	}
 
 	public String getS3Key(String s3Url, S3PrefixType type) {
@@ -60,7 +64,7 @@ public class AwsS3Manager implements ResourceManager {
 		log.info("deleting file from s3: {}", key);
 		String bucket = getBucketName(type);
 		try {
-			amazonS3Client.deleteObject(bucket, key);
+			amazonS3Client.deleteObject(bucket, type.getValue() + key);
 		} catch (AmazonS3Exception e) {
 			log.error("s3 delete error: {}", e.getMessage());
 			e.getStackTrace();
