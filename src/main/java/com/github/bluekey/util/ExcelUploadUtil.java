@@ -16,8 +16,8 @@ public class ExcelUploadUtil {
 
 	private final S3PrefixType excel = S3PrefixType.EXCEL;
 
-	public void uploadExcel(MultipartFile file, String key) {
-		awsS3Manager.upload(file, key, excel);
+	public String uploadExcel(MultipartFile file, String key) {
+		return awsS3Manager.upload(file, key, excel);
 	}
 
 	public S3Object getExcel(String filename) {

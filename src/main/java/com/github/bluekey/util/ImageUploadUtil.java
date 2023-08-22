@@ -15,8 +15,8 @@ public class ImageUploadUtil {
 	private final S3PrefixType image = S3PrefixType.IMAGE;
 	private static final String S3_PROFILE_IMAGE_PREFIX = "profile/";
 
-	public void uploadImage(MultipartFile file, String key) {
-		awsS3Manager.upload(file, key, image);
+	public String uploadImage(MultipartFile file, String key) {
+		return awsS3Manager.upload(file, key, image);
 	}
 
 	public S3Object getImage(String filename) {

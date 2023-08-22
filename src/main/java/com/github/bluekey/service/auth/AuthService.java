@@ -19,6 +19,7 @@ import com.github.bluekey.jwt.JwtProvider;
 import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.s3.manager.AwsS3Manager;
 import com.github.bluekey.s3.manager.S3PrefixType;
+import com.github.bluekey.util.ImageUploadUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,7 +35,7 @@ public class AuthService {
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtProvider jwtProvider;
-	private final AwsS3Manager awsS3Manager;
+	private final ImageUploadUtil imageUploadUtil;
 
 	private static final String S3_PROFILE_IMAGE_PREFIX = "profile/";
 
@@ -65,7 +66,7 @@ public class AuthService {
 		}
 
 		// S3 업로드 로직
-		String fileUrl = awsS3Manager.upload(file, S3_PROFILE_IMAGE_PREFIX + member.getId() + "/" + file.getOriginalFilename()+ "-" +member.getCreatedAt(),  S3PrefixType.IMAGE);
+		String fileUrl = imageUploadUtil.uploadImage(file, S3_PROFILE_IMAGE_PREFIX + member.getId() + "/" + file.getOriginalFilename()+ "-" +member.getCreatedAt());
 		member.updateProfileImage(fileUrl);
 		memberRepository.save(member);
 		return ArtistAccountDto.from(member);
