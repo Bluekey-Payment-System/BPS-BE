@@ -65,9 +65,6 @@ public class AuthService {
 	public void deleteMember(Long memberId) {
 		Member member = memberRepository.findById(memberId)
 				.orElseThrow(MemberNotFoundException::new);
-		if (member.isRemoved()) {
-			throw new BusinessException(ErrorCode.MEMBER_ALREADY_REMOVED);
-		}
 		member.memberRemoved();
 		memberRepository.save(member);
 	}
