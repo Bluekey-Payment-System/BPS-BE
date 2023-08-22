@@ -66,7 +66,7 @@ public class TransactionService {
         }
 
         String s3Url = awsS3Manager.upload(file, uploadAt + "/" + file.getOriginalFilename(), S3PrefixType.EXCEL);
-        S3Object excelFileS3Object = awsS3Manager.getS3Value(S3PrefixType.EXCEL.getValue() + file.getOriginalFilename());
+        S3Object excelFileS3Object = awsS3Manager.getS3Value(S3PrefixType.EXCEL.getValue() + file.getOriginalFilename(), S3PrefixType.EXCEL);
 
         Workbook workbook = getWorkBook(excelFileS3Object);
 

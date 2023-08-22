@@ -56,8 +56,9 @@ public class AwsS3Manager implements ResourceManager {
 	 *
 	 * @param key 삭제할 파일의 이름 혹은 경로 포함 이름
 	 */
-	public void delete(String key) {
+	public void delete(String key, S3PrefixType type) {
 		log.info("deleting file from s3: {}", key);
+		String bucket = getBucketName(type);
 		try {
 			amazonS3Client.deleteObject(bucket, key);
 		} catch (AmazonS3Exception e) {
@@ -66,7 +67,8 @@ public class AwsS3Manager implements ResourceManager {
 		}
 	}
 
-	public S3Object getS3Value(String fileName) {
+	public S3Object getS3Value(String fileName, S3PrefixType type) {
+		String bucket = getBucketName(type);
 		return amazonS3Client.getObject(bucket, fileName);
 	}
 
