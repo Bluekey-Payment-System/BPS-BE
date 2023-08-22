@@ -28,7 +28,6 @@ public class AdminController {
 	@Operation(summary = "월별 Top n 아티스트 매출액과 비율", description = "월별 Top n 아티스트 매출액과 비율")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "정상 반환", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistsRevenueProportionReponseDto.class))),
-			@ApiResponse(responseCode = "400", description = "비정상적인 날짜", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
 	})
 	@GetMapping("/dashboard/artist")
 	public ArtistsRevenueProportionReponseDto getTopRevenueArtistsOfMonth(
@@ -41,7 +40,6 @@ public class AdminController {
 	@Operation(summary = "트랙별 정산 금액 리스트 (페이지네이션)", description = "트랙별 정산 금액 리스트 (페이지네이션)")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "정상 반환", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TracksSettlementAmountResponseDto.class))),
-			@ApiResponse(responseCode = "400", description = "유효하지 않은 값", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
 	})
 	@GetMapping("/dashboard/track")
 	public TracksSettlementAmountResponseDto getTracksSettlementAmount(
@@ -57,7 +55,6 @@ public class AdminController {
 	@Operation(summary = "대시보드에 보여질 정보", description = "대시보드에 보여질 정보")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "정상 반환", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DashboardTotalInfoResponseDto.class))),
-			@ApiResponse(responseCode = "400", description = "유효하지 않은 값", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
 	})
 	@GetMapping("/dashboard")
 	public DashboardTotalInfoResponseDto getDashboardTotalInfo(
@@ -69,7 +66,6 @@ public class AdminController {
 	@Operation(summary = "월별 매출 추이", description = "월별 매출 추이")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "정상 반환", content = @Content(mediaType = "application/json", schema = @Schema(implementation = MonthlyRevenueTrendResponseDto.class))),
-			@ApiResponse(responseCode = "400", description = "유효하지 않은 값", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
 	})
 	@GetMapping("/dashboard/trend")
 	public MonthlyRevenueTrendResponseDto getMonthlyRevenueTrend(
