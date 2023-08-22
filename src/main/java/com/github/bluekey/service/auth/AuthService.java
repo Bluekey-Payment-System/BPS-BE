@@ -1,7 +1,9 @@
 package com.github.bluekey.service.auth;
 
+import com.github.bluekey.dto.ArtistAccountDto;
 import com.github.bluekey.dto.JwtInfoDto;
 import com.github.bluekey.dto.LoginMemberDto;
+import com.github.bluekey.dto.request.ArtistRequestDto;
 import com.github.bluekey.dto.request.LoginRequestDto;
 import com.github.bluekey.dto.request.PasswordRequestDto;
 import com.github.bluekey.dto.request.SignupRequestDto;
@@ -15,11 +17,14 @@ import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.exception.member.MemberNotFoundException;
 import com.github.bluekey.jwt.JwtProvider;
 import com.github.bluekey.repository.member.MemberRepository;
+import com.github.bluekey.s3.manager.AwsS3Manager;
+import com.github.bluekey.s3.manager.S3PrefixType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -29,6 +34,9 @@ public class AuthService {
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtProvider jwtProvider;
+	private final AwsS3Manager awsS3Manager;
+
+	private static final String S3_PROFILE_IMAGE_PREFIX = "profile/";
 
 	public final String AUTHENTICATION_ERROR_MESSAGE = "아이디 또는 비밀번호가 일치하지 않습니다.";
 
@@ -45,6 +53,22 @@ public class AuthService {
 		encodeMemberPassword(admin);
 		Member newMember = memberRepository.save(admin);
 		return SignupResponseDto.from(newMember);
+	}
+
+	@Transactional
+	public ArtistAccountDto createArtist(MultipartFile file, ArtistRequestDto dto) {
+
+		Member member = memberRepository.save(dto.toArtist());
+
+		if (file.isEmpty()) {
+			return ArtistAccountDto.from(member);
+		}
+
+		// S3 업로드 로직
+		String fileUrl = awsS3Manager.upload(file, S3_PROFILE_IMAGE_PREFIX + member.getId() + "/" + file.getOriginalFilename()+ "-" +member.getCreatedAt(),  S3PrefixType.IMAGE);
+		member.updateProfileImage(fileUrl);
+		memberRepository.save(member);
+		return ArtistAccountDto.from(member);
 	}
 
 	public void matchPassword(PasswordRequestDto dto, Long memberId) {

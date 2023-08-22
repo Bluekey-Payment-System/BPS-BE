@@ -58,7 +58,6 @@ public class Member extends BaseTimeEntity {
 
 	@Builder(builderClassName = "ByArtistBuilder", builderMethodName = "ByArtistBuilder")
 	public Member(String email, String loginId, String password, String name, String enName, Integer commissionRate, String profileImage) {
-		validateCommissionRate(commissionRate);
 		this.email = new Email(email);
 		this.loginId = loginId;
 		this.password = password;
@@ -79,6 +78,10 @@ public class Member extends BaseTimeEntity {
 		this.commissionRate = 0;
 		this.type = MemberType.ADMIN;
 		this.role = role;
+	}
+
+	public void updateProfileImage(String profileImage) {
+		this.profileImage = profileImage;
 	}
 
 	public void updatePassword(String password) {
