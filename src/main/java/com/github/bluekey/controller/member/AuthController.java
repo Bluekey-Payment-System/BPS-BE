@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -98,7 +99,8 @@ public class AuthController {
 			@ApiResponse(responseCode = "500", description = "internal server error", content = {})
 	})
 	@DeleteMapping("/members/{memberId}/withdrawal")
-	public void withdrawal(@PathVariable("memberId") Long memberId) {
+	public ResponseEntity<String> withdrawal(@PathVariable("memberId") Long memberId) {
 		authService.deleteMember(memberId);
+		return ResponseEntity.noContent().build();
 	}
 }
