@@ -6,6 +6,7 @@ import com.github.bluekey.dto.request.AdminArtistProfileRequestDto;
 import com.github.bluekey.dto.request.ArtistProfileRequestDto;
 import com.github.bluekey.dto.request.ArtistRequestDto;
 import com.github.bluekey.exception.ErrorResponse;
+import com.github.bluekey.service.auth.AuthService;
 import com.github.bluekey.service.member.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,6 +31,8 @@ import java.time.LocalDate;
 public class ArtistController {
 
     private final MemberService memberService;
+    private final AuthService authService;
+
     @Operation(summary = "아티스트 정보 변경" , description = "아티스트 정보 변경")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "아티스트 정보 변경 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))),
@@ -52,7 +55,7 @@ public class ArtistController {
             @Parameter(description = "multipart/form-data 형식의 엑셀 파일 데이터, key 값은 file 입니다.")
             @RequestParam("file") MultipartFile file
             ) {
-        return ResponseEntity.ok(memberService.createArtist(file, requestDto));
+        return ResponseEntity.ok(authService.createArtist(file, requestDto));
     }
 
     @Operation(summary = "관리자가 등록한 아티스트의 앨범 LIST", description = "관리자가 등록한 아티스트의 앨범 LIST")

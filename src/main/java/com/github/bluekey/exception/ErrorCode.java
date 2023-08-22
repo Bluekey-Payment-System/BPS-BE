@@ -18,9 +18,15 @@ public enum ErrorCode {
 
     INVALID_PWD_VALUE(HttpStatus.BAD_REQUEST, "AD_001", "8자 이상의 16자 이하의 숫자, 영문자, 특수문자를 포함한 비밀번호를 입력해주세요."),
     INVALID_EMAIL_VALUE(HttpStatus.BAD_REQUEST, "AD_001", "이메일 형식이 유효하지 않습니다."),
+    NO_MATCH_PWD_VALUE(HttpStatus.BAD_REQUEST, "AD_001", "비밀번호가 일치하지 않습니다."),
+
+    MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "M_001", "존재하지 않는 회원입니다."),
+
     // 409 Conflict도 사용하는지?
     INVALID_NICKNAME_VALUE(HttpStatus.CONFLICT, "AD_001", "이미 존재하는 닉네임입니다."),
     INVALID_LOGIN_ID_VALUE(HttpStatus.CONFLICT, "AD_001", "이미 존재하는 아이디입니다."),
+
+    MEMBER_ALREADY_REMOVED(HttpStatus.CONFLICT, "M_002", "이미 삭제된 회원입니다."),
 
     // Transaction 400~
     TRANSACTION_ALREADY_BATCH(HttpStatus.BAD_REQUEST, "T_001", "{%s} 파일에 대해 이미 배치 작업이 완료된 transaction이 존재합니다."),

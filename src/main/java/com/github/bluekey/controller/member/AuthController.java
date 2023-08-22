@@ -7,16 +7,18 @@ import com.github.bluekey.dto.request.SignupRequestDto;
 import com.github.bluekey.dto.response.LoginTokenResponseDto;
 import com.github.bluekey.dto.response.SignupResponseDto;
 import com.github.bluekey.exception.ErrorResponse;
-import com.github.bluekey.service.member.AuthService;
-import com.github.bluekey.service.member.MemberService;
+import com.github.bluekey.jwt.PrincipalConvertUtil;
+import com.github.bluekey.service.auth.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,7 +35,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
 	private final AuthService authService;
-	private final MemberService memberService;
 
 	@Operation(summary = "admin 로그인", description = "admin 로그인")
 	@ApiResponses(value = {
@@ -42,7 +43,6 @@ public class AuthController {
 	})
 	@PostMapping("/admin/login")
 	public LoginTokenResponseDto adminLogin(@RequestBody LoginRequestDto dto) {
-		log.debug("adminLogin Controller : {}", dto.getLoginId());
 		return authService.login(dto);
 	}
 
@@ -54,8 +54,8 @@ public class AuthController {
 			@ApiResponse(responseCode = "500", description = "internal server error", content = {})
 	})
 	@PostMapping("/admin/signup")
-	public SignupResponseDto adminSignup(@RequestBody SignupRequestDto dto) {
-		return memberService.createAdmin(dto);
+	public SignupResponseDto adminSignup(@Valid @RequestBody SignupRequestDto dto) {
+		return authService.createAdmin(dto);
 	}
 
 	@Operation(summary = "member 로그인", description = "member 로그인")
@@ -70,23 +70,24 @@ public class AuthController {
 
 	@Operation(summary = "member 비밀번호 변경", description = "member 비밀번호 변경")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "204", description = "비밀번호 변경 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))),
+			@ApiResponse(responseCode = "200", description = "비밀번호 변경 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))),
 			@ApiResponse(responseCode = "400", description = "유효하지 않은 비밀번호", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
 			@ApiResponse(responseCode = "500", description = "internal server error", content = {})
 	})
 	@PatchMapping("/member/password")
-	public void passwordChange(@RequestBody PasswordRequestDto dtd) {
-
+	public void passwordChange(@Valid @RequestBody PasswordRequestDto dto) {
+		authService.changePassword(dto, PrincipalConvertUtil.getMemberId());
 	}
 
 	@Operation(summary = "member 비밀번호 확인", description = "member 비밀번호 확인")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "204", description = "비밀번호 확인 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))),
+			@ApiResponse(responseCode = "200", description = "비밀번호 확인 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))),
 			@ApiResponse(responseCode = "400", description = "비밀번호 일치하지 않음", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
 			@ApiResponse(responseCode = "500", description = "internal server error", content = {})
 	})
 	@PostMapping("/member/password/confirm")
 	public void passwordCheck(@RequestBody PasswordRequestDto dto) {
+		authService.matchPassword(dto, PrincipalConvertUtil.getMemberId());
 	}
 
 	@Operation(summary = "member 퇴출", description = "Super Admin이 member에 대해 탈퇴를 진행")
@@ -95,7 +96,8 @@ public class AuthController {
 			@ApiResponse(responseCode = "500", description = "internal server error", content = {})
 	})
 	@DeleteMapping("/members/{memberId}/withdrawal")
-	public void withdrawal(@PathVariable("memberId") Long memberId) {
-
+	public ResponseEntity<String> withdrawal(@PathVariable("memberId") Long memberId) {
+		authService.deleteMember(memberId);
+		return ResponseEntity.noContent().build();
 	}
 }

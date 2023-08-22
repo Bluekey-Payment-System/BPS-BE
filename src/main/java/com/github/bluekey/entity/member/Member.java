@@ -1,6 +1,8 @@
 package com.github.bluekey.entity.member;
 
 import com.github.bluekey.entity.BaseTimeEntity;
+import com.github.bluekey.exception.BusinessException;
+import com.github.bluekey.exception.ErrorCode;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,8 +12,6 @@ import javax.persistence.Table;
 
 import javax.persistence.*;
 
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,8 +33,8 @@ public class Member extends BaseTimeEntity {
 	@Column(name = "login_id", nullable = false, unique = true)
 	private String loginId;
 
-	@Embedded
-	private Password password;
+	@Column(name = "password", nullable = false)
+	private String password;
 
 	@Column(name = "name", nullable = false)
 	private String name;
@@ -60,7 +60,7 @@ public class Member extends BaseTimeEntity {
 	public Member(String email, String loginId, String password, String name, String enName, Integer commissionRate, String profileImage) {
 		this.email = new Email(email);
 		this.loginId = loginId;
-		this.password = new Password(password);
+		this.password = password;
 		this.name = name;
 		this.enName = enName;
 		this.commissionRate = commissionRate;
@@ -73,7 +73,7 @@ public class Member extends BaseTimeEntity {
 	public Member(String email, String loginId, String password, String name, MemberRole role) {
 		this.email = new Email(email);;
 		this.loginId = loginId;
-		this.password = new Password(password);
+		this.password = password;
 		this.name = name;
 		this.commissionRate = 0;
 		this.type = MemberType.ADMIN;
@@ -82,5 +82,26 @@ public class Member extends BaseTimeEntity {
 
 	public void updateProfileImage(String profileImage) {
 		this.profileImage = profileImage;
+	}
+
+	public void updatePassword(String password) {
+		this.password = password;
+	}
+
+	public void memberRemoved() {
+		if (isRemoved()) {
+			throw new BusinessException(ErrorCode.MEMBER_ALREADY_REMOVED);
+		}
+		this.remove();
+	}
+
+	private void validateCommissionRate(Integer commissionRate) {
+		if (commissionRate < 0) {
+			throw new IllegalArgumentException("Percentage value must not be negative.");
+		}
+
+		if (commissionRate > 100) {
+			throw new IllegalArgumentException("Percentage value cannot exceed 100.");
+		}
 	}
 }
