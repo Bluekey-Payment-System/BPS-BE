@@ -19,8 +19,10 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @Slf4j
 public class AwsS3Manager implements ResourceManager {
-	@Value("${cloud.aws.s3.bucket}")
-	private String bucket;
+	@Value("${cloud.aws.s3.excel-bucket}")
+	private String excelBucket;
+	@Value("{cloud.aws.s3.image-bucket}")
+	private String imageBucket;
 	private final AmazonS3Client amazonS3Client;
 
 	/**
@@ -32,6 +34,7 @@ public class AwsS3Manager implements ResourceManager {
 	public String upload(MultipartFile multipartFile, String key, S3PrefixType type) {
 		log.info("uploading file to s3: {}", type.getValue() + key);
 		ObjectMetadata objectMetadata = createObjectMetadata(multipartFile);
+		String bucket = getBucketName(type);
 		try {
 			PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, type.getValue() + key, multipartFile.getInputStream(), objectMetadata);
 			amazonS3Client.putObject(putObjectRequest);
@@ -79,5 +82,13 @@ public class AwsS3Manager implements ResourceManager {
 		objectMetadata.setContentType(multipartFile.getContentType());
 		objectMetadata.setContentLength(multipartFile.getSize());
 		return objectMetadata;
+	}
+
+	private String getBucketName(S3PrefixType type) {
+		if (type == S3PrefixType.EXCEL) {
+			return excelBucket;
+		} else if (type == S3PrefixType.IMAGE)
+			return imageBucket;
+		return null;
 	}
 }
