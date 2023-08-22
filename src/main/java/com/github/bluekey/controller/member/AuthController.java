@@ -11,7 +11,6 @@ import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.exception.ErrorResponse;
 import com.github.bluekey.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.auth.AuthService;
-import com.github.bluekey.service.member.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,6 +20,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -90,9 +90,7 @@ public class AuthController {
 	})
 	@PostMapping("/member/password/confirm")
 	public void passwordCheck(@RequestBody PasswordRequestDto dto) {
-		if (!authService.matchPassword(dto, PrincipalConvertUtil.getMemberId())) {
-			throw new BusinessException(ErrorCode.NO_MATCH_PWD_VALUE);
-		}
+		authService.matchPassword(dto, PrincipalConvertUtil.getMemberId());
 	}
 
 	@Operation(summary = "member 퇴출", description = "Super Admin이 member에 대해 탈퇴를 진행")
@@ -101,7 +99,8 @@ public class AuthController {
 			@ApiResponse(responseCode = "500", description = "internal server error", content = {})
 	})
 	@DeleteMapping("/members/{memberId}/withdrawal")
-	public void withdrawal(@PathVariable("memberId") Long memberId) {
-
+	public ResponseEntity<String> withdrawal(@PathVariable("memberId") Long memberId) {
+		authService.deleteMember(memberId);
+		return ResponseEntity.noContent().build();
 	}
 }

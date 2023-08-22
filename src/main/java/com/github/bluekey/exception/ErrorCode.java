@@ -26,6 +26,8 @@ public enum ErrorCode {
     INVALID_NICKNAME_VALUE(HttpStatus.CONFLICT, "AD_001", "이미 존재하는 닉네임입니다."),
     INVALID_LOGIN_ID_VALUE(HttpStatus.CONFLICT, "AD_001", "이미 존재하는 아이디입니다."),
 
+    MEMBER_ALREADY_REMOVED(HttpStatus.CONFLICT, "M_002", "이미 삭제된 회원입니다."),
+
     // Transaction 400~
     TRANSACTION_ALREADY_BATCH(HttpStatus.BAD_REQUEST, "T_001", "{%s} 파일에 대해 이미 배치 작업이 완료된 transaction이 존재합니다."),
     TRANSACTION_INVALID_EXCEL_READER_VALUE(HttpStatus.BAD_REQUEST, "T_002", "엑셀 파일을 읽는 중 에러가 발생했습니다.");

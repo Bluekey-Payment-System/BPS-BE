@@ -46,7 +46,7 @@ public class SecurityConfig {
 				.and()
 				.authorizeRequests()
 				.antMatchers("/api/v1/auth/admin/**", "/api/v1/auth/member/login", "/h2-console/**").permitAll()
-				.antMatchers("/api/v1/**").hasRole("ADMIN")
+				.antMatchers("/api/v1/**").hasRole("SUPER_ADMIN")
 				.anyRequest().authenticated()
 				.and()
 				.addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)

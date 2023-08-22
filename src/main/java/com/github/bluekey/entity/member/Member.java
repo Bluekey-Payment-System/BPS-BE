@@ -1,6 +1,8 @@
 package com.github.bluekey.entity.member;
 
 import com.github.bluekey.entity.BaseTimeEntity;
+import com.github.bluekey.exception.BusinessException;
+import com.github.bluekey.exception.ErrorCode;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -81,6 +83,13 @@ public class Member extends BaseTimeEntity {
 
 	public void updatePassword(String password) {
 		this.password = password;
+	}
+
+	public void memberRemoved() {
+		if (isRemoved()) {
+			throw new BusinessException(ErrorCode.MEMBER_ALREADY_REMOVED);
+		}
+		this.remove();
 	}
 
 	private void validateCommissionRate(Integer commissionRate) {
