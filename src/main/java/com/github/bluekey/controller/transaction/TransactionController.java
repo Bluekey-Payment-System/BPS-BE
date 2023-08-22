@@ -1,7 +1,7 @@
 package com.github.bluekey.controller.transaction;
 
 import com.github.bluekey.dto.request.transaction.OriginalTransactionRequestDto;
-import com.github.bluekey.dto.response.ListResponse;
+import com.github.bluekey.dto.response.common.ListResponse;
 import com.github.bluekey.dto.response.transaction.OriginalTransactionPaginationResponseDto;
 import com.github.bluekey.dto.response.transaction.OriginalTransactionResponseDto;
 import com.github.bluekey.exception.UploadErrorResponse;

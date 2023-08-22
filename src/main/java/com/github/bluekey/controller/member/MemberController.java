@@ -1,7 +1,7 @@
 package com.github.bluekey.controller.member;
 
-import com.github.bluekey.dto.response.AdminAndArtistAccountResponseDto;
-import com.github.bluekey.dto.response.ArtistAccountsResponseDto;
+import com.github.bluekey.dto.response.admin.AdminAndArtistAccountResponseDto;
+import com.github.bluekey.dto.response.artist.ArtistAccountsResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

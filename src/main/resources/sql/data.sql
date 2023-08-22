@@ -9,7 +9,7 @@ INSERT INTO member (email, login_id, password, name, en_name, commission_rate, t
 VALUES ('artist3@example.com', 'artist3', 'password123!', '덤프', 'dump', 20, 'USER', 'ARTIST', 'artist.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 
--- Admin Member
+-- admin Member
 INSERT INTO member (email, login_id, password, name, role, type, profile_image, created_at, modified_at, is_removed)
 VALUES ('admin@example.com', 'super_admin', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxmyJE0mKuAnt.KXBq6zYro33S', 'bluekey', 'SUPER_ADMIN', 'ADMIN', 'admin.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 

@@ -1,10 +1,15 @@
 package com.github.bluekey.controller.member;
 
-import com.github.bluekey.dto.ArtistAccountDto;
-import com.github.bluekey.dto.response.*;
-import com.github.bluekey.dto.request.AdminArtistProfileRequestDto;
-import com.github.bluekey.dto.request.ArtistProfileRequestDto;
-import com.github.bluekey.dto.request.ArtistRequestDto;
+import com.github.bluekey.dto.artist.ArtistAccountDto;
+import com.github.bluekey.dto.request.admin.AdminArtistProfileRequestDto;
+import com.github.bluekey.dto.request.artist.ArtistProfileRequestDto;
+import com.github.bluekey.dto.request.artist.ArtistRequestDto;
+import com.github.bluekey.dto.response.admin.AdminArtistProfileListReponseDto;
+import com.github.bluekey.dto.response.artist.ArtistAlbumsListReponseDto;
+import com.github.bluekey.dto.response.artist.ArtistListReponseDto;
+import com.github.bluekey.dto.response.artist.ArtistMonthlyAccountsReponseDto;
+import com.github.bluekey.dto.response.artist.ArtistMonthlyTrackListReponseDto;
+import com.github.bluekey.dto.response.artist.ArtistTopReponseDto;
 import com.github.bluekey.exception.ErrorResponse;
 import com.github.bluekey.service.auth.AuthService;
 import com.github.bluekey.service.member.MemberService;

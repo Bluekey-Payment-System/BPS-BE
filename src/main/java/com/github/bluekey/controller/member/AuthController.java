@@ -1,11 +1,11 @@
 package com.github.bluekey.controller.member;
 
 
-import com.github.bluekey.dto.request.PasswordRequestDto;
-import com.github.bluekey.dto.request.LoginRequestDto;
-import com.github.bluekey.dto.request.SignupRequestDto;
-import com.github.bluekey.dto.response.LoginTokenResponseDto;
-import com.github.bluekey.dto.response.SignupResponseDto;
+import com.github.bluekey.dto.request.auth.PasswordRequestDto;
+import com.github.bluekey.dto.request.auth.LoginRequestDto;
+import com.github.bluekey.dto.request.auth.SignupRequestDto;
+import com.github.bluekey.dto.response.auth.LoginTokenResponseDto;
+import com.github.bluekey.dto.response.auth.SignupResponseDto;
 import com.github.bluekey.exception.ErrorResponse;
 import com.github.bluekey.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.auth.AuthService;

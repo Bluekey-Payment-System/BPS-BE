@@ -1,10 +1,9 @@
 package com.github.bluekey.controller.member;
 
-import com.github.bluekey.dto.response.ArtistsRevenueProportionReponseDto;
-import com.github.bluekey.dto.response.DashboardTotalInfoResponseDto;
-import com.github.bluekey.dto.response.MonthlyRevenueTrendResponseDto;
-import com.github.bluekey.dto.response.TracksSettlementAmountResponseDto;
-import com.github.bluekey.exception.ErrorResponse;
+import com.github.bluekey.dto.response.artist.ArtistsRevenueProportionReponseDto;
+import com.github.bluekey.dto.response.common.DashboardTotalInfoResponseDto;
+import com.github.bluekey.dto.response.common.MonthlyRevenueTrendResponseDto;
+import com.github.bluekey.dto.response.track.TracksSettlementAmountResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

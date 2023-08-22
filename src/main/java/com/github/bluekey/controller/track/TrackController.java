@@ -1,6 +1,6 @@
 package com.github.bluekey.controller.track;
 
-import com.github.bluekey.dto.response.TrackResponseDto;
+import com.github.bluekey.dto.response.track.TrackResponseDto;
 import com.github.bluekey.dto.response.transaction.OriginalTransactionResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
