@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -81,7 +82,7 @@ public class AdminController {
 			@ApiResponse(responseCode = "200", description = "정상 반환", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AdminProfileUpdateRequestDto.class))),
 	})
 	@PatchMapping("/profile")
-	public void updateAdminProfile(AdminProfileUpdateRequestDto dto) {
+	public void updateAdminProfile(@RequestBody AdminProfileUpdateRequestDto dto) {
 
 	}
 }

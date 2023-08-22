@@ -39,7 +39,6 @@ public class AuthController {
 	@Operation(summary = "admin 로그인", description = "admin 로그인")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginTokenResponseDto.class))),
-			@ApiResponse(responseCode = "500", description = "internal server error", content = {})
 	})
 	@PostMapping("/admin/login")
 	public LoginTokenResponseDto adminLogin(@RequestBody LoginRequestDto dto) {
@@ -50,8 +49,6 @@ public class AuthController {
 	@Operation(summary = "admin 회원가입", description = "admin 회원가입")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SignupResponseDto.class))),
-			@ApiResponse(responseCode = "400", description = "유효하지 않은 필드값", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
-			@ApiResponse(responseCode = "500", description = "internal server error", content = {})
 	})
 	@PostMapping("/admin/signup")
 	public SignupResponseDto adminSignup(@Valid @RequestBody SignupRequestDto dto) {
@@ -61,7 +58,6 @@ public class AuthController {
 	@Operation(summary = "member 로그인", description = "member 로그인")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginTokenResponseDto.class))),
-			@ApiResponse(responseCode = "500", description = "internal server error", content = {})
 	})
 	@PostMapping("/member/login")
 	public LoginTokenResponseDto memberLogin(@RequestBody LoginRequestDto dto) {
@@ -71,8 +67,6 @@ public class AuthController {
 	@Operation(summary = "member 비밀번호 변경", description = "member 비밀번호 변경")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "비밀번호 변경 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))),
-			@ApiResponse(responseCode = "400", description = "유효하지 않은 비밀번호", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
-			@ApiResponse(responseCode = "500", description = "internal server error", content = {})
 	})
 	@PatchMapping("/member/password")
 	public void passwordChange(@Valid @RequestBody PasswordRequestDto dto) {
@@ -82,8 +76,6 @@ public class AuthController {
 	@Operation(summary = "member 비밀번호 확인", description = "member 비밀번호 확인")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "비밀번호 확인 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))),
-			@ApiResponse(responseCode = "400", description = "비밀번호 일치하지 않음", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
-			@ApiResponse(responseCode = "500", description = "internal server error", content = {})
 	})
 	@PostMapping("/member/password/confirm")
 	public void passwordCheck(@RequestBody PasswordRequestDto dto) {
@@ -92,8 +84,7 @@ public class AuthController {
 
 	@Operation(summary = "member 퇴출", description = "Super Admin이 member에 대해 탈퇴를 진행")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "204", description = "퇴출 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))),
-			@ApiResponse(responseCode = "500", description = "internal server error", content = {})
+			@ApiResponse(responseCode = "204", description = "퇴출 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class))),
 	})
 	@DeleteMapping("/members/{memberId}/withdrawal")
 	public ResponseEntity<String> withdrawal(@PathVariable("memberId") Long memberId) {
