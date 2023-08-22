@@ -23,4 +23,8 @@ public class BaseTimeEntity {
 
     @Column(columnDefinition = "boolean default false")
     private boolean isRemoved = Boolean.FALSE;
+
+    public void remove() {
+        this.isRemoved = Boolean.TRUE;
+    }
 }

@@ -7,6 +7,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class PrincipalConvertUtil {
+
+	private PrincipalConvertUtil() {
+		throw new IllegalStateException("Utility class");
+	}
+
 	public static Long getMemberId() {
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		UserDetails userDetails = (UserDetails) principal;
