@@ -1,14 +1,13 @@
 package com.github.bluekey.dto.track;
 
 import com.github.bluekey.dto.common.MemberBaseDto;
-import com.github.bluekey.dto.admin.AlbumBaseDto;
+import com.github.bluekey.dto.album.AlbumBaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

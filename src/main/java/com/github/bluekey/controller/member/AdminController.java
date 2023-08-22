@@ -1,5 +1,6 @@
 package com.github.bluekey.controller.member;
 
+import com.github.bluekey.dto.request.admin.AdminProfileUpdateRequestDto;
 import com.github.bluekey.dto.response.artist.ArtistsRevenueProportionReponseDto;
 import com.github.bluekey.dto.response.common.DashboardTotalInfoResponseDto;
 import com.github.bluekey.dto.response.common.MonthlyRevenueTrendResponseDto;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -72,5 +74,14 @@ public class AdminController {
 			@Parameter(description = "월별 추이의 종료일 (format: yyyy-MM)") @RequestParam("endDate") LocalDate endDate
 	) {
 		return null;
+	}
+
+	@Operation(summary = "관리자 프로필 수정", description = "관리자 프로필 수정")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "정상 반환", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AdminProfileUpdateRequestDto.class))),
+	})
+	@PatchMapping("/profile")
+	public void updateAdminProfile(AdminProfileUpdateRequestDto dto) {
+
 	}
 }

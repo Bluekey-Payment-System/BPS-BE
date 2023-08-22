@@ -1,4 +1,4 @@
-package com.github.bluekey.dto.admin;
+package com.github.bluekey.dto.album;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
