@@ -6,7 +6,9 @@ import com.github.bluekey.dto.request.artist.ArtistProfileRequestDto;
 import com.github.bluekey.dto.request.artist.ArtistRequestDto;
 import com.github.bluekey.dto.response.admin.AdminArtistProfileListReponseDto;
 import com.github.bluekey.dto.response.artist.*;
+import com.github.bluekey.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.auth.AuthService;
+import com.github.bluekey.service.member.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,12 +19,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
-import java.util.List;
 
 @Tag(name = "Artist", description = "Artist 관련 API")
 @RestController
@@ -31,17 +33,19 @@ import java.util.List;
 public class ArtistController {
 
     private final AuthService authService;
+    private final MemberService memberService;
 
     @Operation(summary = "아티스트 정보 변경" , description = "아티스트 정보 변경")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "아티스트 정보 변경 성공"), })
+    @PreAuthorize("hasRole('ARTIST')")
     @PatchMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ArtistProfileResponseDto> artistProfileUpdate(
             @Parameter(schema = @Schema(implementation = ArtistProfileRequestDto.class), description = "Artist 수정 API 입니다.")
             @RequestPart("data") @Valid ArtistProfileRequestDto requestDto,
             @Parameter(description = "multipart/form-data 형식의 프로필 이미지 데이터, key 값은 file 입니다.")
             @RequestParam("file") MultipartFile file) {
-        return null;
+        return ResponseEntity.ok(memberService.updateArtistProfile(requestDto, file, PrincipalConvertUtil.getMemberId()));
     }
 
     @Operation(summary = "아티스트 등록" , description = "아티스트 등록")

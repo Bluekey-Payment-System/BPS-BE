@@ -1,5 +1,7 @@
 package com.github.bluekey.dto.response.artist;
 
+import com.github.bluekey.dto.artist.ArtistAccountDto;
+import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.member.MemberType;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -42,5 +44,18 @@ public class ArtistProfileResponseDto {
 		this.name = name;
 		this.enName = enName;
 		this.profileImage = profileImage;
+	}
+
+	public static ArtistProfileResponseDto from(Member member) {
+		return ArtistProfileResponseDto.builder()
+				.memberId(member.getId())
+				.role(member.getRole())
+				.type(member.getType())
+				.email(member.getEmail().getValue())
+				.loginId(member.getLoginId())
+				.name(member.getName())
+				.enName(member.getEnName())
+				.profileImage(member.getProfileImage())
+				.build();
 	}
 }
