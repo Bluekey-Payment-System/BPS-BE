@@ -2,7 +2,7 @@ package com.github.bluekey.service.transaction;
 
 import com.amazonaws.services.s3.model.S3Object;
 import com.github.bluekey.dto.request.transaction.OriginalTransactionRequestDto;
-import com.github.bluekey.dto.response.ListResponse;
+import com.github.bluekey.dto.response.common.ListResponse;
 import com.github.bluekey.dto.response.transaction.OriginalTransactionResponseDto;
 import com.github.bluekey.entity.transaction.OriginalTransaction;
 import com.github.bluekey.exception.transaction.ExcelUploadException;
