@@ -64,7 +64,7 @@ public class AwsS3Manager implements ResourceManager {
 		log.info("deleting file from s3: {}", key);
 		String bucket = getBucketName(type);
 		try {
-			amazonS3Client.deleteObject(bucket, type.getValue() + key);
+			amazonS3Client.deleteObject(bucket, key);
 		} catch (AmazonS3Exception e) {
 			log.error("s3 delete error: {}", e.getMessage());
 			e.getStackTrace();

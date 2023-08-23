@@ -19,6 +19,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,6 +41,7 @@ public class ArtistController {
             @ApiResponse(responseCode = "200", description = "아티스트 정보 변경 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))),
             @ApiResponse(responseCode = "400", description = "유효하지 않는 아티스트ID 입니다.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
     })
+    @PreAuthorize("hasRole('ARTIST')")
     @PatchMapping("/profile")
     public void artistProfileUpdate(@ModelAttribute ArtistProfileRequestDto dto) {
         memberService.updateArtistProfile(dto, PrincipalConvertUtil.getMemberId());

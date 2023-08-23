@@ -26,7 +26,7 @@ public class ImageUploadUtil {
 
 	public void deleteImage(String imageUrl) {
 		String key = awsS3Manager.getS3Key(imageUrl, image);
-		awsS3Manager.delete(key, image);
+		awsS3Manager.delete(image.getValue() + key, image);
 	}
 
 	public String getProfileImageKey(String originalFilename, Long memberId) {

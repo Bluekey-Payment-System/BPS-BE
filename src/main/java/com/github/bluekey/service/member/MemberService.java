@@ -33,8 +33,8 @@ public class MemberService {
 	public void updateArtistProfile(ArtistProfileRequestDto dto, Long memberId) {
 		Member member = memberRepository.findById(memberId)
 				.orElseThrow(MemberNotFoundException::new);
-		updateProfileImages(dto.getProfileImage(), member);
 		updateArtistEmail(dto.getEmail(), member);
+		updateProfileImages(dto.getProfileImage(), member);
 		memberRepository.save(member);
 	}
 
