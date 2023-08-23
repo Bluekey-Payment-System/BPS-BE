@@ -1,5 +1,7 @@
 package com.github.bluekey.service.member;
 
+import com.github.bluekey.dto.artist.ArtistAccountDto;
+import com.github.bluekey.dto.request.admin.AdminArtistProfileRequestDto;
 import com.github.bluekey.dto.request.artist.ArtistProfileRequestDto;
 import com.github.bluekey.dto.response.artist.ArtistProfileResponseDto;
 import com.github.bluekey.entity.member.Member;
@@ -31,6 +33,30 @@ public class MemberService {
 		return ArtistProfileResponseDto.from(member);
 	}
 
+	@Transactional
+	public ArtistAccountDto updateArtistProfileByAdmin(AdminArtistProfileRequestDto dto, Long memberId) {
+		Member member = memberRepository.findById(memberId)
+				.orElseThrow(MemberNotFoundException::new);
+		updateArtistName(dto, member);
+		updateArtistCommissionRate(dto, member);
+		memberRepository.save(member);
+		return ArtistAccountDto.from(member);
+	}
+
+	private void updateArtistName(AdminArtistProfileRequestDto dto, Member member) {
+		if (dto.getName() != null) {
+			member.updateName(dto.getName());
+		}
+		if (dto.getEnName() != null) {
+			member.updateEnName(dto.getEnName());
+		}
+	}
+
+	private void updateArtistCommissionRate(AdminArtistProfileRequestDto dto, Member member) {
+		if (dto.getCommissionRate() != null) {
+			member.updateCommissionRate(Integer.valueOf(dto.getCommissionRate()));
+		}
+	}
 	private void updateProfileImages(MultipartFile file, Member member) {
 		if (file == null || file.getOriginalFilename() == null || file.getOriginalFilename().isEmpty()) {
 			return;
