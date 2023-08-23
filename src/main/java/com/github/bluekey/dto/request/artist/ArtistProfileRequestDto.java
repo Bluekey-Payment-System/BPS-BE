@@ -14,12 +14,8 @@ public class ArtistProfileRequestDto {
     @Schema(description = "이메일", example = "example@bluekey_domain.com")
     private String email;
 
-    @Schema(description = "이미지", example = "https://s3...")
-    private String profileImage;
-
     @Builder
-    public ArtistProfileRequestDto(final String email, final String profileImage) {
+    public ArtistProfileRequestDto(final String email) {
         this.email = email;
-        this.profileImage = profileImage;
     }
 }
