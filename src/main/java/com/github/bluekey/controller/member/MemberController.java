@@ -28,12 +28,14 @@ public class MemberController {
 					oneOf = {ArtistAccountsResponseDto.class, AdminAndArtistAccountResponseDto.class}))),
 	})
 	@GetMapping
-	public ResponseEntity<?> getMemberList(
+	public ResponseEntity<AdminAndArtistAccountResponseDto> getMembers(
 			@RequestParam("page") Integer page,
 			@RequestParam("size") Integer size
 	) {
 		// TODO: MemberRole.ADMIN -> ArtistAccountResponseDto
 		// TODO: MemberRole.SUPER_ADMIN -> AdminAndAristAccountResponseDto
+
+		// Ans: AdminAndAristAccountResponseDto 반환하고 ADMIN인 경우에는 ADMIN 데이터를 빈 리스트로 주면 될 것 같아요
 		return null;
 	}
 }
