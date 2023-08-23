@@ -1,6 +1,7 @@
 package com.github.bluekey.controller.member;
 
 import com.github.bluekey.dto.request.admin.AdminProfileUpdateRequestDto;
+import com.github.bluekey.dto.response.admin.AdminProfileResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistsRevenueProportionReponseDto;
 import com.github.bluekey.dto.response.common.DashboardTotalInfoResponseDto;
 import com.github.bluekey.dto.response.common.MonthlyRevenueTrendResponseDto;
@@ -12,8 +13,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,8 +33,8 @@ public class AdminController {
 			@ApiResponse(responseCode = "200", description = "정상 반환", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistsRevenueProportionReponseDto.class))),
 	})
 	@GetMapping("/dashboard/artist")
-	public ArtistsRevenueProportionReponseDto getTopRevenueArtistsOfMonth(
-			@Parameter(description = "정보를 얻고 싶은 월 (format: yyyy-MM)") @RequestParam("monthly") LocalDate monthly,
+	public ResponseEntity<ArtistsRevenueProportionReponseDto> getTopRevenueArtistsOfMonth(
+			@Parameter(description = "정보를 얻고 싶은 월 (format: yyyy-MM)") @RequestParam("monthly") String monthly,
 			@Parameter(description = "Top 5위까지 알고 싶은 경우 rank=5") @RequestParam("rank") Integer rank
 	) {
 		return null;
@@ -44,12 +45,12 @@ public class AdminController {
 			@ApiResponse(responseCode = "200", description = "정상 반환", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TracksSettlementAmountResponseDto.class))),
 	})
 	@GetMapping("/dashboard/track")
-	public TracksSettlementAmountResponseDto getTracksSettlementAmount(
-			@Parameter(description = "정보를 얻고 싶은 월 (format: yyyy-MM)") @RequestParam("monthly") LocalDate monthly,
+	public ResponseEntity<TracksSettlementAmountResponseDto> getTracksSettlementAmount(
+			@Parameter(description = "정보를 얻고 싶은 월 (format: yyyy-MM)") @RequestParam("monthly") String monthly,
 			@RequestParam("page") Integer page,
 			@RequestParam("size") Integer size,
 			@Parameter(description = "검색 타입 곡명 or 앨범명") @RequestParam("searchType") String searchType,
-			@Parameter(description = "검색할 키워드") @RequestParam("keyword") String keyword
+			@Parameter(description = "검색할 키워드") @RequestParam(value = "keyword", required = false) String keyword
 	) {
 		return null;
 	}
@@ -59,8 +60,8 @@ public class AdminController {
 			@ApiResponse(responseCode = "200", description = "정상 반환", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DashboardTotalInfoResponseDto.class))),
 	})
 	@GetMapping("/dashboard")
-	public DashboardTotalInfoResponseDto getDashboardTotalInfo(
-			@Parameter(description = "정보를 얻고 싶은 월 (format: yyyy-MM)") @RequestParam("monthly") LocalDate monthly
+	public ResponseEntity<DashboardTotalInfoResponseDto> getDashboardTotalInfo(
+			@Parameter(description = "정보를 얻고 싶은 월 (format: yyyy-MM)") @RequestParam("monthly") String monthly
 	) {
 		return null;
 	}
@@ -70,9 +71,9 @@ public class AdminController {
 			@ApiResponse(responseCode = "200", description = "정상 반환", content = @Content(mediaType = "application/json", schema = @Schema(implementation = MonthlyRevenueTrendResponseDto.class))),
 	})
 	@GetMapping("/dashboard/trend")
-	public MonthlyRevenueTrendResponseDto getMonthlyRevenueTrend(
-			@Parameter(description = "월별 추이의 시작일 (format: yyyy-MM)") @RequestParam("startDate") LocalDate startDate,
-			@Parameter(description = "월별 추이의 종료일 (format: yyyy-MM)") @RequestParam("endDate") LocalDate endDate
+	public ResponseEntity<MonthlyRevenueTrendResponseDto> getMonthlyRevenueTrend(
+			@Parameter(description = "월별 추이의 시작일 (format: yyyy-MM)") @RequestParam("startDate") String startDate,
+			@Parameter(description = "월별 추이의 종료일 (format: yyyy-MM)") @RequestParam("endDate") String endDate
 	) {
 		return null;
 	}
@@ -82,7 +83,7 @@ public class AdminController {
 			@ApiResponse(responseCode = "200", description = "정상 반환"),
 	})
 	@PatchMapping("/profile")
-	public void updateAdminProfile(@RequestBody AdminProfileUpdateRequestDto dto) {
-
+	public ResponseEntity<AdminProfileResponseDto> updateAdminProfile(@RequestBody AdminProfileUpdateRequestDto dto) {
+		return ResponseEntity.ok().build();
 	}
 }
