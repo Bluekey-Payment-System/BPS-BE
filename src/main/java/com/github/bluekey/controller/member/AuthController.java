@@ -6,7 +6,6 @@ import com.github.bluekey.dto.request.auth.LoginRequestDto;
 import com.github.bluekey.dto.request.auth.SignupRequestDto;
 import com.github.bluekey.dto.response.auth.LoginTokenResponseDto;
 import com.github.bluekey.dto.response.auth.SignupResponseDto;
-import com.github.bluekey.exception.ErrorResponse;
 import com.github.bluekey.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.auth.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,7 +44,6 @@ public class AuthController {
 		return authService.login(dto);
 	}
 
-	//TODO: 400 bad request가 필드마다 다르게 나올 수 있음, 아직 처리 못 했으나 나중에 처리할 것
 	@Operation(summary = "admin 회원가입", description = "admin 회원가입")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SignupResponseDto.class))),

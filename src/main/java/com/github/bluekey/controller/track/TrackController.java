@@ -1,5 +1,7 @@
 package com.github.bluekey.controller.track;
 
+import com.github.bluekey.dto.request.track.TrackRequestDto;
+import com.github.bluekey.dto.response.track.TrackIdReponseDto;
 import com.github.bluekey.dto.response.track.TrackResponseDto;
 import com.github.bluekey.dto.response.transaction.OriginalTransactionResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,18 +28,21 @@ public class TrackController {
                     schema = @Schema(implementation = OriginalTransactionResponseDto.class)
             )
     )
-    @PostMapping("/{albumId}/tracks")
-    public void tracksInsert(@RequestBody TrackResponseDto dto) {
-
+    @PostMapping("/albums/{albumId}")
+    public TrackResponseDto tracksInsert(Long albumId, @RequestBody TrackRequestDto dto) {
+        return null;
     }
 
     @Operation(summary = "수록곡 삭제", description = "수록곡 삭제")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "수록곡 삭제 완료"),
-            @ApiResponse(responseCode = "400", description = "유효하지 않는 수록곡ID 입니다.")
+            @ApiResponse(responseCode = "200", description = "수록곡 삭제 완료",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = TrackIdReponseDto.class)
+                    )),
     })
     @DeleteMapping("/{trackId}")
-    public void trackDelete(@PathVariable("trackId") Long albumId) {
-
+    public TrackIdReponseDto trackDelete(@PathVariable("trackId") Long trackId) {
+        return null;
     }
 }
