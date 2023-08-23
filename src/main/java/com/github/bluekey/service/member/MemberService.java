@@ -45,9 +45,15 @@ public class MemberService {
 
 	private void updateArtistName(AdminArtistProfileRequestDto dto, Member member) {
 		if (dto.getName() != null) {
+			if (memberRepository.findMemberByNameAndType(dto.getName(), MemberType.USER).isPresent()) {
+				throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
+			}
 			member.updateName(dto.getName());
 		}
 		if (dto.getEnName() != null) {
+			if (memberRepository.findMemberByEnNameAndType(dto.getEnName(), MemberType.USER).isPresent()) {
+				throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
+			}
 			member.updateEnName(dto.getEnName());
 		}
 	}
