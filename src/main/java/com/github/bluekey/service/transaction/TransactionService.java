@@ -16,6 +16,7 @@ import com.github.bluekey.repository.track.TrackRepository;
 import com.github.bluekey.repository.transaction.OriginalTransactionRepository;
 import com.github.bluekey.s3.manager.AwsS3Manager;
 import com.github.bluekey.s3.manager.S3PrefixType;
+import com.github.bluekey.util.ExcelUploadUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -24,8 +25,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -39,6 +41,7 @@ public class TransactionService {
     private final TrackRepository trackRepository;
     private final TrackMemberRepository trackMemberRepository;
     private final AwsS3Manager awsS3Manager;
+    private final ExcelUploadUtil excelUploadUtil;
     private final ExcelFileDBMigrationProcessManager excelFileDBMigrationProcessManager;
 
     public ListResponse<OriginalTransactionResponseDto> getOriginalTransactions(String uploadAt) {
@@ -71,32 +74,30 @@ public class TransactionService {
         }
 
         String s3Url = awsS3Manager.upload(file, uploadAt + "/" + file.getOriginalFilename(), S3PrefixType.EXCEL);
-        S3Object excelFileS3Object = awsS3Manager.getS3Value(S3PrefixType.EXCEL.getValue() + file.getOriginalFilename(), S3PrefixType.EXCEL);
+        excelUploadUtil.uploadExcel(file, excelUploadUtil.getExcelKey(file.getOriginalFilename(), uploadAt));
 
-        Workbook workbook = getWorkBook(excelFileS3Object);
 
         OriginalTransaction originalTransaction = OriginalTransaction.builder()
                 .uploadAt(requestDto.getUploadAt())
                 .fileName(file.getOriginalFilename())
                 .fileUrl(s3Url)
+                .distributorType(excelFileProcessManager.getDistributorType())
                 .build();
         originalTransactionRepository.save(originalTransaction);
         return OriginalTransactionResponseDto.fromWithWarning(originalTransaction, excelFileProcessManager.getWarnings());
     }
 
     public void ExcelFilesToDBMigration() {
-        List<Workbook> workbooks = new ArrayList<>();
+        Map<Workbook, OriginalTransaction> workbooks = new HashMap<>();
         List<OriginalTransaction> originalTransactions = originalTransactionRepository.findAllByIsCompletedFalseAndIsRemovedFalse();
         for (OriginalTransaction originalTransaction: originalTransactions) {
             String s3Key = awsS3Manager.getS3Key(originalTransaction.getFileUrl(), S3PrefixType.EXCEL);
-            S3Object s3Object = awsS3Manager.getS3Value(S3PrefixType.EXCEL.getValue() + s3Key, S3PrefixType.EXCEL);
+            S3Object s3Object = excelUploadUtil.getExcel(S3PrefixType.EXCEL.getValue() + s3Key);
             Workbook workbook = getWorkBook(s3Object);
-            workbooks.add(workbook);
+            workbooks.put(workbook, originalTransaction);
         }
-        log.info("workbooks = {}", workbooks);
         excelFileDBMigrationProcessManager.updateWorkbooks(workbooks);
         excelFileDBMigrationProcessManager.process();
-
     }
 
     private Workbook getWorkBook(S3Object s3Object) {

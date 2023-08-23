@@ -1,5 +1,6 @@
 package com.github.bluekey.processor;
 
+import com.github.bluekey.entity.transaction.ExcelDistributorType;
 import com.github.bluekey.processor.provider.AtoDistributorExcelFileProvider;
 import com.github.bluekey.processor.provider.ExcelFileProvider;
 import com.github.bluekey.processor.type.MusicDistributorType;
@@ -22,6 +23,7 @@ public class ExcelFileProcessManager implements ProcessManager{
     private final ExcelFileProvider excelFileProvider;
     private String filetype;
     private String fileName;
+    private ExcelDistributorType distributorType;
     private final MemberRepository memberRepository;
     private final AlbumRepository albumRepository;
     private final TrackRepository trackRepository;
@@ -56,6 +58,10 @@ public class ExcelFileProcessManager implements ProcessManager{
 
     public List<ExcelRowException> getWarnings() {return excelFileProvider.getWarnings();}
 
+    public ExcelDistributorType getDistributorType() {
+        return this.distributorType;
+    }
+
     private void setExcelFileBasicInformation(MultipartFile file) {
         String[] originalFileNameInformation = file.getOriginalFilename().split(FILE_SEPARATOR);
         this.fileName = originalFileNameInformation[0];
@@ -75,6 +81,7 @@ public class ExcelFileProcessManager implements ProcessManager{
 
     private ExcelFileProvider determineExcelFileProviderWithMusicDistributorType(MusicDistributorType type) {
         if (type.getCls().equals(AtoDistributorExcelFileProvider.class)) {
+            this.distributorType = ExcelDistributorType.ATO;
             return new AtoDistributorExcelFileProvider(file, dbPersistenceValidator);
         }
         throw new IllegalArgumentException("Excel File Provider exception");

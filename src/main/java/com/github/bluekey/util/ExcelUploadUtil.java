@@ -2,7 +2,6 @@ package com.github.bluekey.util;
 
 import com.amazonaws.services.s3.model.S3Object;
 import com.github.bluekey.s3.manager.AwsS3Manager;
-import com.github.bluekey.s3.manager.ResourceManager;
 import com.github.bluekey.s3.manager.S3PrefixType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -22,6 +21,10 @@ public class ExcelUploadUtil {
 
 	public S3Object getExcel(String filename) {
 		return awsS3Manager.getS3Value(excel.getValue() + filename, excel);
+	}
+
+	public String getExcelKey(String originalFilename, String uploadAt) {
+		return excel.getValue() + uploadAt + "/" + originalFilename ;
 	}
 
 	public void deleteExcel(String key) {
