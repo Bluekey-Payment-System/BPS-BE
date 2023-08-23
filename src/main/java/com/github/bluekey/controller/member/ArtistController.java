@@ -140,6 +140,7 @@ public class ArtistController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Admin이 아티스트의 정보 변경 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistAccountDto.class))),
     })
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PatchMapping("/{memberId}/profile")
     public ResponseEntity<ArtistAccountDto> AdminArtistProfileUpdate(
             @RequestBody AdminArtistProfileRequestDto dto,
