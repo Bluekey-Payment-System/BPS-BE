@@ -2,14 +2,22 @@ package com.github.bluekey.dto.response.artist;
 
 import com.github.bluekey.dto.album.AlbumTopDto;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ArtistTopReponseDto {
     @Schema(description = "앨범의 당월 매출 TOP n 트랙 LIST")
-    private final List<AlbumTopDto> contents;
+    private List<AlbumTopDto> contents;
+
+    @Builder
+    public ArtistTopReponseDto(final List<AlbumTopDto> contents) {
+        this.contents = contents;
+    }
 }

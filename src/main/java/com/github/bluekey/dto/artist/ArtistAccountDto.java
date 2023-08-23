@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Schema(description = "아티스트 계정 정보")
 public class ArtistAccountDto {
+	@Schema(description = "아티스트 ID", example = "1")
+	private Long memberId;
 	@Schema(description = "아티스트 이름(국문)", example = "혁기")
 	private String name;
 	@Schema(description = "아티스트 이름(영문)", example = "Hyukki")
@@ -25,8 +27,9 @@ public class ArtistAccountDto {
 	private String profileImage;
 
 	@Builder
-	private ArtistAccountDto(final String name, final String enName,
+	private ArtistAccountDto(final Long memberId, final String name, final String enName,
 			final String loginId, final String email, final Integer commissionRate, final String profileImage) {
+		this.memberId = memberId;
 		this.name = name;
 		this.enName = enName;
 		this.loginId = loginId;
