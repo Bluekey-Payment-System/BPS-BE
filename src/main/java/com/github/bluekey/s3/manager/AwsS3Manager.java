@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
+import com.github.bluekey.s3.config.S3Configuration;
 import java.io.IOException;
 
 import com.amazonaws.services.s3.model.S3Object;
@@ -19,8 +20,13 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @Slf4j
 public class AwsS3Manager implements ResourceManager {
-	@Value("${cloud.aws.s3.bucket}")
-	private String bucket;
+	@Value("${cloud.aws.s3.excel-bucket}")
+	private String excelBucket;
+	@Value("${cloud.aws.s3.image-bucket}")
+	private String imageBucket;
+	@Value("${cloud.aws.region.static}")
+	private String region;
+
 	private final AmazonS3Client amazonS3Client;
 
 	/**
@@ -32,6 +38,7 @@ public class AwsS3Manager implements ResourceManager {
 	public String upload(MultipartFile multipartFile, String key, S3PrefixType type) {
 		log.info("uploading file to s3: {}", type.getValue() + key);
 		ObjectMetadata objectMetadata = createObjectMetadata(multipartFile);
+		String bucket = getBucketName(type);
 		try {
 			PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, type.getValue() + key, multipartFile.getInputStream(), objectMetadata);
 			amazonS3Client.putObject(putObjectRequest);
@@ -41,7 +48,7 @@ public class AwsS3Manager implements ResourceManager {
 			log.error("s3 upload error: {}", e.getMessage());
 			e.getStackTrace();
 		}
-		return "https://" + bucket + "/" + type.getValue() + key;
+		return "https://" + bucket +".s3." + region + ".amazonaws.com/" + type.getValue() + key;
 	}
 
 	public String getS3Key(String s3Url, S3PrefixType type) {
@@ -53,8 +60,9 @@ public class AwsS3Manager implements ResourceManager {
 	 *
 	 * @param key 삭제할 파일의 이름 혹은 경로 포함 이름
 	 */
-	public void delete(String key) {
+	public void delete(String key, S3PrefixType type) {
 		log.info("deleting file from s3: {}", key);
+		String bucket = getBucketName(type);
 		try {
 			amazonS3Client.deleteObject(bucket, key);
 		} catch (AmazonS3Exception e) {
@@ -63,7 +71,8 @@ public class AwsS3Manager implements ResourceManager {
 		}
 	}
 
-	public S3Object getS3Value(String fileName) {
+	public S3Object getS3Value(String fileName, S3PrefixType type) {
+		String bucket = getBucketName(type);
 		return amazonS3Client.getObject(bucket, fileName);
 	}
 
@@ -79,5 +88,13 @@ public class AwsS3Manager implements ResourceManager {
 		objectMetadata.setContentType(multipartFile.getContentType());
 		objectMetadata.setContentLength(multipartFile.getSize());
 		return objectMetadata;
+	}
+
+	private String getBucketName(S3PrefixType type) {
+		if (type == S3PrefixType.EXCEL) {
+			return excelBucket;
+		} else if (type == S3PrefixType.IMAGE)
+			return imageBucket;
+		return null;
 	}
 }

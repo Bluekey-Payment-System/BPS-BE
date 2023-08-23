@@ -72,6 +72,9 @@ public class TransactionService {
         }
 
         String s3Url = awsS3Manager.upload(file, uploadAt + "/" + file.getOriginalFilename(), S3PrefixType.EXCEL);
+        S3Object excelFileS3Object = awsS3Manager.getS3Value(S3PrefixType.EXCEL.getValue() + file.getOriginalFilename(), S3PrefixType.EXCEL);
+
+        Workbook workbook = getWorkBook(excelFileS3Object);
 
 
         OriginalTransaction originalTransaction = OriginalTransaction.builder()
@@ -89,7 +92,7 @@ public class TransactionService {
         List<OriginalTransaction> originalTransactions = originalTransactionRepository.findAllByIsCompletedFalseAndIsRemovedFalse();
         for (OriginalTransaction originalTransaction: originalTransactions) {
             String s3Key = awsS3Manager.getS3Key(originalTransaction.getFileUrl(), S3PrefixType.EXCEL);
-            S3Object s3Object = awsS3Manager.getS3Value(S3PrefixType.EXCEL.getValue() + s3Key);
+            S3Object s3Object = awsS3Manager.getS3Value(S3PrefixType.EXCEL.getValue() + s3Key, S3PrefixType.EXCEL);
             Workbook workbook = getWorkBook(s3Object);
             workbooks.put(workbook, originalTransaction);
         }
