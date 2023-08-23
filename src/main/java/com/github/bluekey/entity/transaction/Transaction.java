@@ -30,14 +30,18 @@ public class Transaction extends BaseTimeEntity {
 	private OriginalTransaction originalTransaction;
 
 	private String duration;
-	private BigDecimal amount;
+	private Double amount;
 
 	@Builder
-	public Transaction(TrackMember trackMember, OriginalTransaction originalTransaction, String duration, BigDecimal amount) {
+	public Transaction(TrackMember trackMember, OriginalTransaction originalTransaction, String duration, Double amount) {
 		this.trackMember = trackMember;
 		this.originalTransaction = originalTransaction;
 		this.duration = duration;
 		this.amount = amount;
+	}
+
+	public void updateAmount(Double amount) {
+		this.amount = this.amount + amount;
 	}
 
 	public String getYear() {
