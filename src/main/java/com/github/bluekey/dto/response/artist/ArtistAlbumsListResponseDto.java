@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Schema(description = "아티스트의 앨범 리스트 응답")
-public class ArtistAlbumsListReponseDto {
+public class ArtistAlbumsListResponseDto {
     @Schema(description = "총 아이템 개수", example = "300")
     private Integer totalItems;
 
@@ -20,7 +20,7 @@ public class ArtistAlbumsListReponseDto {
     private List<AlbumInfoDto> contents;
 
     @Builder
-    public ArtistAlbumsListReponseDto(final Integer totalItems, final List<AlbumInfoDto> contents) {
+    public ArtistAlbumsListResponseDto(final Integer totalItems, final List<AlbumInfoDto> contents) {
         this.totalItems = totalItems;
         this.contents = contents;
     }
