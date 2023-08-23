@@ -45,7 +45,7 @@ public class SecurityConfig {
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and()
 				.authorizeRequests()
-				.antMatchers("/api/v1/auth/admin/**", "/api/v1/auth/member/login", "/h2-console/**").permitAll()
+				.antMatchers("/api/v1/auth/admin/**", "/api/v1/auth/member/login", "/h2-console/**", "/api/v1/transactions", "/api/v1/transactions/migrate").permitAll()
 				.antMatchers("/api/v1/**").hasRole("SUPER_ADMIN")
 				.anyRequest().authenticated()
 				.and()
