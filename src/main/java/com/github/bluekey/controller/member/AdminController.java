@@ -79,7 +79,7 @@ public class AdminController {
 
 	@Operation(summary = "관리자 프로필 수정", description = "관리자 프로필 수정")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "정상 반환", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AdminProfileUpdateRequestDto.class))),
+			@ApiResponse(responseCode = "200", description = "정상 반환"),
 	})
 	@PatchMapping("/profile")
 	public void updateAdminProfile(@RequestBody AdminProfileUpdateRequestDto dto) {

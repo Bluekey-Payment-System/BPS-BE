@@ -20,7 +20,7 @@ public class AlbumSummaryResponseDto {
 	private String enName;
 	@Schema(description = "정산금")
 	private TotalAndGrowthDto settlement;
-	@Schema(description = "베스트트랙")
+	@Schema(description = "베스트트랙", implementation = BestTrackDto.class)
 	private BestTrackDto bestTrack;
 
 	@Builder

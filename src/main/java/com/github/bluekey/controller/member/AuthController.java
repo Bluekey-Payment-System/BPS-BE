@@ -5,6 +5,7 @@ import com.github.bluekey.dto.request.auth.PasswordRequestDto;
 import com.github.bluekey.dto.request.auth.LoginRequestDto;
 import com.github.bluekey.dto.request.auth.SignupRequestDto;
 import com.github.bluekey.dto.response.auth.LoginTokenResponseDto;
+import com.github.bluekey.dto.response.auth.MemberIdResponseDto;
 import com.github.bluekey.dto.response.auth.SignupResponseDto;
 import com.github.bluekey.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.auth.AuthService;
@@ -17,6 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Auth", description = "Auth 관련 API")
@@ -64,7 +67,7 @@ public class AuthController {
 
 	@Operation(summary = "member 비밀번호 변경", description = "member 비밀번호 변경")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "비밀번호 변경 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))),
+			@ApiResponse(responseCode = "200", description = "비밀번호 변경 성공"),
 	})
 	@PatchMapping("/member/password")
 	public void passwordChange(@Valid @RequestBody PasswordRequestDto dto) {
@@ -73,8 +76,9 @@ public class AuthController {
 
 	@Operation(summary = "member 비밀번호 확인", description = "member 비밀번호 확인")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "비밀번호 확인 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = void.class))),
+			@ApiResponse(responseCode = "204", description = "비밀번호 확인 성공"),
 	})
+	@ResponseStatus(value = HttpStatus.NO_CONTENT)
 	@PostMapping("/member/password/confirm")
 	public void passwordCheck(@RequestBody PasswordRequestDto dto) {
 		authService.matchPassword(dto, PrincipalConvertUtil.getMemberId());
@@ -82,11 +86,11 @@ public class AuthController {
 
 	@Operation(summary = "member 퇴출", description = "Super Admin이 member에 대해 탈퇴를 진행")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "204", description = "퇴출 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class))),
+			@ApiResponse(responseCode = "200", description = "퇴출 성공"),
 	})
 	@DeleteMapping("/members/{memberId}/withdrawal")
-	public ResponseEntity<String> withdrawal(@PathVariable("memberId") Long memberId) {
+	public MemberIdResponseDto withdrawal(@PathVariable("memberId") Long memberId) {
 		authService.deleteMember(memberId);
-		return ResponseEntity.noContent().build();
+		return MemberIdResponseDto.builder().memberId(memberId).build();
 	}
 }
