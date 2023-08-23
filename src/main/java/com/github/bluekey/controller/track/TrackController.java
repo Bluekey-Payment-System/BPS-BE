@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -29,7 +30,8 @@ public class TrackController {
             )
     )
     @PostMapping("/albums/{albumId}")
-    public TrackResponseDto tracksInsert(Long albumId, @RequestBody TrackRequestDto dto) {
+    public ResponseEntity<TrackResponseDto> tracksInsert(
+            @PathVariable("albumId") Long albumId, @RequestBody TrackRequestDto dto) {
         return null;
     }
 
@@ -42,7 +44,7 @@ public class TrackController {
                     )),
     })
     @DeleteMapping("/{trackId}")
-    public TrackIdReponseDto trackDelete(@PathVariable("trackId") Long trackId) {
-        return null;
+    public ResponseEntity<TrackIdReponseDto> trackDelete(@PathVariable("trackId") Long trackId) {
+        return ResponseEntity.ok().build();
     }
 }
