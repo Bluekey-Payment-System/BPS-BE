@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Schema(description = "앨범의 트랙 리스트 응답")
-public class AlbumTrackListReponseDto {
+public class AlbumTrackListResponseDto {
     @Schema(description = "앨범ID", example = "1")
     private Long albumId;
 
@@ -33,7 +33,7 @@ public class AlbumTrackListReponseDto {
     private List<TrackInfoListDto> tracks;
 
     @Builder
-    public AlbumTrackListReponseDto(final Long albumId, final String albumImage, final String name, final String enName, final List<ArtistInfoDto> artists, final List<TrackInfoListDto> tracks) {
+    public AlbumTrackListResponseDto(final Long albumId, final String albumImage, final String name, final String enName, final List<ArtistInfoDto> artists, final List<TrackInfoListDto> tracks) {
         this.albumId = albumId;
         this.albumImage = albumImage;
         this.name = name;
