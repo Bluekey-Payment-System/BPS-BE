@@ -89,4 +89,11 @@ public class TransactionController {
     ) {
         return ResponseEntity.ok(transactionService.saveOriginalTransaction(file, requestDto));
     }
+
+    @Deprecated
+    @PostMapping("/migrate")
+    public ResponseEntity migrate() {
+        transactionService.ExcelFilesToDBMigration();
+        return ResponseEntity.ok().build();
+    }
 }
