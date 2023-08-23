@@ -43,8 +43,8 @@ public class AuthController {
 			@ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginTokenResponseDto.class))),
 	})
 	@PostMapping("/admin/login")
-	public LoginTokenResponseDto adminLogin(@RequestBody LoginRequestDto dto) {
-		return authService.login(dto);
+	public ResponseEntity<LoginTokenResponseDto> adminLogin(@RequestBody LoginRequestDto dto) {
+		return ResponseEntity.ok(authService.login(dto));
 	}
 
 	@Operation(summary = "admin 회원가입", description = "admin 회원가입")
@@ -52,8 +52,8 @@ public class AuthController {
 			@ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SignupResponseDto.class))),
 	})
 	@PostMapping("/admin/signup")
-	public SignupResponseDto adminSignup(@Valid @RequestBody SignupRequestDto dto) {
-		return authService.createAdmin(dto);
+	public ResponseEntity<SignupResponseDto> adminSignup(@Valid @RequestBody SignupRequestDto dto) {
+		return ResponseEntity.ok(authService.createAdmin(dto));
 	}
 
 	@Operation(summary = "member 로그인", description = "member 로그인")
@@ -61,8 +61,8 @@ public class AuthController {
 			@ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginTokenResponseDto.class))),
 	})
 	@PostMapping("/member/login")
-	public LoginTokenResponseDto memberLogin(@RequestBody LoginRequestDto dto) {
-		return authService.login(dto);
+	public ResponseEntity<LoginTokenResponseDto> memberLogin(@RequestBody LoginRequestDto dto) {
+		return ResponseEntity.ok(authService.login(dto));
 	}
 
 	@Operation(summary = "member 비밀번호 변경", description = "member 비밀번호 변경")
@@ -70,18 +70,19 @@ public class AuthController {
 			@ApiResponse(responseCode = "200", description = "비밀번호 변경 성공"),
 	})
 	@PatchMapping("/member/password")
-	public void passwordChange(@Valid @RequestBody PasswordRequestDto dto) {
+	public ResponseEntity<?> passwordChange(@Valid @RequestBody PasswordRequestDto dto) {
 		authService.changePassword(dto, PrincipalConvertUtil.getMemberId());
+		return ResponseEntity.noContent().build();
 	}
 
 	@Operation(summary = "member 비밀번호 확인", description = "member 비밀번호 확인")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "204", description = "비밀번호 확인 성공"),
 	})
-	@ResponseStatus(value = HttpStatus.NO_CONTENT)
 	@PostMapping("/member/password/confirm")
-	public void passwordCheck(@RequestBody PasswordRequestDto dto) {
+	public ResponseEntity<?> passwordCheck(@RequestBody PasswordRequestDto dto) {
 		authService.matchPassword(dto, PrincipalConvertUtil.getMemberId());
+		return ResponseEntity.noContent().build();
 	}
 
 	@Operation(summary = "member 퇴출", description = "Super Admin이 member에 대해 탈퇴를 진행")
@@ -89,8 +90,8 @@ public class AuthController {
 			@ApiResponse(responseCode = "200", description = "퇴출 성공"),
 	})
 	@DeleteMapping("/members/{memberId}/withdrawal")
-	public MemberIdResponseDto withdrawal(@PathVariable("memberId") Long memberId) {
-		authService.deleteMember(memberId);
-		return MemberIdResponseDto.builder().memberId(memberId).build();
+	public ResponseEntity<MemberIdResponseDto> withdrawal(@PathVariable("memberId") Long memberId) {
+		Long removedMemberId = authService.deleteMember(memberId);
+		return ResponseEntity.ok(MemberIdResponseDto.builder().memberId(removedMemberId).build());
 	}
 }

@@ -86,11 +86,13 @@ public class AuthService {
 		memberRepository.save(member);
 	}
 
-	public void deleteMember(Long memberId) {
+	@Transactional
+	public Long deleteMember(Long memberId) {
 		Member member = memberRepository.findById(memberId)
 				.orElseThrow(MemberNotFoundException::new);
 		member.memberRemoved();
 		memberRepository.save(member);
+		return memberId;
 	}
 
 	public String getEncodePassword(String password) {
