@@ -1,18 +1,28 @@
 package com.github.bluekey.dto.album;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Schema(description = "앨범의 트랙별 월별 매출 정보")
 public class AlbumTrackMonthlyTrendInfoDto {
     @Schema(description = "월", example = "7")
-    private final int month;
+    private Integer month;
 
     @Schema(description = "합", example = "2142344")
-    private final long settlement;
+    private Long settlement;
 
     @Schema(description = "매출액", example = "732143")
-    private final long revenue;
+    private Long revenue;
+
+    @Builder
+    public AlbumTrackMonthlyTrendInfoDto(final Integer month, final Long settlement, final Long revenue) {
+        this.month = month;
+        this.settlement = settlement;
+        this.revenue = revenue;
+    }
 }

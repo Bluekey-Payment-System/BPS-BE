@@ -4,19 +4,28 @@ import com.github.bluekey.dto.album.AlbumMonthlyInfoDto;
 import com.github.bluekey.dto.album.AlbumMonthlySettlementInfoDto;
 import com.github.bluekey.dto.album.AlbumMonthlyTrackInfoDto;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Schema(description = "앨범의 리스트 응답")
 public class AlbumListReponseDto {
     @Schema(description = "당월 정산 정보")
-    private final AlbumMonthlySettlementInfoDto settlement;
+    private AlbumMonthlySettlementInfoDto settlement;
 
     @Schema(description = "당월 앨범 정보")
-    private final AlbumMonthlyInfoDto bestAlbum;
+    private AlbumMonthlyInfoDto bestAlbum;
 
     @Schema(description = "당월 트랙 정보")
-    private final AlbumMonthlyTrackInfoDto bestTrack;
+    private AlbumMonthlyTrackInfoDto bestTrack;
 
+    @Builder
+    public AlbumListReponseDto(final AlbumMonthlySettlementInfoDto settlement, final AlbumMonthlyInfoDto bestAlbum, final AlbumMonthlyTrackInfoDto bestTrack) {
+        this.settlement = settlement;
+        this.bestAlbum = bestAlbum;
+        this.bestTrack = bestTrack;
+    }
 }

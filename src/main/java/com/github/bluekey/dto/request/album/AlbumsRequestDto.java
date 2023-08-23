@@ -1,24 +1,25 @@
 package com.github.bluekey.dto.request.album;
 
+import com.github.bluekey.dto.album.NewAlbumInfoDto;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Schema(description = "새로 등록할 앨범 정보 (파일 / json 객체)")
 public class AlbumsRequestDto {
-    @Schema(description = "한글명", example = "사랑")
-    private final String name;
+    @Schema(description = "앨범 커버 이미지 파일")
+    private MultipartFile file;
+    @Schema(description = "앨범 정보")
+    private NewAlbumInfoDto data;
 
-    @Schema(description = "영어명", example = "love")
-    private final String enName;
-
-    @Schema(description = "고유ID", example = "1")
-    private final Long memberId;
-
-    @Schema(description = "영문과 동일 여부", example = "false")
-    private final boolean isSameKoNameWithEnName;
-
-    @Schema(description = "이미지", example = "https://s3...")
-    private final String albumImage;
+    @Builder
+    public AlbumsRequestDto(final MultipartFile file, final NewAlbumInfoDto data) {
+        this.file = file;
+        this.data = data;
+    }
 }

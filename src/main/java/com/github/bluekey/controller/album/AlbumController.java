@@ -1,10 +1,14 @@
 package com.github.bluekey.controller.album;
 
 import com.github.bluekey.dto.request.album.AlbumsRequestDto;
+import com.github.bluekey.dto.response.album.AlbumIdResponseDto;
 import com.github.bluekey.dto.response.album.AlbumListReponseDto;
 import com.github.bluekey.dto.response.album.AlbumMonthlyAccontsReponseDto;
+import com.github.bluekey.dto.response.album.AlbumResponseDto;
+import com.github.bluekey.dto.response.album.AlbumSummaryResponseDto;
 import com.github.bluekey.dto.response.album.AlbumTopReponseDto;
 import com.github.bluekey.dto.response.album.AlbumTrackAccontsReponseDto;
+import com.github.bluekey.dto.response.album.AlbumTrackListReponseDto;
 import com.github.bluekey.dto.response.artist.ArtistAlbumsListReponseDto;
 import com.github.bluekey.dto.response.transaction.OriginalTransactionResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,87 +30,125 @@ public class AlbumController {
 
     @Operation(summary = "신규 앨범 등록" , description = "신규 앨범 등록")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",
-                    description = "리스트 형태로 정상적으로 업로드가 완료된 엑셀 파일 내역중 해당 pk에 해당하는 인스턴스를 삭제하고 반환합니다.",
+            @ApiResponse(responseCode = "201",
+                    description = "새로운 앨범을 등록합니다.",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = OriginalTransactionResponseDto.class)
+                            schema = @Schema(implementation = AlbumResponseDto.class)
                     )
             )
     })
     @PostMapping
-    public void albumsInsert(@RequestBody AlbumsRequestDto dto) {
-
+    public AlbumResponseDto albumsInsert(@RequestBody AlbumsRequestDto dto) {
+        return null;
     }
 
     @Operation(summary = "앨범정보 변경" , description = "앨범정보 변경")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "앨범정보 변경 성공"),
-            @ApiResponse(responseCode = "400", description = "유효하지 않는 앨범ID 입니다.")
+            @ApiResponse(responseCode = "200", description = "앨범정보 변경 성공",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = AlbumResponseDto.class)
+                    )),
     })
     @PatchMapping("/{albumId}")
-    public void albumsUpdate(@RequestBody AlbumsRequestDto dto) {
-
+    public AlbumResponseDto albumsUpdate(@RequestBody AlbumsRequestDto dto) {
+        return null;
     }
 
     @Operation(summary = "앨범 삭제", description = "앨범 삭제")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "앨범정보 삭제 완료"),
-            @ApiResponse(responseCode = "400", description = "유효하지 않는 앨범ID 입니다.")
+            @ApiResponse(responseCode = "200", description = "앨범정보 삭제 완료",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = AlbumResponseDto.class)
+                    ))
     })
     @DeleteMapping("/{albumId}")
-    public void albumsDelete(@PathVariable("albumId") Long albumId) {
-
+    public AlbumIdResponseDto albumsDelete(@PathVariable("albumId") Long albumId) {
+        return null;
     }
 
     @Operation(summary = "앨범의 당월 매출 TOP n 트랙 LIST 정보", description = "앨범의 당월 매출 TOP n 트랙 LIST 정보")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "정보 조회 완료"),
-            @ApiResponse(responseCode = "400", description = "error", content = {})
+            @ApiResponse(responseCode = "200", description = "정보 조회 완료",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = AlbumTopReponseDto.class)
+                    )),
     })
     @GetMapping("/{albumId}/dashboard/topTrack")
     public AlbumTopReponseDto getAlbumTopList(
             @RequestParam("monthly") LocalDate monthly,
-            @RequestParam("rank") Integer rank
+            @RequestParam("rank") Integer rank,
+            @PathVariable("albumId") Long albumId
     ) {
         return null;
     }
 
     @Operation(summary = "앨범의 트랙별 정산 LIST", description = "앨범의 트랙별 정산 LIST")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "정보 조회 완료"),
-            @ApiResponse(responseCode = "400", description = "error")
+            @ApiResponse(responseCode = "200", description = "정보 조회 완료",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = AlbumTrackAccontsReponseDto.class)
+                    ))
     })
     @GetMapping("/{albumId}/dashboard/track")
     public AlbumTrackAccontsReponseDto getAlbumTrackAccontsList(
             @RequestParam("startDate") LocalDate startDate,
-            @RequestParam("endDate") LocalDate endDate
+            @RequestParam("endDate") LocalDate endDate,
+            @PathVariable("albumId") Long albumId
     ) {
         return null;
     }
 
     // TODO 앨범상세의 기본정보 가져오기 (보류)
 
+    @Operation(summary = "앨범 대시보드에 들어갈 기본 정보", description = "앨범 대시보드에 들어갈 기본 정보")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "정보 조회 완료",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = AlbumSummaryResponseDto.class)
+                    ))
+    })
+    @GetMapping("/{albumId}/dashboard/summary")
+    public AlbumSummaryResponseDto getAlbumSummary(
+            @PathVariable("albumId") Long albumId,
+            @RequestParam("monthly") LocalDate monthly
+    ) {
+        return null;
+    }
+
+
     @Operation(summary = "앨범의 월별 정산액 LIST", description = "앨범의 월별 정산액 LIST")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "정보 조회 완료"),
-            @ApiResponse(responseCode = "400", description = "error")
+            @ApiResponse(responseCode = "200", description = "정보 조회 완료",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = AlbumMonthlyAccontsReponseDto.class)
+                    ))
     })
     @GetMapping("/{albumId}/dashboard")
     public AlbumMonthlyAccontsReponseDto getAlbumMonthlyAccontsList(
             @RequestParam("startDate") LocalDate startDate,
-            @RequestParam("endDate") LocalDate endDate
+            @RequestParam("endDate") LocalDate endDate,
+            @PathVariable("albumId") Long albumId
     ) {
         return null;
     }
 
     @Operation(summary = "앨범의 트랙 리스트 조회", description = "앨범의 트랙 리스트 조회")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "앨범의 트랙 리스트 조회 완료"),
-            @ApiResponse(responseCode = "400", description = "error")
+            @ApiResponse(responseCode = "200", description = "앨범의 트랙 리스트 조회 완료",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = AlbumTrackListReponseDto.class)
+                    )),
     })
     @GetMapping("/{albumId}")
-    public AlbumListReponseDto getAlbumListDto(
+    public AlbumTrackListReponseDto getAlbumListDto(
             @PathVariable("albumId") Long albumId
     ) {
         return null;
@@ -117,11 +159,14 @@ public class AlbumController {
     // 최신 등록순.
     @Operation(summary = "앨범 리스트 조회", description = "앨범 리스트 조회")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "앨범 리스트 조회 완료"),
-            @ApiResponse(responseCode = "400", description = "error")
+            @ApiResponse(responseCode = "200", description = "앨범 리스트 조회 완료",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ArtistAlbumsListReponseDto.class)
+                    )),
     })
     @GetMapping
-    public ArtistAlbumsListReponseDto getArtistAlbumListDto(
+    public ArtistAlbumsListReponseDto getAlbumListDto(
             @RequestParam("page") Integer page,
             @RequestParam("size") Integer size,
             @RequestParam("keyword") String keyword
