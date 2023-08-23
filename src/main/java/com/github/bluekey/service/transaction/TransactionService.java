@@ -73,8 +73,8 @@ public class TransactionService {
             throw new ExcelUploadException(errors);
         }
 
-        String s3Url = awsS3Manager.upload(file, uploadAt + "/" + file.getOriginalFilename(), S3PrefixType.EXCEL);
-        excelUploadUtil.uploadExcel(file, excelUploadUtil.getExcelKey(file.getOriginalFilename(), uploadAt));
+//        String s3Url = awsS3Manager.upload(file, uploadAt + "/" + file.getOriginalFilename(), S3PrefixType.EXCEL);
+        String s3Url = excelUploadUtil.uploadExcel(file, excelUploadUtil.getExcelKey(file.getOriginalFilename(), uploadAt));
 
 
         OriginalTransaction originalTransaction = OriginalTransaction.builder()
