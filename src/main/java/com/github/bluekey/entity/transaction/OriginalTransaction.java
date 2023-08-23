@@ -36,12 +36,17 @@ public class OriginalTransaction extends BaseTimeEntity {
 	@Column(nullable = false)
 	private String uploadAt;
 
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private ExcelDistributorType distributorType;
+
 	@Builder
-	public OriginalTransaction(String fileName, String fileUrl, String uploadAt) {
+	public OriginalTransaction(String fileName, String fileUrl, String uploadAt, ExcelDistributorType distributorType) {
 		this.fileName = fileName;
 		this.isCompleted = false;
 		this.fileUrl = fileUrl;
 		this.uploadAt = uploadAt;
+		this.distributorType = distributorType;
 	}
 
 	public void updateBatchScheduleCompleted() {

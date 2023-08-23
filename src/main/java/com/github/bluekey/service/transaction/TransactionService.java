@@ -72,10 +72,12 @@ public class TransactionService {
 
         String s3Url = awsS3Manager.upload(file, uploadAt + "/" + file.getOriginalFilename(), S3PrefixType.EXCEL);
 
+
         OriginalTransaction originalTransaction = OriginalTransaction.builder()
                 .uploadAt(requestDto.getUploadAt())
                 .fileName(file.getOriginalFilename())
                 .fileUrl(s3Url)
+                .distributorType(excelFileProcessManager.getDistributorType())
                 .build();
         originalTransactionRepository.save(originalTransaction);
         return OriginalTransactionResponseDto.fromWithWarning(originalTransaction, excelFileProcessManager.getWarnings());
