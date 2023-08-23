@@ -24,8 +24,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -84,18 +85,16 @@ public class TransactionService {
     }
 
     public void ExcelFilesToDBMigration() {
-        List<Workbook> workbooks = new ArrayList<>();
+        Map<Workbook, OriginalTransaction> workbooks = new HashMap<>();
         List<OriginalTransaction> originalTransactions = originalTransactionRepository.findAllByIsCompletedFalseAndIsRemovedFalse();
         for (OriginalTransaction originalTransaction: originalTransactions) {
             String s3Key = awsS3Manager.getS3Key(originalTransaction.getFileUrl(), S3PrefixType.EXCEL);
             S3Object s3Object = awsS3Manager.getS3Value(S3PrefixType.EXCEL.getValue() + s3Key);
             Workbook workbook = getWorkBook(s3Object);
-            workbooks.add(workbook);
+            workbooks.put(workbook, originalTransaction);
         }
-        log.info("workbooks = {}", workbooks);
         excelFileDBMigrationProcessManager.updateWorkbooks(workbooks);
         excelFileDBMigrationProcessManager.process();
-
     }
 
     private Workbook getWorkBook(S3Object s3Object) {
