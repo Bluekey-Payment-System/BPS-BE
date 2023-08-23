@@ -3,7 +3,7 @@ package com.github.bluekey.processor.type;
 import lombok.Getter;
 
 @Getter
-public enum AtoExcelColumnType {
+public enum AtoExcelColumnType implements ColumnType{
     CP("CP", 0),
     SERVICE_AT("서비스월", 1),
     ALBUM_NAME("앨범명", 2),
