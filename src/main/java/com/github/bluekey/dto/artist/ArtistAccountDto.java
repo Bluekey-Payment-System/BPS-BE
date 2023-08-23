@@ -40,6 +40,7 @@ public class ArtistAccountDto {
 
 	public static ArtistAccountDto from(Member member) {
 		return ArtistAccountDto.builder()
+				.memberId(member.getId())
 				.name(member.getName())
 				.enName(member.getEnName())
 				.loginId(member.getLoginId())
