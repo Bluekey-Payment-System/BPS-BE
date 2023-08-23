@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,13 +22,13 @@ public class OriginalTransactionResponseDto {
     @Schema(description = "name", example = "1202306_마피아 유통사 정산 내역.xlsx")
     private String name;
 
-    @Schema(description = "uploadAt", example = "2023-08", format="yyyy-MM")
-    private String uploadAt;
+    @Schema(description = "uploadAt", example = "2023-08-23 17:24:54.642853", format="yyyy-MM-dd ~~")
+    private LocalDateTime uploadAt;
 
     private List<ExcelRowException> warnings = new ArrayList<>();
 
     @Builder
-    private OriginalTransactionResponseDto(final Long id, final String name, final String uploadAt, final List<ExcelRowException> warnings) {
+    private OriginalTransactionResponseDto(final Long id, final String name, final LocalDateTime uploadAt, final List<ExcelRowException> warnings) {
         this.id = id;
         this.name = name;
         this.uploadAt = uploadAt;
@@ -38,7 +39,7 @@ public class OriginalTransactionResponseDto {
         return OriginalTransactionResponseDto.builder()
                 .id(originalTransaction.getId())
                 .name(originalTransaction.getFileName())
-                .uploadAt(originalTransaction.getUploadAt())
+                .uploadAt(originalTransaction.getCreatedAt())
                 .build();
     }
 
@@ -46,7 +47,7 @@ public class OriginalTransactionResponseDto {
         return OriginalTransactionResponseDto.builder()
                 .id(originalTransaction.getId())
                 .name(originalTransaction.getFileName())
-                .uploadAt(originalTransaction.getUploadAt())
+                .uploadAt(originalTransaction.getCreatedAt())
                 .warnings(warnings)
                 .build();
     }

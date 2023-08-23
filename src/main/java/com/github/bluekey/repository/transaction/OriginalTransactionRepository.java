@@ -8,6 +8,7 @@ import java.util.List;
 public interface OriginalTransactionRepository extends JpaRepository<OriginalTransaction, Long> {
 
     List<OriginalTransaction> findAllByUploadAt(String uploadAt);
+    List<OriginalTransaction> findAllByIsCompletedFalseAndIsRemovedFalse();
 
     default OriginalTransaction findByIdOrElseThrow(Long id) {
         return this.findById(id).orElseThrow(() ->

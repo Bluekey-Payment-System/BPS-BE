@@ -16,7 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Getter
-public class ExcelFileProcessManager {
+public class ExcelFileProcessManager implements ProcessManager{
     private static final String FILE_SEPARATOR = "\\.";
     private final MultipartFile file;
     private final ExcelFileProvider excelFileProvider;
@@ -45,6 +45,7 @@ public class ExcelFileProcessManager {
         this.excelFileProvider = setProvider();
     }
 
+    @Override
     public void process() {
         excelFileProvider.process(excelFileProvider.getActiveSheet());
     }

@@ -1,7 +1,7 @@
 package com.github.bluekey.controller.member;
 
-import com.github.bluekey.dto.response.AdminAndArtistAccountResponseDto;
-import com.github.bluekey.dto.response.ArtistAccountsResponseDto;
+import com.github.bluekey.dto.response.admin.AdminAndArtistAccountResponseDto;
+import com.github.bluekey.dto.response.artist.ArtistAccountsResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,15 +25,17 @@ public class MemberController {
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "사이트 이용자 계정 정보 LIST 반환",
 			content = @Content(mediaType = "application/json", schema = @Schema(
-					oneOf = {ArtistAccountsResponseDto.class, AdminAndArtistAccountResponseDto.class}))),
+					oneOf = {AdminAndArtistAccountResponseDto.class}))),
 	})
 	@GetMapping
-	public ResponseEntity<?> getMemberList(
+	public ResponseEntity<AdminAndArtistAccountResponseDto> getMembers(
 			@RequestParam("page") Integer page,
 			@RequestParam("size") Integer size
 	) {
 		// TODO: MemberRole.ADMIN -> ArtistAccountResponseDto
 		// TODO: MemberRole.SUPER_ADMIN -> AdminAndAristAccountResponseDto
+
+		// Ans: AdminAndAristAccountResponseDto 반환하고 ADMIN인 경우에는 ADMIN 데이터를 빈 리스트로 주면 될 것 같아요
 		return null;
 	}
 }

@@ -1,7 +1,7 @@
 package com.github.bluekey.controller.transaction;
 
 import com.github.bluekey.dto.request.transaction.OriginalTransactionRequestDto;
-import com.github.bluekey.dto.response.ListResponse;
+import com.github.bluekey.dto.response.common.ListResponse;
 import com.github.bluekey.dto.response.transaction.OriginalTransactionPaginationResponseDto;
 import com.github.bluekey.dto.response.transaction.OriginalTransactionResponseDto;
 import com.github.bluekey.exception.UploadErrorResponse;
@@ -88,5 +88,12 @@ public class TransactionController {
             @RequestParam("file") MultipartFile file
     ) {
         return ResponseEntity.ok(transactionService.saveOriginalTransaction(file, requestDto));
+    }
+
+    @Deprecated
+    @PostMapping("/migrate")
+    public ResponseEntity migrate() {
+        transactionService.ExcelFilesToDBMigration();
+        return ResponseEntity.ok().build();
     }
 }

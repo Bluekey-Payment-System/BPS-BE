@@ -2,10 +2,11 @@ package com.github.bluekey.service.transaction;
 
 import com.amazonaws.services.s3.model.S3Object;
 import com.github.bluekey.dto.request.transaction.OriginalTransactionRequestDto;
-import com.github.bluekey.dto.response.ListResponse;
+import com.github.bluekey.dto.response.common.ListResponse;
 import com.github.bluekey.dto.response.transaction.OriginalTransactionResponseDto;
 import com.github.bluekey.entity.transaction.OriginalTransaction;
 import com.github.bluekey.exception.transaction.ExcelUploadException;
+import com.github.bluekey.processor.ExcelFileDBMigrationProcessManager;
 import com.github.bluekey.processor.ExcelFileProcessManager;
 import com.github.bluekey.processor.ExcelRowException;
 import com.github.bluekey.repository.album.AlbumRepository;
@@ -16,15 +17,18 @@ import com.github.bluekey.repository.transaction.OriginalTransactionRepository;
 import com.github.bluekey.s3.manager.AwsS3Manager;
 import com.github.bluekey.s3.manager.S3PrefixType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TransactionService {
@@ -35,6 +39,7 @@ public class TransactionService {
     private final TrackRepository trackRepository;
     private final TrackMemberRepository trackMemberRepository;
     private final AwsS3Manager awsS3Manager;
+    private final ExcelFileDBMigrationProcessManager excelFileDBMigrationProcessManager;
 
     public ListResponse<OriginalTransactionResponseDto> getOriginalTransactions(String uploadAt) {
         List<OriginalTransaction> originalTransactions = originalTransactionRepository.findAllByUploadAt(uploadAt);
@@ -79,11 +84,25 @@ public class TransactionService {
         return OriginalTransactionResponseDto.fromWithWarning(originalTransaction, excelFileProcessManager.getWarnings());
     }
 
+    public void ExcelFilesToDBMigration() {
+        List<Workbook> workbooks = new ArrayList<>();
+        List<OriginalTransaction> originalTransactions = originalTransactionRepository.findAllByIsCompletedFalseAndIsRemovedFalse();
+        for (OriginalTransaction originalTransaction: originalTransactions) {
+            String s3Key = awsS3Manager.getS3Key(originalTransaction.getFileUrl(), S3PrefixType.EXCEL);
+            S3Object s3Object = awsS3Manager.getS3Value(S3PrefixType.EXCEL.getValue() + s3Key, S3PrefixType.EXCEL);
+            Workbook workbook = getWorkBook(s3Object);
+            workbooks.add(workbook);
+        }
+        log.info("workbooks = {}", workbooks);
+        excelFileDBMigrationProcessManager.updateWorkbooks(workbooks);
+        excelFileDBMigrationProcessManager.process();
+
+    }
+
     private Workbook getWorkBook(S3Object s3Object) {
         try (InputStream inputStream = s3Object.getObjectContent()) {
             return WorkbookFactory.create(inputStream);
         } catch (Exception e) {
-            // 처리 중 발생한 예외 처리
             throw new RuntimeException("Error while reading Excel file from S3", e);
         }
     }

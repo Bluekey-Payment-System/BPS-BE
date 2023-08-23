@@ -1,21 +1,15 @@
 package com.github.bluekey.service.member;
 
-import com.github.bluekey.dto.ArtistAccountDto;
-import com.github.bluekey.dto.request.ArtistProfileRequestDto;
-import com.github.bluekey.dto.request.ArtistRequestDto;
-import com.github.bluekey.dto.request.SignupRequestDto;
-import com.github.bluekey.dto.response.SignupResponseDto;
+import com.github.bluekey.dto.request.artist.ArtistProfileRequestDto;
+import com.github.bluekey.dto.response.artist.ArtistProfileResponseDto;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberType;
 import com.github.bluekey.exception.BusinessException;
 import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.exception.member.MemberNotFoundException;
 import com.github.bluekey.repository.member.MemberRepository;
-import com.github.bluekey.s3.manager.AwsS3Manager;
-import com.github.bluekey.s3.manager.S3PrefixType;
 import com.github.bluekey.util.ImageUploadUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,19 +21,18 @@ public class MemberService {
 	private final MemberRepository memberRepository;
 	private final ImageUploadUtil imageUploadUtil;
 
-	private static final String S3_PROFILE_IMAGE_PREFIX = "profile/";
-
 	@Transactional
-	public void updateArtistProfile(ArtistProfileRequestDto dto, Long memberId) {
+	public ArtistProfileResponseDto updateArtistProfile(ArtistProfileRequestDto dto, MultipartFile file, Long memberId) {
 		Member member = memberRepository.findById(memberId)
 				.orElseThrow(MemberNotFoundException::new);
 		updateArtistEmail(dto.getEmail(), member);
-		updateProfileImages(dto.getProfileImage(), member);
+		updateProfileImages(file, member);
 		memberRepository.save(member);
+		return ArtistProfileResponseDto.from(member);
 	}
 
 	private void updateProfileImages(MultipartFile file, Member member) {
-		if (file == null) {
+		if (file == null || file.getOriginalFilename() == null || file.getOriginalFilename().isEmpty()) {
 			return;
 		}
 		if (member.getProfileImage() != null) {

@@ -1,14 +1,14 @@
 package com.github.bluekey.service.auth;
 
-import com.github.bluekey.dto.ArtistAccountDto;
-import com.github.bluekey.dto.JwtInfoDto;
-import com.github.bluekey.dto.LoginMemberDto;
-import com.github.bluekey.dto.request.ArtistRequestDto;
-import com.github.bluekey.dto.request.LoginRequestDto;
-import com.github.bluekey.dto.request.PasswordRequestDto;
-import com.github.bluekey.dto.request.SignupRequestDto;
-import com.github.bluekey.dto.response.LoginTokenResponseDto;
-import com.github.bluekey.dto.response.SignupResponseDto;
+import com.github.bluekey.dto.artist.ArtistAccountDto;
+import com.github.bluekey.dto.auth.JwtInfoDto;
+import com.github.bluekey.dto.auth.LoginMemberDto;
+import com.github.bluekey.dto.request.artist.ArtistRequestDto;
+import com.github.bluekey.dto.request.auth.LoginRequestDto;
+import com.github.bluekey.dto.request.auth.PasswordRequestDto;
+import com.github.bluekey.dto.request.auth.SignupRequestDto;
+import com.github.bluekey.dto.response.auth.LoginTokenResponseDto;
+import com.github.bluekey.dto.response.auth.SignupResponseDto;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberType;
 import com.github.bluekey.exception.AuthenticationException;
@@ -87,11 +87,13 @@ public class AuthService {
 		memberRepository.save(member);
 	}
 
-	public void deleteMember(Long memberId) {
+	@Transactional
+	public Long deleteMember(Long memberId) {
 		Member member = memberRepository.findById(memberId)
 				.orElseThrow(MemberNotFoundException::new);
 		member.memberRemoved();
 		memberRepository.save(member);
+		return memberId;
 	}
 
 	public String getEncodePassword(String password) {

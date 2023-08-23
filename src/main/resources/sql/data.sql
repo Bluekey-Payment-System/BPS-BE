@@ -1,50 +1,50 @@
 -- Artist Member
 INSERT INTO member (email, login_id, password, name, en_name, commission_rate, type, role, profile_image, created_at, modified_at, is_removed)
-VALUES ('artist1@example.com', 'artist1', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxmyJE0mKuAnt.KXBq6zYro33S', '혁기', 'hucki', 10, 'USER', 'ARTIST', 'artist.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES ('artist1@example.com', 'artist1', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxmyJE0mKuAnt.KXBq6zYro33S', '혁기', 'hucki', 10, 'USER', 'ARTIST', 'image/profile/artist.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 INSERT INTO member (email, login_id, password, name, en_name, commission_rate, type, role, profile_image, created_at, modified_at, is_removed)
-VALUES ('artist2@example.com', 'artist2', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxmyJE0mKuAnt.KXBq6zYro33S', '53X', '53X', 20, 'USER', 'ARTIST', 'artist.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES ('artist2@example.com', 'artist2', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxmyJE0mKuAnt.KXBq6zYro33S', '53X', '53X', 20, 'USER', 'ARTIST', 'image/profile/artist.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 INSERT INTO member (email, login_id, password, name, en_name, commission_rate, type, role, profile_image, created_at, modified_at, is_removed)
-VALUES ('artist3@example.com', 'artist3', 'password123!', '덤프', 'dump', 20, 'USER', 'ARTIST', 'artist.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES ('artist3@example.com', 'artist3', 'password123!', '덤프', 'dump', 20, 'USER', 'ARTIST', 'image/profile/artist.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 
--- Admin Member
+-- admin Member
 INSERT INTO member (email, login_id, password, name, role, type, profile_image, created_at, modified_at, is_removed)
-VALUES ('admin@example.com', 'super_admin', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxmyJE0mKuAnt.KXBq6zYro33S', 'bluekey', 'SUPER_ADMIN', 'ADMIN', 'admin.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES ('admin@example.com', 'super_admin', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxmyJE0mKuAnt.KXBq6zYro33S', 'bluekey', 'SUPER_ADMIN', 'ADMIN', 'image/profile/admin.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 INSERT INTO member (email, login_id, password, name, role, type, profile_image, created_at, modified_at, is_removed)
-VALUES ('admin1@example.com', 'admin1234', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxmyJE0mKuAnt.KXBq6zYro33S', 'bluekey1', 'ADMIN', 'ADMIN', 'admin.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES ('admin1@example.com', 'admin1234', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxmyJE0mKuAnt.KXBq6zYro33S', 'bluekey1', 'ADMIN', 'ADMIN', 'image/profile/admin.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 
 -- Album
 -- 1
 INSERT INTO album (artist_id, artist_name, name, en_name, profile_image, created_at, modified_at, is_removed)
-VALUES (1, '혁기', '사랑에도 공식이 있나요 OST PART 2', '사랑에도 공식이 있나요 OST PART 2', 'album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (1, '혁기', '사랑에도 공식이 있나요 OST PART 2', '사랑에도 공식이 있나요 OST PART 2', 'image/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 2
 INSERT INTO album (artist_id, artist_name, name, en_name, profile_image, created_at, modified_at, is_removed)
-VALUES (1, '혁기', 'COME TO ME', 'COME TO ME', 'album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (1, '혁기', 'COME TO ME', 'COME TO ME', 'image/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 3
 INSERT INTO album (artist_id, artist_name, name, en_name, profile_image, created_at, modified_at, is_removed)
-VALUES (1, '혁기', 'Underwater', 'Underwater', 'album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (1, '혁기', 'Underwater', 'Underwater', 'image/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 4
 INSERT INTO album (artist_id, artist_name, name, en_name, profile_image, created_at, modified_at, is_removed)
-VALUES (1, '혁기', '프라하', 'Praha', 'album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (1, '혁기', '프라하', 'Praha', 'image/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 5
 INSERT INTO album (artist_id, artist_name, name, en_name, profile_image, created_at, modified_at, is_removed)
-VALUES (1, '혁기', 'Is there an equation in Love? Pt. 2 (Original Motion Picture Soundtrack)', 'Is there an equation in Love? Pt. 2 (Original Motion Picture Soundtrack)', 'album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (1, '혁기', 'Is there an equation in Love? Pt. 2 (Original Motion Picture Soundtrack)', 'Is there an equation in Love? Pt. 2 (Original Motion Picture Soundtrack)', 'image/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 6
 INSERT INTO album (artist_id, artist_name, name, en_name, profile_image, created_at, modified_at, is_removed)
-VALUES (2, '53X', 'C&C', 'C&C', 'album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (2, '53X', 'C&C', 'C&C', 'image/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 7
 INSERT INTO album (artist_id, artist_name, name, en_name, profile_image, created_at, modified_at, is_removed)
-VALUES (2, '53X', 'About Money', 'About Money', 'album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (2, '53X', 'About Money', 'About Money', 'image/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- Track
 -- 1
