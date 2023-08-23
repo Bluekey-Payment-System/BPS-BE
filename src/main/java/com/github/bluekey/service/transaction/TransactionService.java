@@ -16,6 +16,7 @@ import com.github.bluekey.repository.track.TrackRepository;
 import com.github.bluekey.repository.transaction.OriginalTransactionRepository;
 import com.github.bluekey.s3.manager.AwsS3Manager;
 import com.github.bluekey.s3.manager.S3PrefixType;
+import com.github.bluekey.util.ExcelUploadUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -40,6 +41,7 @@ public class TransactionService {
     private final TrackRepository trackRepository;
     private final TrackMemberRepository trackMemberRepository;
     private final AwsS3Manager awsS3Manager;
+    private final ExcelUploadUtil excelUploadUtil;
     private final ExcelFileDBMigrationProcessManager excelFileDBMigrationProcessManager;
 
     public ListResponse<OriginalTransactionResponseDto> getOriginalTransactions(String uploadAt) {
@@ -72,9 +74,7 @@ public class TransactionService {
         }
 
         String s3Url = awsS3Manager.upload(file, uploadAt + "/" + file.getOriginalFilename(), S3PrefixType.EXCEL);
-        S3Object excelFileS3Object = awsS3Manager.getS3Value(S3PrefixType.EXCEL.getValue() + file.getOriginalFilename(), S3PrefixType.EXCEL);
-
-        Workbook workbook = getWorkBook(excelFileS3Object);
+        excelUploadUtil.uploadExcel(file, excelUploadUtil.getExcelKey(file.getOriginalFilename(), uploadAt));
 
 
         OriginalTransaction originalTransaction = OriginalTransaction.builder()
@@ -92,7 +92,7 @@ public class TransactionService {
         List<OriginalTransaction> originalTransactions = originalTransactionRepository.findAllByIsCompletedFalseAndIsRemovedFalse();
         for (OriginalTransaction originalTransaction: originalTransactions) {
             String s3Key = awsS3Manager.getS3Key(originalTransaction.getFileUrl(), S3PrefixType.EXCEL);
-            S3Object s3Object = awsS3Manager.getS3Value(S3PrefixType.EXCEL.getValue() + s3Key, S3PrefixType.EXCEL);
+            S3Object s3Object = excelUploadUtil.getExcel(S3PrefixType.EXCEL.getValue() + s3Key);
             Workbook workbook = getWorkBook(s3Object);
             workbooks.put(workbook, originalTransaction);
         }
