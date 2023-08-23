@@ -10,7 +10,6 @@ import java.util.List;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Schema(description = "어드민 아티스트 프로필 리스트")
 public class AdminArtistProfileListDto {

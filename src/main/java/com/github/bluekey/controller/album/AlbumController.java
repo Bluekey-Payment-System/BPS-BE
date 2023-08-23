@@ -1,12 +1,12 @@
 package com.github.bluekey.controller.album;
 
-import com.github.bluekey.dto.request.album.AlbumsRequestDto;
+import com.github.bluekey.dto.request.album.AlbumsRegisterRequestDto;
 import com.github.bluekey.dto.response.album.AlbumIdResponseDto;
 import com.github.bluekey.dto.response.album.AlbumMonthlyAccontsReponseDto;
 import com.github.bluekey.dto.response.album.AlbumResponseDto;
 import com.github.bluekey.dto.response.album.AlbumSummaryResponseDto;
 import com.github.bluekey.dto.response.album.AlbumTopResponseDto;
-import com.github.bluekey.dto.response.album.AlbumTrackAccontsReponseDto;
+import com.github.bluekey.dto.response.album.AlbumTrackAccountsResponseDto;
 import com.github.bluekey.dto.response.album.AlbumTrackListResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistAlbumsListResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,7 +36,7 @@ public class AlbumController {
             )
     })
     @PostMapping
-    public ResponseEntity<AlbumResponseDto> albumsInsert(@RequestBody AlbumsRequestDto dto) {
+    public ResponseEntity<AlbumResponseDto> albumsInsert(@RequestBody AlbumsRegisterRequestDto dto) {
         return null;
     }
 
@@ -50,7 +50,7 @@ public class AlbumController {
     })
     @PatchMapping("/{albumId}")
     public ResponseEntity<AlbumResponseDto> albumsUpdate(
-            @RequestBody AlbumsRequestDto dto,
+            @RequestBody AlbumsRegisterRequestDto dto,
             @PathVariable("albumId") Long albumId
     ) {
         return null;
@@ -91,11 +91,11 @@ public class AlbumController {
             @ApiResponse(responseCode = "200", description = "정보 조회 완료",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = AlbumTrackAccontsReponseDto.class)
+                            schema = @Schema(implementation = AlbumTrackAccountsResponseDto.class)
                     ))
     })
     @GetMapping("/{albumId}/dashboard/track")
-    public ResponseEntity<AlbumTrackAccontsReponseDto> getAlbumTrackAccounts(
+    public ResponseEntity<AlbumTrackAccountsResponseDto> getAlbumTrackAccounts(
             @RequestParam("startDate") String startDate,
             @RequestParam("endDate") String endDate,
             @PathVariable("albumId") Long albumId

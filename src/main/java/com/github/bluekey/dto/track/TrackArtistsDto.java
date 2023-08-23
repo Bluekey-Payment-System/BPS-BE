@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Schema(description = "트랙 참여 아티스트 리스트")
 public class TrackArtistsDto {

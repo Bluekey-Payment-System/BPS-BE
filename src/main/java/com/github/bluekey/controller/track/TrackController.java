@@ -1,7 +1,7 @@
 package com.github.bluekey.controller.track;
 
 import com.github.bluekey.dto.request.track.TrackRequestDto;
-import com.github.bluekey.dto.response.track.TrackIdReponseDto;
+import com.github.bluekey.dto.response.track.TrackIdResponseDto;
 import com.github.bluekey.dto.response.track.TrackResponseDto;
 import com.github.bluekey.dto.response.transaction.OriginalTransactionResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,11 +40,11 @@ public class TrackController {
             @ApiResponse(responseCode = "200", description = "수록곡 삭제 완료",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = TrackIdReponseDto.class)
+                            schema = @Schema(implementation = TrackIdResponseDto.class)
                     )),
     })
     @DeleteMapping("/{trackId}")
-    public ResponseEntity<TrackIdReponseDto> trackDelete(@PathVariable("trackId") Long trackId) {
+    public ResponseEntity<TrackIdResponseDto> trackDelete(@PathVariable("trackId") Long trackId) {
         return ResponseEntity.ok().build();
     }
 }

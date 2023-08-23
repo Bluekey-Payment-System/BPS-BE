@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ArtistMonthlyArtistsDto {
     @Schema(description = "멤버 ID", example = "1")

@@ -2,11 +2,14 @@ package com.github.bluekey.dto.response.admin;
 
 import com.github.bluekey.entity.member.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Schema(description = "어드민 프로필 응답")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AdminProfileResponseDto {
 
     @Schema(description = "어드민 PK", example = "1")

@@ -25,7 +25,7 @@ public class MemberController {
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "사이트 이용자 계정 정보 LIST 반환",
 			content = @Content(mediaType = "application/json", schema = @Schema(
-					oneOf = {ArtistAccountsResponseDto.class, AdminAndArtistAccountResponseDto.class}))),
+					oneOf = {AdminAndArtistAccountResponseDto.class}))),
 	})
 	@GetMapping
 	public ResponseEntity<AdminAndArtistAccountResponseDto> getMembers(

@@ -9,7 +9,6 @@ import java.util.List;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Schema(description = "트랙 정보 리스트")
 public class TrackInfoListDto {

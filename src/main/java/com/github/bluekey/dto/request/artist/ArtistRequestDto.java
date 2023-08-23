@@ -3,6 +3,7 @@ package com.github.bluekey.dto.request.artist;
 import com.github.bluekey.entity.member.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,7 +28,8 @@ public class ArtistRequestDto {
     @Schema(description = "기본요율", example = "40")
     private Integer commissionRate;
 
-    public ArtistRequestDto(String email, String loginId, String name, String enName, String password, String profileImage, Integer commissionRate) {
+    @Builder
+    public ArtistRequestDto(String email, String loginId, String name, String enName, String password, Integer commissionRate) {
         this.email = email;
         this.loginId = loginId;
         this.name = name;

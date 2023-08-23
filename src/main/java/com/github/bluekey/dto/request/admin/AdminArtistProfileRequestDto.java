@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Schema(description = "어드민이 아티스트 프로필 수정")
 public class AdminArtistProfileRequestDto {

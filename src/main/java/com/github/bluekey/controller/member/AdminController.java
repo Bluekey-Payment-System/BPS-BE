@@ -2,7 +2,7 @@ package com.github.bluekey.controller.member;
 
 import com.github.bluekey.dto.request.admin.AdminProfileUpdateRequestDto;
 import com.github.bluekey.dto.response.admin.AdminProfileResponseDto;
-import com.github.bluekey.dto.response.artist.ArtistsRevenueProportionReponseDto;
+import com.github.bluekey.dto.response.artist.ArtistsRevenueProportionResponseDto;
 import com.github.bluekey.dto.response.common.DashboardTotalInfoResponseDto;
 import com.github.bluekey.dto.response.common.MonthlyRevenueTrendResponseDto;
 import com.github.bluekey.dto.response.track.TracksSettlementAmountResponseDto;
@@ -30,10 +30,10 @@ public class AdminController {
 
 	@Operation(summary = "월별 Top n 아티스트 매출액과 비율", description = "월별 Top n 아티스트 매출액과 비율")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "정상 반환", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistsRevenueProportionReponseDto.class))),
+			@ApiResponse(responseCode = "200", description = "정상 반환", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistsRevenueProportionResponseDto.class))),
 	})
 	@GetMapping("/dashboard/artist")
-	public ResponseEntity<ArtistsRevenueProportionReponseDto> getTopRevenueArtistsOfMonth(
+	public ResponseEntity<ArtistsRevenueProportionResponseDto> getTopRevenueArtistsOfMonth(
 			@Parameter(description = "정보를 얻고 싶은 월 (format: yyyy-MM)") @RequestParam("monthly") String monthly,
 			@Parameter(description = "Top 5위까지 알고 싶은 경우 rank=5") @RequestParam("rank") Integer rank
 	) {

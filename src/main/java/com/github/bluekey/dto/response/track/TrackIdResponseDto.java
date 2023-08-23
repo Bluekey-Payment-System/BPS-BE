@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TrackIdReponseDto {
+public class TrackIdResponseDto {
 	@Schema(description = "트랙ID", example = "1")
 	private Long trackId;
 
 	@Builder
-	public TrackIdReponseDto(final Long trackId) {
+	public TrackIdResponseDto(final Long trackId) {
 		this.trackId = trackId;
 	}
 }

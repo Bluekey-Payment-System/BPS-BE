@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class ArtistMonthlyAccountsReponseDto {
+public class ArtistMonthlyAccountsResponseDto {
     @Schema(description = "아티스트 List 정보")
     private final List<ArtistMonthlyAccountsDto> contents;
 }

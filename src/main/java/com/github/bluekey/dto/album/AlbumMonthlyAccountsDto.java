@@ -1,7 +1,6 @@
 package com.github.bluekey.dto.album;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import javax.persistence.criteria.CriteriaBuilder.In;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Schema(description = "앨범의 월별 정산")
-public class AlbumMonthlyAccontsDto {
+public class AlbumMonthlyAccountsDto {
     @Schema(description = "월", example = "7")
     private Integer month;
 
@@ -21,7 +20,7 @@ public class AlbumMonthlyAccontsDto {
     private Long revenue;
 
     @Builder
-    public AlbumMonthlyAccontsDto(final Integer month, final Long settlement, final Long revenue) {
+    public AlbumMonthlyAccountsDto(final Integer month, final Long settlement, final Long revenue) {
         this.month = month;
         this.settlement = settlement;
         this.revenue = revenue;

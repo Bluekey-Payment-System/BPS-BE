@@ -21,4 +21,12 @@ public class DashboardTotalInfoResponseDto {
 	private TotalAndGrowthDto settlementAmount;
 	@Schema(description = "월의 Best 아티스트 매출액과 비율")
 	private BestArtistDto bestArtist;
+
+	@Builder
+	public DashboardTotalInfoResponseDto(TotalAndGrowthDto revenue, TotalAndGrowthDto netIncome, TotalAndGrowthDto settlementAmount, BestArtistDto bestArtist) {
+		this.revenue = revenue;
+		this.netIncome = netIncome;
+		this.settlementAmount = settlementAmount;
+		this.bestArtist = bestArtist;
+	}
 }

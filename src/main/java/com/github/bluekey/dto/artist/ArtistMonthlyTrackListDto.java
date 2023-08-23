@@ -9,7 +9,6 @@ import java.util.List;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Schema(description = "아티스트 월간 트랙 정산 리스트")
 public class ArtistMonthlyTrackListDto {

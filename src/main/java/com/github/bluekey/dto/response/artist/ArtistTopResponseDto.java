@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ArtistTopReponseDto {
+public class ArtistTopResponseDto {
     @Schema(description = "앨범의 당월 매출 TOP n 트랙 LIST")
     private List<AlbumTopDto> contents;
 
     @Builder
-    public ArtistTopReponseDto(final List<AlbumTopDto> contents) {
+    public ArtistTopResponseDto(final List<AlbumTopDto> contents) {
         this.contents = contents;
     }
 }

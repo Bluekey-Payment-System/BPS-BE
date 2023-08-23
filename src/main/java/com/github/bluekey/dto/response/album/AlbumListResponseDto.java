@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Schema(description = "앨범의 리스트 응답")
-public class AlbumListReponseDto {
+public class AlbumListResponseDto {
     @Schema(description = "당월 정산 정보")
     private AlbumMonthlySettlementInfoDto settlement;
 
@@ -23,7 +23,7 @@ public class AlbumListReponseDto {
     private AlbumMonthlyTrackInfoDto bestTrack;
 
     @Builder
-    public AlbumListReponseDto(final AlbumMonthlySettlementInfoDto settlement, final AlbumMonthlyInfoDto bestAlbum, final AlbumMonthlyTrackInfoDto bestTrack) {
+    public AlbumListResponseDto(final AlbumMonthlySettlementInfoDto settlement, final AlbumMonthlyInfoDto bestAlbum, final AlbumMonthlyTrackInfoDto bestTrack) {
         this.settlement = settlement;
         this.bestAlbum = bestAlbum;
         this.bestTrack = bestTrack;
