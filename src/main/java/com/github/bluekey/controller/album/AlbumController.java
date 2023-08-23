@@ -2,15 +2,13 @@ package com.github.bluekey.controller.album;
 
 import com.github.bluekey.dto.request.album.AlbumsRequestDto;
 import com.github.bluekey.dto.response.album.AlbumIdResponseDto;
-import com.github.bluekey.dto.response.album.AlbumListReponseDto;
 import com.github.bluekey.dto.response.album.AlbumMonthlyAccontsReponseDto;
 import com.github.bluekey.dto.response.album.AlbumResponseDto;
 import com.github.bluekey.dto.response.album.AlbumSummaryResponseDto;
-import com.github.bluekey.dto.response.album.AlbumTopReponseDto;
+import com.github.bluekey.dto.response.album.AlbumTopResponseDto;
 import com.github.bluekey.dto.response.album.AlbumTrackAccontsReponseDto;
-import com.github.bluekey.dto.response.album.AlbumTrackListReponseDto;
-import com.github.bluekey.dto.response.artist.ArtistAlbumsListReponseDto;
-import com.github.bluekey.dto.response.transaction.OriginalTransactionResponseDto;
+import com.github.bluekey.dto.response.album.AlbumTrackListResponseDto;
+import com.github.bluekey.dto.response.artist.ArtistAlbumsListResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,9 +16,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
 
 @Tag(name = "Albums", description = "Album 관련 API")
 @RestController
@@ -39,7 +36,7 @@ public class AlbumController {
             )
     })
     @PostMapping
-    public AlbumResponseDto albumsInsert(@RequestBody AlbumsRequestDto dto) {
+    public ResponseEntity<AlbumResponseDto> albumsInsert(@RequestBody AlbumsRequestDto dto) {
         return null;
     }
 
@@ -52,7 +49,10 @@ public class AlbumController {
                     )),
     })
     @PatchMapping("/{albumId}")
-    public AlbumResponseDto albumsUpdate(@RequestBody AlbumsRequestDto dto) {
+    public ResponseEntity<AlbumResponseDto> albumsUpdate(
+            @RequestBody AlbumsRequestDto dto,
+            @PathVariable("albumId") Long albumId
+    ) {
         return null;
     }
 
@@ -65,7 +65,7 @@ public class AlbumController {
                     ))
     })
     @DeleteMapping("/{albumId}")
-    public AlbumIdResponseDto albumsDelete(@PathVariable("albumId") Long albumId) {
+    public ResponseEntity<AlbumIdResponseDto> albumsDelete(@PathVariable("albumId") Long albumId) {
         return null;
     }
 
@@ -74,12 +74,12 @@ public class AlbumController {
             @ApiResponse(responseCode = "200", description = "정보 조회 완료",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = AlbumTopReponseDto.class)
+                            schema = @Schema(implementation = AlbumTopResponseDto.class)
                     )),
     })
     @GetMapping("/{albumId}/dashboard/topTrack")
-    public AlbumTopReponseDto getAlbumTopList(
-            @RequestParam("monthly") LocalDate monthly,
+    public ResponseEntity<AlbumTopResponseDto> getAlbumTopList(
+            @RequestParam("monthly") String monthly,
             @RequestParam("rank") Integer rank,
             @PathVariable("albumId") Long albumId
     ) {
@@ -95,9 +95,9 @@ public class AlbumController {
                     ))
     })
     @GetMapping("/{albumId}/dashboard/track")
-    public AlbumTrackAccontsReponseDto getAlbumTrackAccontsList(
-            @RequestParam("startDate") LocalDate startDate,
-            @RequestParam("endDate") LocalDate endDate,
+    public ResponseEntity<AlbumTrackAccontsReponseDto> getAlbumTrackAccounts(
+            @RequestParam("startDate") String startDate,
+            @RequestParam("endDate") String endDate,
             @PathVariable("albumId") Long albumId
     ) {
         return null;
@@ -114,9 +114,9 @@ public class AlbumController {
                     ))
     })
     @GetMapping("/{albumId}/dashboard/summary")
-    public AlbumSummaryResponseDto getAlbumSummary(
+    public ResponseEntity<AlbumSummaryResponseDto> getAlbumSummary(
             @PathVariable("albumId") Long albumId,
-            @RequestParam("monthly") LocalDate monthly
+            @RequestParam("monthly") String monthly
     ) {
         return null;
     }
@@ -131,9 +131,9 @@ public class AlbumController {
                     ))
     })
     @GetMapping("/{albumId}/dashboard")
-    public AlbumMonthlyAccontsReponseDto getAlbumMonthlyAccontsList(
-            @RequestParam("startDate") LocalDate startDate,
-            @RequestParam("endDate") LocalDate endDate,
+    public ResponseEntity<AlbumMonthlyAccontsReponseDto> getAlbumMonthlyAccounts(
+            @RequestParam("startDate") String startDate,
+            @RequestParam("endDate") String endDate,
             @PathVariable("albumId") Long albumId
     ) {
         return null;
@@ -144,11 +144,11 @@ public class AlbumController {
             @ApiResponse(responseCode = "200", description = "앨범의 트랙 리스트 조회 완료",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = AlbumTrackListReponseDto.class)
+                            schema = @Schema(implementation = AlbumTrackListResponseDto.class)
                     )),
     })
     @GetMapping("/{albumId}")
-    public AlbumTrackListReponseDto getAlbumListDto(
+    public ResponseEntity<AlbumTrackListResponseDto> getAlbum(
             @PathVariable("albumId") Long albumId
     ) {
         return null;
@@ -162,14 +162,14 @@ public class AlbumController {
             @ApiResponse(responseCode = "200", description = "앨범 리스트 조회 완료",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = ArtistAlbumsListReponseDto.class)
+                            schema = @Schema(implementation = ArtistAlbumsListResponseDto.class)
                     )),
     })
     @GetMapping
-    public ArtistAlbumsListReponseDto getAlbumListDto(
+    public ResponseEntity<ArtistAlbumsListResponseDto> getAlbums(
             @RequestParam("page") Integer page,
             @RequestParam("size") Integer size,
-            @RequestParam("keyword") String keyword
+            @RequestParam(value = "keyword", required = false) String keyword
     ) {
         return null;
     }
