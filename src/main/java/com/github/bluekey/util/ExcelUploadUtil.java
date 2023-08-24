@@ -24,7 +24,7 @@ public class ExcelUploadUtil {
 	}
 
 	public String getExcelKey(String originalFilename, String uploadAt) {
-		return excel.getValue() + uploadAt + "/" + originalFilename ;
+		return uploadAt + "/" + originalFilename ;
 	}
 
 	public void deleteExcel(String key) {

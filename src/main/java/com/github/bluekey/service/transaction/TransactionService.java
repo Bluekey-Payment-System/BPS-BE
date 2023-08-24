@@ -73,8 +73,8 @@ public class TransactionService {
             throw new ExcelUploadException(errors);
         }
 
-        String s3Url = awsS3Manager.upload(file, uploadAt + "/" + file.getOriginalFilename(), S3PrefixType.EXCEL);
-        excelUploadUtil.uploadExcel(file, excelUploadUtil.getExcelKey(file.getOriginalFilename(), uploadAt));
+//        String s3Url = awsS3Manager.upload(file, uploadAt + "/" + file.getOriginalFilename(), S3PrefixType.EXCEL);
+        String s3Url = excelUploadUtil.uploadExcel(file, excelUploadUtil.getExcelKey(file.getOriginalFilename(), uploadAt));
 
 
         OriginalTransaction originalTransaction = OriginalTransaction.builder()
@@ -92,7 +92,7 @@ public class TransactionService {
         List<OriginalTransaction> originalTransactions = originalTransactionRepository.findAllByIsCompletedFalseAndIsRemovedFalse();
         for (OriginalTransaction originalTransaction: originalTransactions) {
             String s3Key = awsS3Manager.getS3Key(originalTransaction.getFileUrl(), S3PrefixType.EXCEL);
-            S3Object s3Object = excelUploadUtil.getExcel(S3PrefixType.EXCEL.getValue() + s3Key);
+            S3Object s3Object = excelUploadUtil.getExcel(s3Key);
             Workbook workbook = getWorkBook(s3Object);
             workbooks.put(workbook, originalTransaction);
         }

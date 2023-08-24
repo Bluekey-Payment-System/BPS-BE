@@ -1,7 +1,6 @@
 package com.github.bluekey.processor.provider;
 
 import com.github.bluekey.processor.ExcelRowException;
-
 import com.github.bluekey.processor.validator.DistributorExcelValidator;
 import com.github.bluekey.processor.validator.DBPersistenceValidator;
 import lombok.Getter;
@@ -10,29 +9,29 @@ import org.apache.poi.ss.usermodel.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import static com.github.bluekey.processor.type.AtoExcelColumnType.*;
+import static com.github.bluekey.processor.type.ThreePointOneFourExcelColumnType.*;
 import static com.github.bluekey.processor.type.ExcelRowExceptionType.*;
+import static com.github.bluekey.processor.type.ExcelRowExceptionType.NOT_EXIST;
 
 @Getter
 @RequiredArgsConstructor
-public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
-    private static final int ACTIVE_EXCEL_SHEET_INDEX = 1;
-    private static final String SHEET_NAME = "전체매출내역";
-    private static final String ALLOW_EXCEPTION_SERVICE_NAME_THRESHOLD = "유튜브";
+public class ThreePointOneFourDistributorExcelFileProvider implements ExcelFileProvider {
+    private static final int ACTIVE_EXCEL_SHEET_INDEX = 2;
+    private static final String SHEET_NAME = "상세내역";
     private static final int MIN_COLUMN_INDEX = 0;
-    private static final int MAX_COLUMN_INDEX = 10;
+    private static final int MAX_COLUMN_INDEX = 13;
     private static final int HEADER_ROW_INDEX = 3;
-    private static final int DATA_ROW_START_INDEX = 5;
+    private static final int DATA_ROW_START_INDEX = 4;
     private final List<ExcelRowException> errorRows = new ArrayList<>();
     private final List<ExcelRowException> warningRows = new ArrayList<>();
     private final DistributorExcelValidator atoDistributorCellValidator;
-
     private Workbook workbook;
     private final DBPersistenceValidator dbPersistenceValidator;
 
-    public AtoDistributorExcelFileProvider(
+    public ThreePointOneFourDistributorExcelFileProvider(
             MultipartFile file,
             DBPersistenceValidator dbPersistenceValidator
     ) {
@@ -51,7 +50,7 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
 
     @Override
     public void process(Sheet sheet) {
-        if (atoDistributorCellValidator.hasInValidColumns(sheet.getRow(HEADER_ROW_INDEX), "ATO")) {
+        if (atoDistributorCellValidator.hasInValidColumns(sheet.getRow(HEADER_ROW_INDEX), "3.14")) {
             throw new RuntimeException("Invalid columns definition");
         }
         for (int i = DATA_ROW_START_INDEX; i<= sheet.getLastRowNum(); i++) {
@@ -68,10 +67,6 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
     @Override
     public List<ExcelRowException> getWarnings() {
         return warningRows;
-    }
-
-    public void updateWorkbook(Workbook workbook) {
-        this.workbook = workbook;
     }
 
     private Workbook setWorkBook(MultipartFile file) {
@@ -123,17 +118,6 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
             ExcelRowException excelRowException = atoDistributorCellValidator.generateException(ALBUM_NAME, NULL_CELL, cell, row.getRowNum());
             errorRows.add(excelRowException);
         }
-
-        // 앨범 값이 0인 경우
-        if (isAlbumExceptionAllowCase(cell, row)) {
-            ExcelRowException excelRowException = atoDistributorCellValidator.generateException(ALBUM_NAME, ALLOW_EXCEPTION_CASE, cell, row.getRowNum());
-            warningRows.add(excelRowException);
-        }
-
-        if(!isAlbumExceptionAllowCase(cell, row) && dbPersistenceValidator.hasNotExistedAlbum(cell) && !atoDistributorCellValidator.hasCellNullValue(cell)) {
-            ExcelRowException excelRowException = atoDistributorCellValidator.generateException(ALBUM_NAME, NOT_EXIST, cell, row.getRowNum());
-            errorRows.add(excelRowException);
-        }
     }
 
     private void validateTrackNameCell(Cell cell, Row row) {
@@ -143,27 +127,9 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
             errorRows.add(excelRowException);
         }
 
-        if (dbPersistenceValidator.hasNotExistedTrack(cell, row.getCell(ALBUM_NAME.getIndex())) && isAlbumExceptionAllowCase(cell, row)) {
+        if (dbPersistenceValidator.hasNotExistedTrack(cell, row.getCell(ALBUM_NAME.getIndex()))) {
             ExcelRowException excelRowException = atoDistributorCellValidator.generateException(TRACK_NAME, NOT_EXIST, cell, row.getRowNum());
             errorRows.add(excelRowException);
         }
-    }
-
-    private boolean isAlbumExceptionAllowCase(Cell cell, Row row) {
-        if (atoDistributorCellValidator.hasCellZeroValue(ALBUM_NAME, cell)) {
-            Cell cellArtist = row.getCell(ARTIST_NAME.getIndex());
-            Cell cellTrack = row.getCell(TRACK_NAME.getIndex());
-            Cell cellServiceName = row.getCell(SERVICE_NAME.getIndex());
-
-            // 아티스트명, 트랙명이 존재하고, 서비스명이 유튜브일 경우 경고 데이터로 종속
-            if (!atoDistributorCellValidator.hasCellNullValue(cellArtist) &&
-                    !atoDistributorCellValidator.hasCellNullValue(cellTrack) &&
-                    cellServiceName.getStringCellValue().equals(ALLOW_EXCEPTION_SERVICE_NAME_THRESHOLD)
-            ) {
-                return true;
-            }
-            return false;
-        }
-        return false;
     }
 }

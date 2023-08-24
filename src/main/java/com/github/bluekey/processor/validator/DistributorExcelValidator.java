@@ -2,17 +2,17 @@ package com.github.bluekey.processor.validator;
 
 import com.github.bluekey.processor.ExcelRowException;
 import com.github.bluekey.processor.type.AtoExcelColumnType;
+import com.github.bluekey.processor.type.ColumnType;
 import com.github.bluekey.processor.type.ExcelRowExceptionType;
+import com.github.bluekey.processor.type.ThreePointOneFourExcelColumnType;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AtoDistributorExcelValidator implements ExcelValidator<AtoExcelColumnType> {
+public class DistributorExcelValidator implements ExcelValidator {
     private static final int ROW_DIFFERENCE_ADJUSTMENT = 1;
-    private static final int ACTIVE_EXCEL_SHEET_INDEX = 1;
-    private static final String ACTIVE_EXCEL_SHEET_NAME = "전체매출내역";
 
     @Override
     public boolean hasCellNullValue(Cell cell) {
@@ -26,21 +26,28 @@ public class AtoDistributorExcelValidator implements ExcelValidator<AtoExcelColu
     }
 
     @Override
-    public boolean hasInValidColumns(Row row) {
+    public boolean hasInValidColumns(Row row, String distributorType) {
         for(Cell cell: row) {
             int index = cell.getColumnIndex();
             String value = cell.getStringCellValue();
-
-            AtoExcelColumnType columnType = AtoExcelColumnType.valueOfIndex(index);
-            if (!columnType.getColumnName().equals(value)) {
-                return true;
+            if (distributorType.equals("ATO")) {
+                ColumnType columnType = AtoExcelColumnType.valueOfIndex(index);
+                if (!columnType.getColumnName().equals(value)) {
+                    return true;
+                }
+            }
+            if (distributorType.equals("3.14")) {
+                ColumnType columnType = ThreePointOneFourExcelColumnType.valueOfIndex(index);
+                if (!columnType.getColumnName().equals(value)) {
+                    return true;
+                }
             }
         }
         return false;
     }
 
     @Override
-    public ExcelRowException generateException(AtoExcelColumnType columnType, ExcelRowExceptionType type, Cell cell, int rowIndex) {
+    public ExcelRowException generateException(ColumnType columnType, ExcelRowExceptionType type, Cell cell, int rowIndex) {
         String columnValue = getCellValueAsString(cell);
         return ExcelRowException.builder()
                 .rowIndex(rowIndex + ROW_DIFFERENCE_ADJUSTMENT)
@@ -53,9 +60,9 @@ public class AtoDistributorExcelValidator implements ExcelValidator<AtoExcelColu
     }
 
     @Override
-    public boolean hasValidSheetName(Workbook workbook) {
-        Sheet sheet = workbook.getSheetAt(ACTIVE_EXCEL_SHEET_INDEX);
-        return sheet.getSheetName().equals(ACTIVE_EXCEL_SHEET_NAME);
+    public boolean hasValidSheetName(Workbook workbook, String sheetName, int sheetIndex) {
+        Sheet sheet = workbook.getSheetAt(sheetIndex);
+        return sheet.getSheetName().equals(sheetName);
     }
 
     public boolean hasCellZeroValue(AtoExcelColumnType columnType, Cell cell) {
