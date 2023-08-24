@@ -157,7 +157,8 @@ public class ArtistController {
     public ResponseEntity<AdminArtistProfileListReponseDto> getAdminArtistProfiles(
             @RequestParam("page") Integer page,
             @RequestParam("size") Integer size,
-            @RequestParam("monthly") String monthly
+            @RequestParam("monthly") String monthly,
+            @RequestParam(value = "keyword", required = false) String keyword
     ) {
         return null;
     }
