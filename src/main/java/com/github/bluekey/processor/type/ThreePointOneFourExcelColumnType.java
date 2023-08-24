@@ -3,7 +3,7 @@ package com.github.bluekey.processor.type;
 import lombok.Getter;
 
 @Getter
-public enum ThreePointOneFourExcelColumnType {
+public enum ThreePointOneFourExcelColumnType implements ColumnType{
     MEDIA("MEDIA", 0),
     SERVICE_COMPANY("서비스사", 1),
     ALBUM_NAME("앨범명", 2),
@@ -25,5 +25,9 @@ public enum ThreePointOneFourExcelColumnType {
     ThreePointOneFourExcelColumnType(String columnName, int index) {
         this.columnName = columnName;
         this.index = index;
+    }
+
+    public static ThreePointOneFourExcelColumnType valueOfIndex(int index) {
+        return values()[index];
     }
 }

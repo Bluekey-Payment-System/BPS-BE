@@ -11,9 +11,9 @@ public interface ExcelValidator {
 
     boolean hasCellNullValue(Cell cell);
 
-    boolean hasInValidColumns(Row row);
+    boolean hasInValidColumns(Row row, String distributorType);
 
-    boolean hasValidSheetName(Workbook workbook);
+    boolean hasValidSheetName(Workbook workbook, String sheetName, int sheetIndex);
 
     ExcelRowException generateException(ColumnType columnType, ExcelRowExceptionType type, Cell cell, int rowIndex);
 }

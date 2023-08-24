@@ -5,6 +5,8 @@ import com.github.bluekey.entity.track.TrackMember;
 import com.github.bluekey.entity.transaction.ExcelDistributorType;
 import com.github.bluekey.entity.transaction.OriginalTransaction;
 import com.github.bluekey.entity.transaction.Transaction;
+import com.github.bluekey.processor.type.AtoExcelColumnType;
+import com.github.bluekey.processor.type.ThreePointOneFourExcelColumnType;
 import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.repository.track.TrackMemberRepository;
 import com.github.bluekey.repository.track.TrackRepository;
@@ -17,15 +19,17 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-import static com.github.bluekey.processor.type.AtoExcelColumnType.*;
-
 @Getter
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class ExcelFileDBMigrationProcessManager implements ProcessManager {
     private static final int ATO_ACTIVE_EXCEL_SHEET_INDEX = 1;
+    private static final int THREE_POINT_ONE_FOUR_ACTIVE_EXCEL_SHEET_INDEX = 2;
+
     private static final int ATO_DATA_ROW_START_INDEX = 5;
+    private static final int THREE_POINT_ONE_FOUR_DATA_ROW_START_INDEX = 4;
+
     private final MemberRepository memberRepository;
     private final TrackMemberRepository trackMemberRepository;
     private final TrackRepository trackRepository;
@@ -42,12 +46,39 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
                 Sheet sheet = distributorWorkbook.getSheetAt(ATO_ACTIVE_EXCEL_SHEET_INDEX);
                 atoWorkbookProcess(sheet, workbook.getValue());
             }
+            if (distributorType.equals(ExcelDistributorType.THREE_POINT_ONE_FOUR)) {
+                Sheet sheet = distributorWorkbook.getSheetAt(THREE_POINT_ONE_FOUR_ACTIVE_EXCEL_SHEET_INDEX);
+                threePointOneFourWorkbookProcess(sheet, workbook.getValue());
+            }
         }
 
     }
 
     public void updateWorkbooks(Map<Workbook, OriginalTransaction> workbooks) {
         this.workbooks = workbooks;
+    }
+
+    private void threePointOneFourWorkbookProcess(Sheet sheet, OriginalTransaction originalTransaction) {
+        for (int i = THREE_POINT_ONE_FOUR_DATA_ROW_START_INDEX; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            migrateThreePointOneFourExcelDataToDB(row, originalTransaction);
+        }
+    }
+
+    private void migrateThreePointOneFourExcelDataToDB(Row row, OriginalTransaction originalTransaction) {
+        DataFormatter dataFormatter = new DataFormatter();
+
+        Cell artistCell = row.getCell(ThreePointOneFourExcelColumnType.ARTIST_NAME.getIndex());
+        Cell trackCell = row.getCell(ThreePointOneFourExcelColumnType.TRACK_NAME.getIndex());
+        Cell amountCell = row.getCell(ThreePointOneFourExcelColumnType.AMOUNT.getIndex());
+
+        String artistName = dataFormatter.formatCellValue(artistCell);
+        String trackName = dataFormatter.formatCellValue(trackCell);
+        Double amount = amountCell.getNumericCellValue();
+
+        List<String> artistExtractedNames = NameExtractor.getExtractedNames(artistName);
+
+        migrate(artistExtractedNames, trackName, amount, originalTransaction);
     }
 
     private void atoWorkbookProcess(Sheet sheet, OriginalTransaction originalTransaction) {
@@ -60,9 +91,9 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
     private void migrateAtoExcelDataToDB(Row row, OriginalTransaction originalTransaction) {
         DataFormatter dataFormatter = new DataFormatter();
 
-        Cell artistCell = row.getCell(ARTIST_NAME.getIndex());
-        Cell trackCell = row.getCell(TRACK_NAME.getIndex());
-        Cell amountCell = row.getCell(AMOUNT.getIndex());
+        Cell artistCell = row.getCell(AtoExcelColumnType.ARTIST_NAME.getIndex());
+        Cell trackCell = row.getCell(AtoExcelColumnType.TRACK_NAME.getIndex());
+        Cell amountCell = row.getCell(AtoExcelColumnType.AMOUNT.getIndex());
 
         String artistName = dataFormatter.formatCellValue(artistCell);
         String trackName = dataFormatter.formatCellValue(trackCell);
@@ -70,6 +101,10 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
 
         List<String> artistExtractedNames = NameExtractor.getExtractedNames(artistName);
 
+        migrate(artistExtractedNames, trackName, amount, originalTransaction);
+    }
+
+    private void migrate(List<String> artistExtractedNames, String trackName, Double amount, OriginalTransaction originalTransaction) {
         for (String artistExtractedName : artistExtractedNames) {
             Optional<Track> trackFindByEnName = trackRepository.findTrackByEnNameIgnoreCase(trackName);
             if (trackFindByEnName.isPresent()) {

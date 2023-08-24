@@ -2,7 +2,7 @@ package com.github.bluekey.processor.provider;
 
 import com.github.bluekey.processor.ExcelRowException;
 
-import com.github.bluekey.processor.validator.AtoDistributorExcelValidator;
+import com.github.bluekey.processor.validator.DistributorExcelValidator;
 import com.github.bluekey.processor.validator.DBPersistenceValidator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +19,7 @@ import static com.github.bluekey.processor.type.ExcelRowExceptionType.*;
 @RequiredArgsConstructor
 public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
     private static final int ACTIVE_EXCEL_SHEET_INDEX = 1;
+    private static final String SHEET_NAME = "전체매출내역";
     private static final String ALLOW_EXCEPTION_SERVICE_NAME_THRESHOLD = "유튜브";
     private static final int MIN_COLUMN_INDEX = 0;
     private static final int MAX_COLUMN_INDEX = 10;
@@ -26,7 +27,7 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
     private static final int DATA_ROW_START_INDEX = 5;
     private final List<ExcelRowException> errorRows = new ArrayList<>();
     private final List<ExcelRowException> warningRows = new ArrayList<>();
-    private final AtoDistributorExcelValidator atoDistributorCellValidator;
+    private final DistributorExcelValidator atoDistributorCellValidator;
 
     private Workbook workbook;
     private final DBPersistenceValidator dbPersistenceValidator;
@@ -36,13 +37,13 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
             DBPersistenceValidator dbPersistenceValidator
     ) {
         this.workbook = setWorkBook(file);
-        this.atoDistributorCellValidator = new AtoDistributorExcelValidator();
+        this.atoDistributorCellValidator = new DistributorExcelValidator();
         this.dbPersistenceValidator = dbPersistenceValidator;
     }
 
     @Override
     public Sheet getActiveSheet() {
-        if (atoDistributorCellValidator.hasValidSheetName(workbook)) {
+        if (atoDistributorCellValidator.hasValidSheetName(workbook, SHEET_NAME, ACTIVE_EXCEL_SHEET_INDEX)) {
             return workbook.getSheetAt(ACTIVE_EXCEL_SHEET_INDEX);
         }
         throw new RuntimeException("Invalid sheet name");
@@ -50,7 +51,7 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
 
     @Override
     public void process(Sheet sheet) {
-        if (atoDistributorCellValidator.hasInValidColumns(sheet.getRow(HEADER_ROW_INDEX))) {
+        if (atoDistributorCellValidator.hasInValidColumns(sheet.getRow(HEADER_ROW_INDEX), "ATO")) {
             throw new RuntimeException("Invalid columns definition");
         }
         for (int i = DATA_ROW_START_INDEX; i<= sheet.getLastRowNum(); i++) {
