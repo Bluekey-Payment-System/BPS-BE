@@ -70,7 +70,7 @@ public class JwtProvider {
 				return false;
 			}
 			Claims claims = getClaims(token.substring(BEARER_TOKEN_PREFIX)); // Remove Bearer prefix
-			return !claims.getExpiration().before(new Date());
+			return !claims.getExpiration().before(new Date()); // 토큰이 만료되면 getClaims -> parseClaimsJws에서 Exception(ExpiredJwtException) 발생
 		} catch (Exception e) {
 			return false;
 		}

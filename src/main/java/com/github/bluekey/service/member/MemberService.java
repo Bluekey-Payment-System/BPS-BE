@@ -45,15 +45,9 @@ public class MemberService {
 
 	private void updateArtistName(AdminArtistProfileRequestDto dto, Member member) {
 		if (dto.getName() != null) {
-			if (memberRepository.findMemberByNameAndType(dto.getName(), MemberType.USER).isPresent()) {
-				throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
-			}
 			member.updateName(dto.getName());
 		}
 		if (dto.getEnName() != null) {
-			if (memberRepository.findMemberByEnNameAndType(dto.getEnName(), MemberType.USER).isPresent()) {
-				throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
-			}
 			member.updateEnName(dto.getEnName());
 		}
 	}
@@ -63,6 +57,7 @@ public class MemberService {
 			member.updateCommissionRate(Integer.valueOf(dto.getCommissionRate()));
 		}
 	}
+
 	private void updateProfileImages(MultipartFile file, Member member) {
 		if (file == null || file.getOriginalFilename() == null || file.getOriginalFilename().isEmpty()) {
 			return;
