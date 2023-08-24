@@ -8,6 +8,15 @@ VALUES ('artist2@example.com', 'artist2', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxm
 INSERT INTO member (email, login_id, password, name, en_name, commission_rate, type, role, profile_image, created_at, modified_at, is_removed)
 VALUES ('artist3@example.com', 'artist3', 'password123!', '덤프', 'dump', 20, 'USER', 'ARTIST', 'image/profile/artist.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
+INSERT INTO member (email, login_id, password, name, en_name, commission_rate, type, role, profile_image, created_at, modified_at, is_removed)
+VALUES ('artist4@example.com', 'artist4', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxmyJE0mKuAnt.KXBq6zYro33S', '이은성', '이은성', 20, 'USER', 'ARTIST', 'image/profile/artist.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+INSERT INTO member (email, login_id, password, name, en_name, commission_rate, type, role, profile_image, created_at, modified_at, is_removed)
+VALUES ('artist5@example.com', 'artist5', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxmyJE0mKuAnt.KXBq6zYro33S', 'SKY', 'SKY', 20, 'USER', 'ARTIST', 'image/profile/artist.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+INSERT INTO member (email, login_id, password, name, en_name, commission_rate, type, role, profile_image, created_at, modified_at, is_removed)
+VALUES ('artist6@example.com', 'artist6', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxmyJE0mKuAnt.KXBq6zYro33S', '블루키', '블루키', 20, 'USER', 'ARTIST', 'image/profile/artist.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
 
 -- admin Member
 INSERT INTO member (email, login_id, password, name, role, type, profile_image, created_at, modified_at, is_removed)
@@ -45,6 +54,16 @@ VALUES (2, '53X', 'C&C', 'C&C', 'image/album.jpg', CURRENT_TIMESTAMP, CURRENT_TI
 -- 7
 INSERT INTO album (artist_id, artist_name, name, en_name, profile_image, created_at, modified_at, is_removed)
 VALUES (2, '53X', 'About Money', 'About Money', 'image/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 8
+INSERT INTO album (artist_id, artist_name, name, en_name, profile_image, created_at, modified_at, is_removed)
+VALUES (null, null, '미녀 OST', '미녀 OST', 'image/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 9
+INSERT INTO album (artist_id, artist_name, name, en_name, profile_image, created_at, modified_at, is_removed)
+VALUES (6, '블루키', '미녀 Original Score', '미녀 Original Score', 'image/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+
 
 -- Track
 -- 1
@@ -115,6 +134,77 @@ VALUES (2, 'Come to me', 'Come to me', false, CURRENT_TIMESTAMP, CURRENT_TIMESTA
 INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
 VALUES (2, 'Come to me (inst.)', 'Come to me (inst.)', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
+-- 18
+INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
+VALUES (8, '내 세상은', '내 세상은', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 19
+INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
+VALUES (8, 'Wait For You', 'Wait For You', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 20
+INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
+VALUES (8, '고백이야', '고백이야', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 21
+INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
+VALUES (8, '비밀스럽게', '비밀스럽게', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 22
+INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
+VALUES (9, 'Truth', 'Truth', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 23
+INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
+VALUES (9, 'Witch', 'Witch', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 24
+INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
+VALUES (9, 'Glasses', 'Glasses', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 25
+INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
+VALUES (9, 'Evil', 'Evil', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 26
+INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
+VALUES (9, 'Hash Tag', 'Hash Tag', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 27
+INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
+VALUES (9, 'Nervous', 'Nervous', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 28
+INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
+VALUES (9, 'Tarot', 'Tarot', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 29
+INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
+VALUES (9, 'Magic Show', 'Magic Show', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 30
+INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
+VALUES (9, 'Moring Mood', 'Moring Mood', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 31
+INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
+VALUES (9, 'Sweet Couple', 'Sweet Couple', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 32
+INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
+VALUES (9, 'FollowFollow', 'FollowFollow', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 33
+INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
+VALUES (9, 'Return', 'Return', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 34
+INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
+VALUES (9, 'Omen', 'Omen', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 35
+INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
+VALUES (9, 'Strange', 'Strange', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- TrackMember
 
@@ -189,3 +279,75 @@ VALUES (16, 1, '혁기', 40, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 -- 18
 INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
 VALUES (17, 1, '혁기', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 19
+INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
+VALUES (18, 4, '이은성', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 20
+INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
+VALUES (19, 5, 'SKY', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 21
+INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
+VALUES (20, 1, '혁기', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 22
+INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
+VALUES (21, 1, '혁기', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 23
+INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
+VALUES (22, 6, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 24
+INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
+VALUES (23, 6, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 25
+INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
+VALUES (24, 6, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 26
+INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
+VALUES (25, 6, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 27
+INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
+VALUES (26, 6, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 28
+INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
+VALUES (27, 6, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 29
+INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
+VALUES (28, 6, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 30
+INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
+VALUES (29, 6, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 31
+INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
+VALUES (30, 6, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 32
+INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
+VALUES (31, 6, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 33
+INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
+VALUES (32, 6, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 34
+INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
+VALUES (33, 6, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 35
+INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
+VALUES (34, 6, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 36
+INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
+VALUES (35, 6, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
