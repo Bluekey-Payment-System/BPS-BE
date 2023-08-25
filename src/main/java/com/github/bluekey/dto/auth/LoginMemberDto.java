@@ -16,6 +16,10 @@ import lombok.RequiredArgsConstructor;
 public class LoginMemberDto {
 	@Schema(description = "회원 Id", example = "1")
 	private Long memberId;
+	@Schema(description = "아티스트 이름", example = "블루키")
+	private String name;
+	@Schema(description = "아티스트 영문 이름", example = "bluekey")
+	private String enName;
 	@Schema(description = "회원 Email", example = "bluekey@gmail.com")
 	private String email;
 	@Schema(description = "회원 이름", example = "bluekey")
@@ -28,9 +32,12 @@ public class LoginMemberDto {
 	private String profileImage;
 
 	@Builder
-	public LoginMemberDto(final Long id, final String email, final String loginId, final MemberType type, final MemberRole role, final String profileImage) {
+	public LoginMemberDto(final Long id, final String email, final String loginId, final String name,
+			final String enName, final MemberType type, final MemberRole role, final String profileImage) {
 		this.memberId = id;
 		this.email = email;
+		this.name = name;
+		this.enName = enName;
 		this.loginId = loginId;
 		this.type = type;
 		this.role = role;
@@ -40,6 +47,8 @@ public class LoginMemberDto {
 	public static LoginMemberDto from(Member member) {
 		return LoginMemberDto.builder()
 				.id(member.getId())
+				.name(member.getName())
+				.enName(member.getEnName())
 				.loginId(member.getLoginId())
 				.email(member.getEmail().getValue())
 				.type(member.getType())
