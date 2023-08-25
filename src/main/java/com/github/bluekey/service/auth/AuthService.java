@@ -39,8 +39,6 @@ public class AuthService {
 
 	private static final String S3_PROFILE_IMAGE_PREFIX = "profile/";
 
-	public final String AUTHENTICATION_ERROR_MESSAGE = "아이디 또는 비밀번호가 일치하지 않습니다.";
-
 	public LoginTokenResponseDto login(LoginRequestDto dto) {
 		Member member = validateLogin(dto);
 		String token = jwtProvider.generateAccessToken(member.getLoginId(), member.getType(), member.getRole());
@@ -76,7 +74,7 @@ public class AuthService {
 		Member member = memberRepository.findById(memberId)
 				.orElseThrow(MemberNotFoundException::new);
 		if (!passwordEncoder.matches(dto.getPassword(), member.getPassword())) {
-			throw new BusinessException(ErrorCode.NO_MATCH_PWD_VALUE);
+			throw new BusinessException(ErrorCode.LOGIN_FAILED);
 		}
 	}
 
@@ -132,9 +130,9 @@ public class AuthService {
 
 	private Member validateLogin(LoginRequestDto dto){
 		Member member = memberRepository.findMemberByLoginId(dto.getLoginId())
-				.orElseThrow(() -> new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED, AUTHENTICATION_ERROR_MESSAGE));
+				.orElseThrow(() -> new AuthenticationException(ErrorCode.LOGIN_FAILED));
 		if (!passwordEncoder.matches(dto.getPassword(), member.getPassword())) {
-			throw new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED, AUTHENTICATION_ERROR_MESSAGE);
+			throw new AuthenticationException(ErrorCode.LOGIN_FAILED);
 		}
 		return member;
 	}
