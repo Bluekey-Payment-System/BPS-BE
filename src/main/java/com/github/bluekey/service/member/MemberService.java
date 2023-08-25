@@ -56,6 +56,20 @@ public class MemberService {
 		return AdminProfileResponseDto.from(member);
 	}
 
+	public void validateAdminEmail(String email) {
+		memberRepository.findMemberByEmailAndType(email, MemberType.ADMIN)
+				.ifPresent(member -> {throw new BusinessException(ErrorCode.INVALID_EMAIL_VALUE);
+				});
+	}
+
+	public void validateAdminNickname(String nickname) {
+		// 아티스트의 활동 예명을 닉네임으로 사용할 수 없다.
+		if (memberRepository.findMemberByNameAndType(nickname, MemberType.USER).isPresent() ||
+				memberRepository.findMemberByEnNameAndType(nickname, MemberType.USER).isPresent()) {
+			throw new BusinessException(ErrorCode.INVALID_NICKNAME_VALUE);
+		}
+	}
+
 	private void updateArtistName(AdminArtistProfileRequestDto dto, Member member) {
 		if (dto.getName() != null) {
 			member.updateName(dto.getName());
@@ -95,28 +109,16 @@ public class MemberService {
 	}
 
 	private void updateAdminEmail(String email, Member member) {
-		if (email == null) {
-			return;
+		if (email != null) {
+			validateAdminEmail(email);
+			member.updateEmail(email);
 		}
-		memberRepository.findMemberByEmailAndType(email, MemberType.ADMIN)
-				.ifPresent(m -> {
-					throw new BusinessException(ErrorCode.INVALID_EMAIL_VALUE);
-				});
-		member.updateEmail(email);
 	}
 
 	private void updateAdminNickname(String nickname, Member member) {
-		if (nickname == null) {
-			return;
+		if (nickname != null) {
+			validateAdminNickname(nickname);
+			member.updateName(nickname);
 		}
-		memberRepository.findMemberByNameAndType(nickname, MemberType.USER)
-				.ifPresent(m -> {
-					throw new BusinessException(ErrorCode.INVALID_NICKNAME_VALUE);
-				});
-		memberRepository.findMemberByEnNameAndType(nickname, MemberType.USER)
-				.ifPresent(m -> {
-					throw new BusinessException(ErrorCode.INVALID_NICKNAME_VALUE);
-				});
-		member.updateName(nickname);
 	}
 }

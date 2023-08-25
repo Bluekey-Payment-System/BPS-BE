@@ -19,6 +19,7 @@ import com.github.bluekey.jwt.JwtProvider;
 import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.s3.manager.AwsS3Manager;
 import com.github.bluekey.s3.manager.S3PrefixType;
+import com.github.bluekey.service.member.MemberService;
 import com.github.bluekey.util.ImageUploadUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class AuthService {
 
 	private final MemberRepository memberRepository;
+	private final MemberService memberService;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtProvider jwtProvider;
 	private final ImageUploadUtil imageUploadUtil;
@@ -104,28 +106,14 @@ public class AuthService {
 
 	private void validateSignUpRequest(SignupRequestDto dto) {
 		validateAdminLoginId(dto.getLoginId());
-		validateAdminEmail(dto.getEmail());
-		validateAdminNickname(dto.getNickname());
+		memberService.validateAdminEmail(dto.getEmail());
+		memberService.validateAdminNickname(dto.getNickname());
 	}
 
 	private void validateAdminLoginId(String loginId) {
 		memberRepository.findMemberByLoginId(loginId)
 				.ifPresent(member -> {throw new BusinessException(ErrorCode.INVALID_LOGIN_ID_VALUE);
 				});
-	}
-
-	private void validateAdminEmail(String email) {
-		memberRepository.findMemberByEmailAndType(email, MemberType.ADMIN)
-				.ifPresent(member -> {throw new BusinessException(ErrorCode.INVALID_EMAIL_VALUE);
-				});
-	}
-
-	private void validateAdminNickname(String nickname) {
-		// 아티스트의 활동 예명을 닉네임으로 사용할 수 없다.
-		if (memberRepository.findMemberByNameAndType(nickname, MemberType.USER).isPresent() ||
-				memberRepository.findMemberByEnNameAndType(nickname, MemberType.USER).isPresent()) {
-			throw new BusinessException(ErrorCode.INVALID_NICKNAME_VALUE);
-		}
 	}
 
 	private Member validateLogin(LoginRequestDto dto){
