@@ -2,23 +2,22 @@ package com.github.bluekey.service.auth;
 
 import com.github.bluekey.dto.artist.ArtistAccountDto;
 import com.github.bluekey.dto.auth.JwtInfoDto;
+import com.github.bluekey.dto.auth.LoginAdminDto;
 import com.github.bluekey.dto.auth.LoginMemberDto;
 import com.github.bluekey.dto.request.artist.ArtistRequestDto;
 import com.github.bluekey.dto.request.auth.LoginRequestDto;
 import com.github.bluekey.dto.request.auth.PasswordRequestDto;
 import com.github.bluekey.dto.request.auth.SignupRequestDto;
+import com.github.bluekey.dto.response.auth.AdminLoginTokenResponseDto;
 import com.github.bluekey.dto.response.auth.LoginTokenResponseDto;
 import com.github.bluekey.dto.response.auth.SignupResponseDto;
 import com.github.bluekey.entity.member.Member;
-import com.github.bluekey.entity.member.MemberType;
 import com.github.bluekey.exception.AuthenticationException;
 import com.github.bluekey.exception.BusinessException;
 import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.exception.member.MemberNotFoundException;
 import com.github.bluekey.jwt.JwtProvider;
 import com.github.bluekey.repository.member.MemberRepository;
-import com.github.bluekey.s3.manager.AwsS3Manager;
-import com.github.bluekey.s3.manager.S3PrefixType;
 import com.github.bluekey.service.member.MemberService;
 import com.github.bluekey.util.ImageUploadUtil;
 import lombok.RequiredArgsConstructor;
@@ -43,8 +42,18 @@ public class AuthService {
 
 	public LoginTokenResponseDto login(LoginRequestDto dto) {
 		Member member = validateLogin(dto);
+		if (!member.isUser())
+			throw new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED);
 		String token = jwtProvider.generateAccessToken(member.getLoginId(), member.getType(), member.getRole());
 		return generateLoginTokenResponseDto(member, token);
+	}
+
+	public AdminLoginTokenResponseDto adminLogin(LoginRequestDto dto) {
+		Member member = validateLogin(dto);
+		if (!member.isAdmin())
+			throw new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED);
+		String token = jwtProvider.generateAccessToken(member.getLoginId(), member.getType(), member.getRole());
+		return generateAdminLoginTokenResponseDto(member, token);
 	}
 
 	@Transactional
@@ -128,6 +137,13 @@ public class AuthService {
 	private LoginTokenResponseDto generateLoginTokenResponseDto(Member member, String token){
 		return LoginTokenResponseDto.builder()
 				.member(LoginMemberDto.from(member))
+				.jwtInformation(JwtInfoDto.builder().accessToken(token).build())
+				.build();
+	}
+
+	private AdminLoginTokenResponseDto generateAdminLoginTokenResponseDto(Member member, String token){
+		return AdminLoginTokenResponseDto.builder()
+				.member(LoginAdminDto.from(member))
 				.jwtInformation(JwtInfoDto.builder().accessToken(token).build())
 				.build();
 	}
