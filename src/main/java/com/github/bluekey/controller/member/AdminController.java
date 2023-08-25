@@ -6,6 +6,8 @@ import com.github.bluekey.dto.response.artist.ArtistsRevenueProportionResponseDt
 import com.github.bluekey.dto.response.common.DashboardTotalInfoResponseDto;
 import com.github.bluekey.dto.response.common.MonthlyRevenueTrendResponseDto;
 import com.github.bluekey.dto.response.track.TracksSettlementAmountResponseDto;
+import com.github.bluekey.jwt.PrincipalConvertUtil;
+import com.github.bluekey.service.member.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,6 +29,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/admin")
 public class AdminController {
+
+	private final MemberService memberService;
 
 	@Operation(summary = "월별 Top n 아티스트 매출액과 비율", description = "월별 Top n 아티스트 매출액과 비율")
 	@ApiResponses(value = {
@@ -83,7 +87,7 @@ public class AdminController {
 			@ApiResponse(responseCode = "200", description = "정상 반환"),
 	})
 	@PatchMapping("/profile")
-	public ResponseEntity<AdminProfileResponseDto> updateAdminProfile(@RequestBody AdminProfileUpdateRequestDto dto) {
-		return ResponseEntity.ok().build();
+	public AdminProfileResponseDto updateAdminProfile(@RequestBody AdminProfileUpdateRequestDto dto) {
+		return memberService.updateAdminProfile(dto, PrincipalConvertUtil.getMemberId());
 	}
 }
