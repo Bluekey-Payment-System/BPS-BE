@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -92,6 +93,7 @@ public class AdminController {
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "정상 반환"),
 	})
+	@PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
 	@PatchMapping("/profile")
 	public AdminProfileResponseDto updateAdminProfile(
 			@RequestPart("data") AdminProfileUpdateDto dto,
