@@ -2,7 +2,9 @@ package com.github.bluekey.service.member;
 
 import com.github.bluekey.dto.artist.ArtistAccountDto;
 import com.github.bluekey.dto.request.admin.AdminArtistProfileRequestDto;
+import com.github.bluekey.dto.request.admin.AdminProfileUpdateRequestDto;
 import com.github.bluekey.dto.request.artist.ArtistProfileRequestDto;
+import com.github.bluekey.dto.response.admin.AdminProfileResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistProfileResponseDto;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberType;
@@ -43,6 +45,17 @@ public class MemberService {
 		return ArtistAccountDto.from(member);
 	}
 
+	@Transactional
+	public AdminProfileResponseDto updateAdminProfile(AdminProfileUpdateRequestDto dto, Long memberId) {
+		Member member = memberRepository.findById(memberId)
+				.orElseThrow(MemberNotFoundException::new);
+		updateAdminEmail(dto.getData().getEmail(), member);
+		updateAdminNickname(dto.getData().getNickname(), member);
+		updateProfileImages(dto.getFile(), member);
+		memberRepository.save(member);
+		return AdminProfileResponseDto.from(member);
+	}
+
 	private void updateArtistName(AdminArtistProfileRequestDto dto, Member member) {
 		if (dto.getName() != null) {
 			member.updateName(dto.getName());
@@ -79,5 +92,31 @@ public class MemberService {
 					throw new BusinessException(ErrorCode.INVALID_EMAIL_VALUE);
 				});
 		member.updateEmail(email);
+	}
+
+	private void updateAdminEmail(String email, Member member) {
+		if (email == null) {
+			return;
+		}
+		memberRepository.findMemberByEmailAndType(email, MemberType.ADMIN)
+				.ifPresent(m -> {
+					throw new BusinessException(ErrorCode.INVALID_EMAIL_VALUE);
+				});
+		member.updateEmail(email);
+	}
+
+	private void updateAdminNickname(String nickname, Member member) {
+		if (nickname == null) {
+			return;
+		}
+		memberRepository.findMemberByNameAndType(nickname, MemberType.USER)
+				.ifPresent(m -> {
+					throw new BusinessException(ErrorCode.INVALID_NICKNAME_VALUE);
+				});
+		memberRepository.findMemberByEnNameAndType(nickname, MemberType.USER)
+				.ifPresent(m -> {
+					throw new BusinessException(ErrorCode.INVALID_NICKNAME_VALUE);
+				});
+		member.updateName(nickname);
 	}
 }
