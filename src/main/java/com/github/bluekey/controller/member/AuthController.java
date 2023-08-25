@@ -39,7 +39,9 @@ public class AuthController {
 
 	@Operation(summary = "admin 로그인", description = "admin 로그인")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AdminLoginTokenResponseDto.class))),
+			@ApiResponse(responseCode = "200", description = "로그인 성공",
+					content = @Content(mediaType = "application/json",
+							schema = @Schema(implementation = AdminLoginTokenResponseDto.class))),
 	})
 	@PostMapping("/admin/login")
 	public ResponseEntity<AdminLoginTokenResponseDto> adminLogin(@RequestBody LoginRequestDto dto) {
@@ -48,7 +50,9 @@ public class AuthController {
 
 	@Operation(summary = "admin 회원가입", description = "admin 회원가입")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SignupResponseDto.class))),
+			@ApiResponse(responseCode = "200", description = "회원가입 성공",
+					content = @Content(mediaType = "application/json",
+							schema = @Schema(implementation = SignupResponseDto.class))),
 	})
 	@PostMapping("/admin/signup")
 	public ResponseEntity<SignupResponseDto> adminSignup(@Valid @RequestBody SignupRequestDto dto) {
@@ -57,7 +61,9 @@ public class AuthController {
 
 	@Operation(summary = "member 로그인", description = "member 로그인")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AdminLoginTokenResponseDto.class))),
+			@ApiResponse(responseCode = "200", description = "로그인 성공",
+					content = @Content(mediaType = "application/json",
+							schema = @Schema(implementation = AdminLoginTokenResponseDto.class))),
 	})
 	@PostMapping("/member/login")
 	public ResponseEntity<LoginTokenResponseDto> memberLogin(@RequestBody LoginRequestDto dto) {

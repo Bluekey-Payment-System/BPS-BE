@@ -2,6 +2,7 @@ package com.github.bluekey.service.auth;
 
 import com.github.bluekey.dto.artist.ArtistAccountDto;
 import com.github.bluekey.dto.auth.JwtInfoDto;
+import com.github.bluekey.dto.auth.LoginAdminDto;
 import com.github.bluekey.dto.auth.LoginMemberDto;
 import com.github.bluekey.dto.request.artist.ArtistRequestDto;
 import com.github.bluekey.dto.request.auth.LoginRequestDto;
@@ -48,7 +49,11 @@ public class AuthService {
 	}
 
 	public AdminLoginTokenResponseDto adminLogin(LoginRequestDto dto) {
-		return null;
+		Member member = validateLogin(dto);
+		if (!member.isAdmin())
+			throw new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED);
+		String token = jwtProvider.generateAccessToken(member.getLoginId(), member.getType(), member.getRole());
+		return generateAdminLoginTokenResponseDto(member, token);
 	}
 
 	@Transactional
@@ -132,6 +137,13 @@ public class AuthService {
 	private LoginTokenResponseDto generateLoginTokenResponseDto(Member member, String token){
 		return LoginTokenResponseDto.builder()
 				.member(LoginMemberDto.from(member))
+				.jwtInformation(JwtInfoDto.builder().accessToken(token).build())
+				.build();
+	}
+
+	private AdminLoginTokenResponseDto generateAdminLoginTokenResponseDto(Member member, String token){
+		return AdminLoginTokenResponseDto.builder()
+				.member(LoginAdminDto.from(member))
 				.jwtInformation(JwtInfoDto.builder().accessToken(token).build())
 				.build();
 	}
