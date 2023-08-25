@@ -1,5 +1,6 @@
 package com.github.bluekey.service.member;
 
+import com.github.bluekey.dto.admin.AdminProfileUpdateDto;
 import com.github.bluekey.dto.artist.ArtistAccountDto;
 import com.github.bluekey.dto.request.admin.AdminArtistProfileRequestDto;
 import com.github.bluekey.dto.request.admin.AdminProfileUpdateRequestDto;
@@ -46,12 +47,12 @@ public class MemberService {
 	}
 
 	@Transactional
-	public AdminProfileResponseDto updateAdminProfile(AdminProfileUpdateRequestDto dto, Long memberId) {
+	public AdminProfileResponseDto updateAdminProfile(AdminProfileUpdateDto dto, MultipartFile file, Long memberId) {
 		Member member = memberRepository.findById(memberId)
 				.orElseThrow(MemberNotFoundException::new);
-		updateAdminEmail(dto.getData().getEmail(), member);
-		updateAdminNickname(dto.getData().getNickname(), member);
-		updateProfileImages(dto.getFile(), member);
+		updateAdminEmail(dto.getEmail(), member);
+		updateAdminNickname(dto.getNickname(), member);
+		updateProfileImages(file, member);
 		memberRepository.save(member);
 		return AdminProfileResponseDto.from(member);
 	}
@@ -66,7 +67,7 @@ public class MemberService {
 		// 아티스트의 활동 예명을 닉네임으로 사용할 수 없다.
 		if (memberRepository.findMemberByNameAndType(nickname, MemberType.USER).isPresent() ||
 				memberRepository.findMemberByEnNameAndType(nickname, MemberType.USER).isPresent()) {
-			throw new BusinessException(ErrorCode.INVALID_NICKNAME_VALUE);
+			throw new BusinessException(ErrorCode.DUPLICATE_ARTIST_NAME);
 		}
 	}
 

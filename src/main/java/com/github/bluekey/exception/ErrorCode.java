@@ -23,8 +23,7 @@ public enum ErrorCode {
 
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "M_001", "존재하지 않는 회원입니다."),
 
-    // 409 Conflict도 사용하는지?
-    INVALID_NICKNAME_VALUE(HttpStatus.CONFLICT, "AD_001", "이미 존재하는 닉네임입니다."),
+    DUPLICATE_ARTIST_NAME(HttpStatus.CONFLICT, "AD_001", "이미 등록된 아티스트명과 동일한 닉네임은 사용할 수 없습니다."),
     INVALID_LOGIN_ID_VALUE(HttpStatus.CONFLICT, "AD_001", "이미 존재하는 아이디입니다."),
 
     MEMBER_ALREADY_REMOVED(HttpStatus.CONFLICT, "M_002", "이미 삭제된 회원입니다."),
