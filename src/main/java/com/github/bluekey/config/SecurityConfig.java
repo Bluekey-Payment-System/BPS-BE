@@ -6,8 +6,10 @@ import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.GsonBuilderUtils;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,6 +29,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SecurityConfig {
 
+	@Value("${spring.server.host}")
+	private String host;
 	private final JwtProvider jwtProvider;
 
 	@Bean
@@ -42,7 +46,7 @@ public class SecurityConfig {
 				.cors(c -> {
 					c.configurationSource(request -> {
 						CorsConfiguration config = new CorsConfiguration();
-						config.setAllowedOrigins(List.of("http://localhost:3000")); //TODO: front 주소로 변경 필요
+						config.setAllowedOrigins(List.of("http://localhost:3000", host)); //TODO: front 주소로 변경 필요
 						config.setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE"));
 						config.setAllowedHeaders(Arrays.asList("*"));
 						return config;
