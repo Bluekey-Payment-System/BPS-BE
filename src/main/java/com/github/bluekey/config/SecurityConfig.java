@@ -2,6 +2,7 @@ package com.github.bluekey.config;
 
 import com.github.bluekey.jwt.JwtAuthenticationFilter;
 import com.github.bluekey.jwt.JwtProvider;
+import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -40,8 +42,9 @@ public class SecurityConfig {
 				.cors(c -> {
 					c.configurationSource(request -> {
 						CorsConfiguration config = new CorsConfiguration();
-						config.setAllowedOrigins(List.of("*")); //TODO: front 주소로 변경 필요
+						config.setAllowedOrigins(List.of("http://localhost:3000")); //TODO: front 주소로 변경 필요
 						config.setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE"));
+						config.setAllowedHeaders(Arrays.asList("*"));
 						return config;
 					});
 				})
