@@ -4,6 +4,7 @@ package com.github.bluekey.controller.member;
 import com.github.bluekey.dto.request.auth.PasswordRequestDto;
 import com.github.bluekey.dto.request.auth.LoginRequestDto;
 import com.github.bluekey.dto.request.auth.SignupRequestDto;
+import com.github.bluekey.dto.response.auth.AdminLoginTokenResponseDto;
 import com.github.bluekey.dto.response.auth.LoginTokenResponseDto;
 import com.github.bluekey.dto.response.auth.MemberIdResponseDto;
 import com.github.bluekey.dto.response.auth.SignupResponseDto;
@@ -18,17 +19,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Auth", description = "Auth 관련 API")
@@ -42,11 +39,11 @@ public class AuthController {
 
 	@Operation(summary = "admin 로그인", description = "admin 로그인")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginTokenResponseDto.class))),
+			@ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AdminLoginTokenResponseDto.class))),
 	})
 	@PostMapping("/admin/login")
-	public ResponseEntity<LoginTokenResponseDto> adminLogin(@RequestBody LoginRequestDto dto) {
-		return ResponseEntity.ok(authService.login(dto));
+	public ResponseEntity<AdminLoginTokenResponseDto> adminLogin(@RequestBody LoginRequestDto dto) {
+		return ResponseEntity.ok(authService.adminLogin(dto));
 	}
 
 	@Operation(summary = "admin 회원가입", description = "admin 회원가입")
@@ -60,7 +57,7 @@ public class AuthController {
 
 	@Operation(summary = "member 로그인", description = "member 로그인")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginTokenResponseDto.class))),
+			@ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AdminLoginTokenResponseDto.class))),
 	})
 	@PostMapping("/member/login")
 	public ResponseEntity<LoginTokenResponseDto> memberLogin(@RequestBody LoginRequestDto dto) {
