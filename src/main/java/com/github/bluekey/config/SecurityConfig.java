@@ -48,8 +48,8 @@ public class SecurityConfig {
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and()
 				.authorizeRequests()
-					.antMatchers("/api/v1/auth/admin/**", "/api/v1/auth/member/login", "/h2-console/**").permitAll()
-					.anyRequest().authenticated()
+				.antMatchers("/api/v1/auth/admin/**", "/api/v1/auth/member/login", "/h2-console/**").permitAll()
+				.anyRequest().authenticated()
 				.and()
 				.addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
 				.exceptionHandling()
@@ -64,6 +64,6 @@ public class SecurityConfig {
 
 	@Bean
 	public WebSecurityCustomizer ignoringCustomizer() {
-		return (web) -> web.ignoring().antMatchers("/swagger-ui/**", "/api-docs/**");
+		return (web) -> web.ignoring().antMatchers("/swagger-ui/**", "/api-docs/**", "/h2-console/**");
 	}
 }

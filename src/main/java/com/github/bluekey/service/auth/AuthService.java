@@ -19,6 +19,7 @@ import com.github.bluekey.jwt.JwtProvider;
 import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.s3.manager.AwsS3Manager;
 import com.github.bluekey.s3.manager.S3PrefixType;
+import com.github.bluekey.service.member.MemberService;
 import com.github.bluekey.util.ImageUploadUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,13 +34,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class AuthService {
 
 	private final MemberRepository memberRepository;
+	private final MemberService memberService;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtProvider jwtProvider;
 	private final ImageUploadUtil imageUploadUtil;
 
 	private static final String S3_PROFILE_IMAGE_PREFIX = "profile/";
-
-	public final String AUTHENTICATION_ERROR_MESSAGE = "아이디 또는 비밀번호가 일치하지 않습니다.";
 
 	public LoginTokenResponseDto login(LoginRequestDto dto) {
 		Member member = validateLogin(dto);
@@ -76,7 +76,7 @@ public class AuthService {
 		Member member = memberRepository.findById(memberId)
 				.orElseThrow(MemberNotFoundException::new);
 		if (!passwordEncoder.matches(dto.getPassword(), member.getPassword())) {
-			throw new BusinessException(ErrorCode.NO_MATCH_PWD_VALUE);
+			throw new BusinessException(ErrorCode.LOGIN_FAILED);
 		}
 	}
 
@@ -106,8 +106,8 @@ public class AuthService {
 
 	private void validateSignUpRequest(SignupRequestDto dto) {
 		validateAdminLoginId(dto.getLoginId());
-		validateAdminEmail(dto.getEmail());
-		validateAdminNickname(dto.getNickname());
+		memberService.validateAdminEmail(dto.getEmail());
+		memberService.validateAdminNickname(dto.getNickname());
 	}
 
 	private void validateAdminLoginId(String loginId) {
@@ -116,25 +116,11 @@ public class AuthService {
 				});
 	}
 
-	private void validateAdminEmail(String email) {
-		memberRepository.findMemberByEmailAndType(email, MemberType.ADMIN)
-				.ifPresent(member -> {throw new BusinessException(ErrorCode.INVALID_EMAIL_VALUE);
-				});
-	}
-
-	private void validateAdminNickname(String nickname) {
-		// 아티스트의 활동 예명을 닉네임으로 사용할 수 없다.
-		if (memberRepository.findMemberByNameAndType(nickname, MemberType.USER).isPresent() ||
-				memberRepository.findMemberByEnNameAndType(nickname, MemberType.USER).isPresent()) {
-			throw new BusinessException(ErrorCode.INVALID_NICKNAME_VALUE);
-		}
-	}
-
 	private Member validateLogin(LoginRequestDto dto){
 		Member member = memberRepository.findMemberByLoginId(dto.getLoginId())
-				.orElseThrow(() -> new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED, AUTHENTICATION_ERROR_MESSAGE));
+				.orElseThrow(() -> new AuthenticationException(ErrorCode.LOGIN_FAILED));
 		if (!passwordEncoder.matches(dto.getPassword(), member.getPassword())) {
-			throw new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED, AUTHENTICATION_ERROR_MESSAGE);
+			throw new AuthenticationException(ErrorCode.LOGIN_FAILED);
 		}
 		return member;
 	}

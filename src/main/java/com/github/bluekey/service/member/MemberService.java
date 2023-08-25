@@ -1,8 +1,11 @@
 package com.github.bluekey.service.member;
 
+import com.github.bluekey.dto.admin.AdminProfileUpdateDto;
 import com.github.bluekey.dto.artist.ArtistAccountDto;
 import com.github.bluekey.dto.request.admin.AdminArtistProfileRequestDto;
+import com.github.bluekey.dto.request.admin.AdminProfileUpdateRequestDto;
 import com.github.bluekey.dto.request.artist.ArtistProfileRequestDto;
+import com.github.bluekey.dto.response.admin.AdminProfileResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistProfileResponseDto;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberType;
@@ -43,6 +46,31 @@ public class MemberService {
 		return ArtistAccountDto.from(member);
 	}
 
+	@Transactional
+	public AdminProfileResponseDto updateAdminProfile(AdminProfileUpdateDto dto, MultipartFile file, Long memberId) {
+		Member member = memberRepository.findById(memberId)
+				.orElseThrow(MemberNotFoundException::new);
+		updateAdminEmail(dto.getEmail(), member);
+		updateAdminNickname(dto.getNickname(), member);
+		updateProfileImages(file, member);
+		memberRepository.save(member);
+		return AdminProfileResponseDto.from(member);
+	}
+
+	public void validateAdminEmail(String email) {
+		memberRepository.findMemberByEmailAndType(email, MemberType.ADMIN)
+				.ifPresent(member -> {throw new BusinessException(ErrorCode.INVALID_EMAIL_VALUE);
+				});
+	}
+
+	public void validateAdminNickname(String nickname) {
+		// 아티스트의 활동 예명을 닉네임으로 사용할 수 없다.
+		if (memberRepository.findMemberByNameAndType(nickname, MemberType.USER).isPresent() ||
+				memberRepository.findMemberByEnNameAndType(nickname, MemberType.USER).isPresent()) {
+			throw new BusinessException(ErrorCode.DUPLICATE_ARTIST_NAME);
+		}
+	}
+
 	private void updateArtistName(AdminArtistProfileRequestDto dto, Member member) {
 		if (dto.getName() != null) {
 			member.updateName(dto.getName());
@@ -79,5 +107,19 @@ public class MemberService {
 					throw new BusinessException(ErrorCode.INVALID_EMAIL_VALUE);
 				});
 		member.updateEmail(email);
+	}
+
+	private void updateAdminEmail(String email, Member member) {
+		if (email != null) {
+			validateAdminEmail(email);
+			member.updateEmail(email);
+		}
+	}
+
+	private void updateAdminNickname(String nickname, Member member) {
+		if (nickname != null) {
+			validateAdminNickname(nickname);
+			member.updateName(nickname);
+		}
 	}
 }

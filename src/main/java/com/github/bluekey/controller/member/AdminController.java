@@ -1,11 +1,15 @@
 package com.github.bluekey.controller.member;
 
+import com.github.bluekey.dto.admin.AdminProfileUpdateDto;
 import com.github.bluekey.dto.request.admin.AdminProfileUpdateRequestDto;
+import com.github.bluekey.dto.request.transaction.OriginalTransactionRequestDto;
 import com.github.bluekey.dto.response.admin.AdminProfileResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistsRevenueProportionResponseDto;
 import com.github.bluekey.dto.response.common.DashboardTotalInfoResponseDto;
 import com.github.bluekey.dto.response.common.MonthlyRevenueTrendResponseDto;
 import com.github.bluekey.dto.response.track.TracksSettlementAmountResponseDto;
+import com.github.bluekey.jwt.PrincipalConvertUtil;
+import com.github.bluekey.service.member.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,20 +17,27 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "admin", description = "관리자")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/admin")
 public class AdminController {
+
+	private final MemberService memberService;
 
 	@Operation(summary = "월별 Top n 아티스트 매출액과 비율", description = "월별 Top n 아티스트 매출액과 비율")
 	@ApiResponses(value = {
@@ -82,8 +93,12 @@ public class AdminController {
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "정상 반환"),
 	})
+	@PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
 	@PatchMapping("/profile")
-	public ResponseEntity<AdminProfileResponseDto> updateAdminProfile(@RequestBody AdminProfileUpdateRequestDto dto) {
-		return ResponseEntity.ok().build();
+	public AdminProfileResponseDto updateAdminProfile(
+			@RequestPart("data") AdminProfileUpdateDto dto,
+			@Parameter(description = "multipart/form-data 형식의 이미지 파일 데이터, key 값은 file 입니다.")
+			@RequestParam("file") MultipartFile file) {
+		return memberService.updateAdminProfile(dto, file, PrincipalConvertUtil.getMemberId());
 	}
 }
