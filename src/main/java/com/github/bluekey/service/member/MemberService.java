@@ -8,8 +8,10 @@ import com.github.bluekey.dto.request.admin.AdminProfileUpdateRequestDto;
 import com.github.bluekey.dto.request.artist.ArtistProfileRequestDto;
 import com.github.bluekey.dto.response.admin.AdminAccountsResponseDto;
 import com.github.bluekey.dto.response.admin.AdminProfileResponseDto;
+import com.github.bluekey.dto.response.artist.ArtistAccountsResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistProfileResponseDto;
 import com.github.bluekey.entity.member.Member;
+import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.member.MemberType;
 import com.github.bluekey.exception.BusinessException;
 import com.github.bluekey.exception.ErrorCode;
@@ -65,11 +67,21 @@ public class MemberService {
 
 	@Transactional(readOnly = true)
 	public AdminAccountsResponseDto getAdminAccounts(PageRequest pageable) {
-		Page<Member> adminList = memberRepository.findAllByType(MemberType.ADMIN, pageable);
+		Page<Member> adminList = memberRepository.findMembersByType(MemberType.ADMIN, pageable);
 		return AdminAccountsResponseDto.builder()
 				.totalItems(adminList.getTotalElements())
 						.contents(adminList.getContent().stream()
 								.map(AdminAccountDto::from).collect(Collectors.toList())).build();
+	}
+
+	@Transactional(readOnly = true)
+	public ArtistAccountsResponseDto getArtistAccounts(PageRequest pageable) {
+
+		Page<Member> artistList = memberRepository.findMembersByRole(MemberRole.ARTIST, pageable);
+		return ArtistAccountsResponseDto.builder()
+				.totalItems(artistList.getTotalElements())
+				.contents(artistList.getContent().stream()
+						.map(ArtistAccountDto::from).collect(Collectors.toList())).build();
 	}
 
 	public void validateAdminEmail(String email) {

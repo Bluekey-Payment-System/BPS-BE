@@ -1,5 +1,6 @@
 package com.github.bluekey.repository.member;
 import com.github.bluekey.entity.member.Member;
+import com.github.bluekey.entity.member.MemberRole;
 import java.awt.print.Pageable;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -21,5 +22,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	Optional<Member> findMemberByNameAndType(String name, MemberType type);
 	Optional<Member> findMemberByEnNameAndType(String enName, MemberType type);
 
-	Page<Member> findAllByType(MemberType type, PageRequest pageable);
+	Page<Member> findMembersByType(MemberType type, PageRequest pageable);
+	Page<Member> findMembersByRole(MemberRole role, PageRequest pageable);
 }
