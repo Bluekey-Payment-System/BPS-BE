@@ -21,21 +21,4 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class MemberController {
 
-	@Operation(summary = "관리자 계정 관리", description = "관리자가 관리하는 계정들을 불러온다.")
-	@ApiResponses(value = {
-		@ApiResponse(responseCode = "200", description = "사이트 이용자 계정 정보 LIST 반환",
-			content = @Content(mediaType = "application/json", schema = @Schema(
-					oneOf = {AdminAndArtistAccountResponseDto.class}))),
-	})
-	@GetMapping
-	public ResponseEntity<AdminAndArtistAccountResponseDto> getMembers(
-			@RequestParam("page") Integer page,
-			@RequestParam("size") Integer size
-	) {
-		// TODO: MemberRole.ADMIN -> ArtistAccountResponseDto
-		// TODO: MemberRole.SUPER_ADMIN -> AdminAndAristAccountResponseDto
-
-		// Ans: AdminAndAristAccountResponseDto 반환하고 ADMIN인 경우에는 ADMIN 데이터를 빈 리스트로 주면 될 것 같아요
-		return null;
-	}
 }
