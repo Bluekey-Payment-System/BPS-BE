@@ -1,6 +1,10 @@
 package com.github.bluekey.repository.member;
 import com.github.bluekey.entity.member.Member;
+import com.github.bluekey.entity.member.MemberRole;
+import java.awt.print.Pageable;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.github.bluekey.entity.member.MemberType;
 
@@ -17,4 +21,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	Optional<Member> findMemberByEmailAndType(@Param("email") String email, @Param("type") MemberType type);
 	Optional<Member> findMemberByNameAndType(String name, MemberType type);
 	Optional<Member> findMemberByEnNameAndType(String enName, MemberType type);
+
+	Page<Member> findMembersByType(MemberType type, PageRequest pageable);
+	Page<Member> findMembersByRole(MemberRole role, PageRequest pageable);
 }

@@ -1,6 +1,5 @@
 package com.github.bluekey.dto.response.artist;
 
-import com.github.bluekey.dto.artist.ArtistAccountDto;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.member.MemberType;
