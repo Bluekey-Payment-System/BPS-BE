@@ -3,6 +3,7 @@ package com.github.bluekey.controller.member;
 import com.github.bluekey.dto.admin.AdminProfileUpdateDto;
 import com.github.bluekey.dto.request.admin.AdminProfileUpdateRequestDto;
 import com.github.bluekey.dto.request.transaction.OriginalTransactionRequestDto;
+import com.github.bluekey.dto.response.admin.AdminAccountsResponseDto;
 import com.github.bluekey.dto.response.admin.AdminProfileResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistsRevenueProportionResponseDto;
 import com.github.bluekey.dto.response.common.DashboardTotalInfoResponseDto;
@@ -19,6 +20,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -101,4 +103,19 @@ public class AdminController {
 			@RequestParam("file") MultipartFile file) {
 		return memberService.updateAdminProfile(dto, file, PrincipalConvertUtil.getMemberId());
 	}
+
+	@Operation(summary = "관리자 계정 조회", description = "관리자 계정 조회")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "정상 반환", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AdminAccountsResponseDto.class))),
+	})
+	@PreAuthorize("hasRole('SUPER_ADMIN')")
+	@GetMapping
+	public ResponseEntity<AdminAccountsResponseDto> getAdminAccounts(
+			@Parameter(description = "페이지 번호") @RequestParam("page") Integer page,
+			@Parameter(description = "페이지 사이즈") @RequestParam("size") Integer size
+	) {
+		PageRequest pageRequest = PageRequest.of(page, size);
+		return ResponseEntity.ok(memberService.getAdminAccounts(pageRequest));
+	}
+
 }

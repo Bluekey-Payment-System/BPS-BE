@@ -1,10 +1,12 @@
 package com.github.bluekey.service.member;
 
+import com.github.bluekey.dto.admin.AdminAccountDto;
 import com.github.bluekey.dto.admin.AdminProfileUpdateDto;
 import com.github.bluekey.dto.artist.ArtistAccountDto;
 import com.github.bluekey.dto.request.admin.AdminArtistProfileRequestDto;
 import com.github.bluekey.dto.request.admin.AdminProfileUpdateRequestDto;
 import com.github.bluekey.dto.request.artist.ArtistProfileRequestDto;
+import com.github.bluekey.dto.response.admin.AdminAccountsResponseDto;
 import com.github.bluekey.dto.response.admin.AdminProfileResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistProfileResponseDto;
 import com.github.bluekey.entity.member.Member;
@@ -14,7 +16,11 @@ import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.exception.member.MemberNotFoundException;
 import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.util.ImageUploadUtil;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,6 +61,15 @@ public class MemberService {
 		updateProfileImages(file, member);
 		memberRepository.save(member);
 		return AdminProfileResponseDto.from(member);
+	}
+
+	@Transactional(readOnly = true)
+	public AdminAccountsResponseDto getAdminAccounts(PageRequest pageable) {
+		Page<Member> adminList = memberRepository.findAllByType(MemberType.ADMIN, pageable);
+		return AdminAccountsResponseDto.builder()
+				.totalItems(adminList.getTotalElements())
+						.contents(adminList.getContent().stream()
+								.map(AdminAccountDto::from).collect(Collectors.toList())).build();
 	}
 
 	public void validateAdminEmail(String email) {
