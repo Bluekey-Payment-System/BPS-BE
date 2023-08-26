@@ -1,6 +1,8 @@
 package com.github.bluekey.dto.request.track;
 
 import com.github.bluekey.dto.track.TrackCommissionRateDto;
+import com.github.bluekey.entity.member.Member;
+import com.github.bluekey.entity.track.Track;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,4 +35,11 @@ public class TrackRequestDto {
         this.artists = artists;
     }
 
+    public Track toTrack() {
+        return Track.ByTrackBuilder()
+                .name(name)
+                .enName(enName)
+                .isOriginalTrack(isOriginalTrack)
+                .build();
+    }
 }

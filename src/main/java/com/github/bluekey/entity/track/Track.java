@@ -38,7 +38,7 @@ public class Track extends BaseTimeEntity {
 	@Column(nullable = false)
 	private boolean isOriginalTrack;
 
-	@Builder
+	@Builder(builderClassName = "ByTrackBuilder", builderMethodName = "ByTrackBuilder")
 	public Track(Album album, String name, String enName, boolean isOriginalTrack) {
 		this.album = album;
 		this.name = name;
