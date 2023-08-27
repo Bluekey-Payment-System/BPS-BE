@@ -1,5 +1,6 @@
 package com.github.bluekey.controller.album;
 
+import com.github.bluekey.dto.album.NewAlbumInfoDto;
 import com.github.bluekey.dto.request.album.AlbumsRegisterRequestDto;
 import com.github.bluekey.dto.response.album.AlbumIdResponseDto;
 import com.github.bluekey.dto.response.album.AlbumMonthlyAccontsReponseDto;
@@ -18,6 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "Albums", description = "Album 관련 API")
 @RestController
@@ -36,7 +38,10 @@ public class AlbumController {
             )
     })
     @PostMapping
-    public ResponseEntity<AlbumResponseDto> albumsInsert(@RequestBody AlbumsRegisterRequestDto dto) {
+    public ResponseEntity<AlbumResponseDto> albumsInsert(
+            @RequestParam("file") MultipartFile file,
+            @RequestPart("data") NewAlbumInfoDto dto
+    ) {
         return null;
     }
 
