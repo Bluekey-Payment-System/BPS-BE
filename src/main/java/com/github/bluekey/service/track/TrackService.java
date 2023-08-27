@@ -76,7 +76,8 @@ public class TrackService {
         Track track = trackRepository.findById(trackId)
                 .orElseThrow(()-> new BusinessException(ErrorCode.INVALID_TRACK_VALUE));
 
-        trackRepository.deleteById(trackId);
+        track.remove();
+        trackRepository.save(track);
 
         return trackId;
     }
