@@ -5,6 +5,7 @@ import com.github.bluekey.dto.request.transaction.OriginalTransactionRequestDto;
 import com.github.bluekey.dto.response.common.ListResponse;
 import com.github.bluekey.dto.response.transaction.OriginalTransactionResponseDto;
 import com.github.bluekey.entity.transaction.OriginalTransaction;
+import com.github.bluekey.exception.transaction.AlreadyOriginalTransactionExistException;
 import com.github.bluekey.exception.transaction.ExcelUploadException;
 import com.github.bluekey.processor.ExcelFileDBMigrationProcessManager;
 import com.github.bluekey.processor.ExcelFileProcessManager;
@@ -77,7 +78,7 @@ public class TransactionService {
         }
 
         originalTransactionRepository.findOriginalTransactionByFileNameAndUploadAtAndIsRemovedFalse(fileName, uploadAt).ifPresent((originalTransaction) -> {
-                    throw new RuntimeException("이미 중복된 이름의 파일이 업로드되어 있습니다.");
+                    throw new AlreadyOriginalTransactionExistException();
                 });
 
         String s3Url = excelUploadUtil.uploadExcel(file, excelUploadUtil.getExcelKey(file.getOriginalFilename(), uploadAt));
