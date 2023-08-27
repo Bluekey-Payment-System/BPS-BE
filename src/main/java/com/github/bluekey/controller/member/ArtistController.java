@@ -171,7 +171,7 @@ public class ArtistController {
     })
     @GetMapping("/simple")
     public ResponseEntity<SimpleArtistAccountListResponseDto> getSimpleArtists() {
-        return ok().build();
+        return ok(memberService.getSimpleArtistAccounts());
     }
 
 }

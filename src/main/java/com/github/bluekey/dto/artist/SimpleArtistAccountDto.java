@@ -1,5 +1,6 @@
 package com.github.bluekey.dto.artist;
 
+import com.github.bluekey.entity.member.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -18,9 +19,9 @@ public class SimpleArtistAccountDto {
     private String enName;
 
     @Builder
-    public SimpleArtistAccountDto(final Long memberId, final String name, final String enName) {
-        this.memberId = memberId;
-        this.name = name;
-        this.enName = enName;
+    public SimpleArtistAccountDto(Member member) {
+        this.memberId = member.getId();
+        this.name = member.getName();
+        this.enName = member.getEnName();
     }
 }
