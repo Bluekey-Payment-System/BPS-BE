@@ -59,6 +59,9 @@ public class TransactionService {
         originalTransactionRepository.save(originalTransaction);
         excelUploadUtil.deleteExcel(excelUploadUtil.getExcelKey(originalTransaction.getFileName(), originalTransaction.getUploadAt()));
 
+        originalTransaction.getTransactions()
+                .forEach(transaction -> transaction.remove());
+
         return OriginalTransactionResponseDto.from(originalTransaction);
     }
 
