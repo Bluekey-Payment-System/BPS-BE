@@ -51,10 +51,13 @@ public class TransactionService {
         return new ListResponse<>(originalTransactions.size(), originalTransactions.stream().map(OriginalTransactionResponseDto::from).collect(Collectors.toList()));
     }
 
+    @Transactional
     public OriginalTransactionResponseDto removeOriginalTransaction(Long id) {
         OriginalTransaction originalTransaction = originalTransactionRepository.findByIdOrElseThrow(id);
 
-        // 삭제 로직
+        originalTransaction.remove();
+        originalTransactionRepository.save(originalTransaction);
+        excelUploadUtil.deleteExcel(excelUploadUtil.getExcelKey(originalTransaction.getFileName(), originalTransaction.getUploadAt()));
 
         return OriginalTransactionResponseDto.from(originalTransaction);
     }
