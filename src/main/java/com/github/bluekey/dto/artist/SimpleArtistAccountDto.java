@@ -16,14 +16,11 @@ public class SimpleArtistAccountDto {
     private String name;
     @Schema(description = "아티스트 이름(영문)", example = "Hyukki")
     private String enName;
-    @Schema(description = "요율", example = "50")
-    private Integer commissionRate;
 
     @Builder
-    public SimpleArtistAccountDto(Long memberId, String name, String enName, Integer commissionRate) {
+    public SimpleArtistAccountDto(final Long memberId, final String name, final String enName) {
         this.memberId = memberId;
         this.name = name;
         this.enName = enName;
-        this.commissionRate = commissionRate;
     }
 }
