@@ -12,7 +12,7 @@ import com.github.bluekey.dto.response.album.AlbumTrackListResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistAlbumsListResponseDto;
 import com.github.bluekey.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.album.AlbumService;
-import com.github.bluekey.service.dashboard.DashBoardService;
+import com.github.bluekey.service.dashboard.TopTrackDashBoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -33,7 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class AlbumController {
 
     private final AlbumService albumService;
-    private final DashBoardService dashBoardService;
+    private final TopTrackDashBoardService topTrackDashBoardService;
 
     @Operation(summary = "신규 앨범 등록" , description = "신규 앨범 등록")
     @ApiResponses(value = {
@@ -100,7 +100,7 @@ public class AlbumController {
             @PathVariable("albumId") Long albumId
     ) {
 
-        return ResponseEntity.ok(dashBoardService.getTopTracks(albumId, monthly, rank, PrincipalConvertUtil.getMemberId()));
+        return ResponseEntity.ok(topTrackDashBoardService.getTopTracks(albumId, monthly, rank, PrincipalConvertUtil.getMemberId()));
     }
 
     @Operation(summary = "앨범의 트랙별 정산 LIST", description = "앨범의 트랙별 정산 LIST")
