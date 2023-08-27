@@ -1,9 +1,14 @@
 package com.github.bluekey.service.dashboard;
 
+import com.github.bluekey.dto.album.AlbumTopDto;
 import com.github.bluekey.dto.artist.ArtistRevenueProportionDto;
 import com.github.bluekey.dto.common.MemberBaseDto;
+import com.github.bluekey.dto.response.album.AlbumTopResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistsRevenueProportionResponseDto;
+import com.github.bluekey.dto.track.TrackBaseDto;
 import com.github.bluekey.entity.member.Member;
+import com.github.bluekey.entity.member.MemberRole;
+import com.github.bluekey.entity.track.Track;
 import com.github.bluekey.entity.transaction.Transaction;
 import com.github.bluekey.exception.member.MemberNotFoundException;
 import com.github.bluekey.repository.member.MemberRepository;
@@ -27,9 +32,7 @@ public class DashBoardService {
     private final TransactionRepository transactionRepository;
 
     public ArtistsRevenueProportionResponseDto getTopArtists(String monthly, int rank) {
-        LocalDate date = LocalDate.parse(monthly + MONTH_PREFIX, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        LocalDate previousMonth = date.minusMonths(1);
-        String previousMonthly = previousMonth.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+        String previousMonthly = getPreviousMonth(monthly);
 
         Double totalAmount = 0.0;
         Double totalProportion = 0.0;
@@ -120,6 +123,158 @@ public class DashBoardService {
         return ArtistsRevenueProportionResponseDto.from(topArtistRevenueProportions);
     }
 
+    public AlbumTopResponseDto getTopTracks(Long albumId, String monthly, int rank, Long memberId) {
+        String previousMonthly = getPreviousMonth(monthly);
+        Map<Track, Double> trackMappedByAmount = new HashMap<>();
+        Map<Track, Double> trackMappedByAmountPreviousMonth = new HashMap<>();
+        Map<Track, Double> sortedTrackMappedByAmount = new LinkedHashMap<>();
+        Map<Track, Double> sortedTrackMappedByAmountPreviousMonth = new LinkedHashMap<>();
+        List<AlbumTopDto> albums = new ArrayList<>();
+
+        Double totalAmount = 0.0;
+        Double totalProportion = 0.0;
+        double totalEtcRevenue = 0.0;
+
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> {throw new MemberNotFoundException();});
+
+        List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
+        List<Transaction> previousMonthlyTransactions = transactionRepository.findTransactionsByDuration(previousMonthly);
+
+        if (member.getRole().equals(MemberRole.ARTIST)) {
+            trackMappedByAmount = transactions.stream()
+                    .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
+                    .filter((transaction -> transaction.getTrackMember().getMemberId().equals(member.getId()) &&
+                            transaction.getTrackMember().getTrack().getAlbum().getId().equals(albumId)))
+                    .collect(Collectors.groupingBy(
+                            transaction -> transaction.getTrackMember().getTrack(),
+                            Collectors.summingDouble(Transaction::getAmount)
+                    ));
+
+            trackMappedByAmountPreviousMonth = previousMonthlyTransactions.stream()
+                    .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
+                    .filter((transaction -> transaction.getTrackMember().getMemberId().equals(member.getId()) &&
+                            transaction.getTrackMember().getTrack().getAlbum().getId().equals(albumId)))
+                    .collect(Collectors.groupingBy(
+                            transaction -> transaction.getTrackMember().getTrack(),
+                            Collectors.summingDouble(Transaction::getAmount)
+                    ));
+
+            sortedTrackMappedByAmount = trackMappedByAmount.entrySet().stream()
+                    .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            Map.Entry::getValue,
+                            (e1, e2) -> e1,
+                            LinkedHashMap::new
+                    ));
+
+            sortedTrackMappedByAmountPreviousMonth = trackMappedByAmountPreviousMonth.entrySet().stream()
+                    .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            Map.Entry::getValue,
+                            (e1, e2) -> e1,
+                            LinkedHashMap::new
+                    ));
+        }
+
+        if (member.getRole().equals(MemberRole.ADMIN) || member.getRole().equals(MemberRole.SUPER_ADMIN)) {
+            trackMappedByAmount = transactions.stream()
+//                    .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
+                    .filter((transaction -> transaction.getTrackMember().getTrack().getAlbum().getId().equals(albumId)))
+                    .collect(Collectors.groupingBy(
+                            transaction -> transaction.getTrackMember().getTrack(),
+                            Collectors.summingDouble(Transaction::getAmount)
+                    ));
+
+            trackMappedByAmountPreviousMonth = previousMonthlyTransactions.stream()
+//                    .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
+                    .filter((transaction -> transaction.getTrackMember().getTrack().getAlbum().getId().equals(albumId)))
+                    .collect(Collectors.groupingBy(
+                            transaction -> transaction.getTrackMember().getTrack(),
+                            Collectors.summingDouble(Transaction::getAmount)
+                    ));
+
+            sortedTrackMappedByAmount = trackMappedByAmount.entrySet().stream()
+                    .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            Map.Entry::getValue,
+                            (e1, e2) -> e1,
+                            LinkedHashMap::new
+                    ));
+
+            sortedTrackMappedByAmountPreviousMonth = trackMappedByAmountPreviousMonth.entrySet().stream()
+                    .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            Map.Entry::getValue,
+                            (e1, e2) -> e1,
+                            LinkedHashMap::new
+                    ));
+        }
+
+        for(Map.Entry<Track, Double> entry : sortedTrackMappedByAmount.entrySet()) {
+            totalAmount += entry.getValue();
+        }
+
+        for(Map.Entry<Track, Double> entry : sortedTrackMappedByAmount.entrySet()) {
+            Track track = entry.getKey();
+            Double amount = entry.getValue();
+
+            Double previousMonthAmount = sortedTrackMappedByAmountPreviousMonth.get(entry.getKey());
+
+            TrackBaseDto trackBaseDto = TrackBaseDto.builder()
+                    .trackId(track.getId())
+                    .name(track.getName())
+                    .enName(track.getEnName())
+                    .build();
+
+
+            AlbumTopDto albumTopDto = AlbumTopDto.builder()
+                    .track(trackBaseDto)
+                    .revenue(getRevenue(amount))
+                    .growthRate(getGrowthRate(previousMonthAmount, amount))
+                    .proportion(getProportion(amount, totalAmount))
+                    .build();
+
+            albums.add(albumTopDto);
+        }
+
+        List<AlbumTopDto> topAlbums = new ArrayList<>();
+
+        if (albums.size() > rank) {
+            topAlbums = albums.subList(0, rank);
+            List<AlbumTopDto> etcAlbums = albums.subList(rank, albums.size());
+            for (AlbumTopDto albumTopDto : etcAlbums) {
+                totalEtcRevenue += albumTopDto.getRevenue();
+            }
+
+            for (AlbumTopDto albumTopDto : topAlbums) {
+                totalProportion += albumTopDto.getProportion();
+            }
+
+            AlbumTopDto etc = AlbumTopDto.builder()
+                    .proportion(Math.floor((100.0 - totalProportion) * 10) / 10)
+                    .track(null)
+                    .growthRate(null)
+                    .revenue(totalEtcRevenue)
+                    .build();
+
+            topAlbums.add(etc);
+
+        } else {
+            topAlbums = albums.subList(0, albums.size());
+
+            for (AlbumTopDto albumTopDto : topAlbums) {
+                totalProportion += albumTopDto.getProportion();
+            }
+        }
+
+        return AlbumTopResponseDto.from(topAlbums);
+
+    }
+
     private double getProportion(double amount, double totalAmount) {
         double percentage = (amount / totalAmount) * 100;
         if (0 < percentage && percentage < 1) {
@@ -141,5 +296,11 @@ public class DashBoardService {
             return Math.floor(percentage * 10) / 10;
         }
         return Math.floor(percentage);
+    }
+
+    private String getPreviousMonth(String monthly) {
+        LocalDate date = LocalDate.parse(monthly + MONTH_PREFIX, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        LocalDate previousMonth = date.minusMonths(1);
+        return previousMonth.format(DateTimeFormatter.ofPattern("yyyy-MM"));
     }
 }
