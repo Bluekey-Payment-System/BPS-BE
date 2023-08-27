@@ -6,6 +6,7 @@ import com.github.bluekey.entity.album.Album;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.exception.member.MemberNotFoundException;
+import com.github.bluekey.repository.album.AlbumRepository;
 import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.util.ImageUploadUtil;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class AlbumService {
 
 	private final MemberRepository memberRepository;
+	private final AlbumRepository albumRepository;
 	private final ImageUploadUtil imageUploadUtil;
 
 	public AlbumResponseDto createAlbum(MultipartFile file, NewAlbumInfoDto dto) {
@@ -32,11 +34,12 @@ public class AlbumService {
 				.enName(dto.getEnName())
 				.build();
 		String albumImage = null;
-		if (file != null) {
+		if (file != null && !file.isEmpty()) {
 			albumImage = imageUploadUtil.uploadImage(file,
 					imageUploadUtil.getProfileImageKey(file.getOriginalFilename(), album.getId()));
 		}
 		album.updateProfileImage(albumImage);
+		albumRepository.save(album);
 		return AlbumResponseDto.from(album);
 	}
 }

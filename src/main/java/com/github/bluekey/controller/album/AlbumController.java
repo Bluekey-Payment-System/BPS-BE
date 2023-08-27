@@ -10,6 +10,7 @@ import com.github.bluekey.dto.response.album.AlbumTopResponseDto;
 import com.github.bluekey.dto.response.album.AlbumTrackAccountsResponseDto;
 import com.github.bluekey.dto.response.album.AlbumTrackListResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistAlbumsListResponseDto;
+import com.github.bluekey.service.album.AlbumService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,7 +18,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,6 +29,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/v1/albums")
 @RequiredArgsConstructor
 public class AlbumController {
+
+    private final AlbumService albumService;
 
     @Operation(summary = "신규 앨범 등록" , description = "신규 앨범 등록")
     @ApiResponses(value = {
@@ -37,12 +42,14 @@ public class AlbumController {
                     )
             )
     })
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     @PostMapping
     public ResponseEntity<AlbumResponseDto> albumsInsert(
             @RequestParam("file") MultipartFile file,
             @RequestPart("data") NewAlbumInfoDto dto
     ) {
-        return null;
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(albumService.createAlbum(file, dto));
     }
 
     @Operation(summary = "앨범정보 변경" , description = "앨범정보 변경")
