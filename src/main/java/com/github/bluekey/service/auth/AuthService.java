@@ -101,6 +101,7 @@ public class AuthService {
 		Member member = memberRepository.findById(memberId)
 				.orElseThrow(MemberNotFoundException::new);
 		member.memberRemoved();
+		// TODO: S3 이미지 삭제 로직
 		memberRepository.save(member);
 		return memberId;
 	}
