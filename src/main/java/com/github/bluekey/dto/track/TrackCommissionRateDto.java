@@ -1,5 +1,6 @@
 package com.github.bluekey.dto.track;
 
+import com.github.bluekey.entity.track.TrackMember;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -17,12 +18,12 @@ public class TrackCommissionRateDto {
     private String name;
 
     @Schema(description = "요율", example = "50")
-    private double commissionRate;
+    private Integer commissionRate;
 
     @Builder
-    public TrackCommissionRateDto(final Long memberId, final String name, final double commissionRate) {
-        this.memberId = memberId;
-        this.name = name;
-        this.commissionRate = commissionRate;
+    public TrackCommissionRateDto(TrackMember trackMember) {
+        this.memberId = trackMember.getMemberId();
+        this.name = trackMember.getName();
+        this.commissionRate = trackMember.getCommissionRate();
     }
 }
