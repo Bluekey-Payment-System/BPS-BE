@@ -76,9 +76,10 @@ public class AlbumController {
                             schema = @Schema(implementation = AlbumResponseDto.class)
                     ))
     })
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     @DeleteMapping("/{albumId}")
     public ResponseEntity<AlbumIdResponseDto> albumsDelete(@PathVariable("albumId") Long albumId) {
-        return null;
+        return ResponseEntity.ok(albumService.deleteAlbum(albumId));
     }
 
     @Operation(summary = "앨범의 당월 매출 TOP n 트랙 LIST 정보", description = "앨범의 당월 매출 TOP n 트랙 LIST 정보")
