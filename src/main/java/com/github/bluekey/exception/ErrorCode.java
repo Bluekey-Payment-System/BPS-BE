@@ -21,6 +21,9 @@ public enum ErrorCode {
     INVALID_PWD_VALUE(HttpStatus.BAD_REQUEST, "AD_001", "8자 이상의 16자 이하의 숫자, 영문자, 특수문자를 포함한 비밀번호를 입력해주세요."),
     INVALID_EMAIL_VALUE(HttpStatus.BAD_REQUEST, "AD_001", "이메일 형식이 유효하지 않습니다."),
 
+    INVALID_TRACK_VALUE(HttpStatus.BAD_REQUEST, "T_001", "존재하지 않는 트랙입니다."),
+    INVALID_ALBUM_VALUE(HttpStatus.BAD_REQUEST, "A_001", "존재하지 않는 앨범입니다."),
+
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "M_001", "존재하지 않는 회원입니다."),
 
     DUPLICATE_ARTIST_NAME(HttpStatus.CONFLICT, "AD_001", "이미 등록된 아티스트명과 동일한 닉네임은 사용할 수 없습니다."),
