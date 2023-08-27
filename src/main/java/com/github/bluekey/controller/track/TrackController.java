@@ -48,11 +48,11 @@ public class TrackController {
                             schema = @Schema(implementation = TrackResponseDto.class)
                     )),
     })
-    @PatchMapping("/albums/{tracId}")
+    @PatchMapping("/albums/{trackId}")
     public ResponseEntity<TrackResponseDto> trackUpdate(
-            @PathVariable("tracId") Long tracId,
+            @PathVariable("trackId") Long trackId,
             @RequestBody TrackRequestDto dto) {
-        return ok(trackService.updateTrack(tracId, dto));
+        return ok(trackService.updateTrack(trackId, dto));
     }
 
     @Operation(summary = "트랙 삭제", description = "트랙 삭제")
@@ -63,7 +63,7 @@ public class TrackController {
                             schema = @Schema(implementation = TrackIdResponseDto.class)
                     )),
     })
-    @DeleteMapping("/albums/{tracId}")
+    @DeleteMapping("/{trackId}")
     public ResponseEntity<TrackIdResponseDto> trackDelete(@PathVariable("trackId") Long trackId) {
         Long deleteTrackId = trackService.deleteTrack(trackId);
         return ok(TrackIdResponseDto.builder().trackId(deleteTrackId).build());
