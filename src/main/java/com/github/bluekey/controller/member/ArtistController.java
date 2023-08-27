@@ -3,6 +3,7 @@ package com.github.bluekey.controller.member;
 import static org.springframework.http.ResponseEntity.ok;
 
 import com.github.bluekey.dto.artist.ArtistAccountDto;
+import com.github.bluekey.dto.artist.ArtistProfileViewDto;
 import com.github.bluekey.dto.request.admin.AdminArtistProfileRequestDto;
 import com.github.bluekey.dto.request.artist.ArtistProfileRequestDto;
 import com.github.bluekey.dto.request.artist.ArtistRequestDto;
@@ -174,4 +175,14 @@ public class ArtistController {
         return ok(memberService.getSimpleArtistAccounts());
     }
 
+    @Operation(summary = "아티스트 프로필 조회", description = "아티스트 프로필 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "아티스트 프로필 조회 완료",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistProfileViewDto.class))),
+    })
+    @PreAuthorize("hasRole('ARTIST')")
+    @GetMapping("/profile")
+    public ResponseEntity<ArtistProfileViewDto> getArtistProfile() {
+        return ok(memberService.getArtistProfile(PrincipalConvertUtil.getMemberId()));
+    }
 }
