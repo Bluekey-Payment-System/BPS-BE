@@ -55,14 +55,17 @@ public class SecurityConfig {
 				.antMatchers("/api/v1/auth/admin/**", "/api/v1/auth/member/login", "/h2-console/**").permitAll()
 				.anyRequest().authenticated()
 				.and()
-				.addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
 				.exceptionHandling()
 				.accessDeniedHandler(
 						(request, response, accessDeniedException) -> response.sendError(HttpServletResponse.SC_FORBIDDEN)
 				)
+				.and()
+				.exceptionHandling()
 				.authenticationEntryPoint(
-						(request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED)
-				);
+						(request, response, authException) -> response.sendError(HttpServletResponse.SC_FORBIDDEN)
+				)
+				.and()
+				.addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 

@@ -133,4 +133,11 @@ public class AdminController {
 		return ResponseEntity.ok(memberService.getArtistAccounts(pageRequest));
 	}
 
+	@Operation(summary = "어드민 접근 페이지 허용 여부 조회 API ", description = "어드민 접근 페이지 허용 여부 조회 API")
+	@PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+	@GetMapping("/authority-check")
+	public ResponseEntity<?> checkAuthority() {
+		Long memberId = PrincipalConvertUtil.getMemberId();
+		return ResponseEntity.ok().build();
+	}
 }
