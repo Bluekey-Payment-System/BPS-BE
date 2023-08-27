@@ -1,5 +1,7 @@
 package com.github.bluekey.dto.track;
 
+import com.github.bluekey.entity.member.Member;
+import com.github.bluekey.entity.track.TrackMember;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -20,13 +22,29 @@ public class TrackArtistsDto {
     private String enName;
 
     @Schema(description = "요율", example = "15")
-    private Double commissionRate;
+    private Integer commissionRate;
 
     @Builder
-    public TrackArtistsDto(final Long memberId, final String name, final String enName, final Double commissionRate) {
+    public TrackArtistsDto(final Long memberId, final String name, final String enName, final Integer commissionRate) {
         this.memberId = memberId;
         this.name = name;
         this.enName = enName;
         this.commissionRate = commissionRate;
+    }
+
+    public static TrackArtistsDto from(Member member) {
+        return TrackArtistsDto.builder()
+                .memberId(member.getId())
+                .name(member.getName())
+                .enName(member.getEnName())
+                .commissionRate(member.getCommissionRate())
+                .build();
+    }
+
+    public static TrackArtistsDto from(TrackMember trackMember) {
+        return TrackArtistsDto.builder()
+                .name(trackMember.getName())
+                .commissionRate(trackMember.getCommissionRate())
+                .build();
     }
 }
