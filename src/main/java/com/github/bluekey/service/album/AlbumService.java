@@ -33,13 +33,18 @@ public class AlbumService {
 				.name(dto.getName())
 				.enName(dto.getEnName())
 				.build();
+		Album saveAlbum = albumRepository.save(album);
+		updateAlbumImage(file, saveAlbum);
+		return AlbumResponseDto.from(album);
+	}
+
+	private void updateAlbumImage(MultipartFile file, Album album) {
 		String albumImage = null;
 		if (file != null && !file.isEmpty()) {
 			albumImage = imageUploadUtil.uploadImage(file,
-					imageUploadUtil.getProfileImageKey(file.getOriginalFilename(), album.getId()));
+					imageUploadUtil.getAlbumImageKey(file.getOriginalFilename(), album.getId()));
 		}
 		album.updateProfileImage(albumImage);
 		albumRepository.save(album);
-		return AlbumResponseDto.from(album);
 	}
 }
