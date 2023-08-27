@@ -18,7 +18,13 @@ public class AlbumTopResponseDto {
     private List<AlbumTopDto> contents;
 
     @Builder
-    public AlbumTopResponseDto(final List<AlbumTopDto> contents) {
+    private AlbumTopResponseDto(final List<AlbumTopDto> contents) {
         this.contents = contents;
+    }
+
+    public static AlbumTopResponseDto from(List<AlbumTopDto> contents) {
+        return AlbumTopResponseDto.builder()
+                .contents(contents)
+                .build();
     }
 }
