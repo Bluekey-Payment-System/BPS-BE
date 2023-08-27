@@ -50,43 +50,43 @@ VALUES ('admin1@example.com', 'admin1234', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDx
 
 -- 1
 INSERT INTO album (artist_id, artist_name, name, en_name, profile_image, created_at, modified_at, is_removed)
-VALUES (1, '혁기', '사랑에도 공식이 있나요 OST PART 2', '사랑에도 공식이 있나요 OST PART 2', 'image/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (1, '혁기', '사랑에도 공식이 있나요 OST PART 2', '사랑에도 공식이 있나요 OST PART 2', 'image/album/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 2
 INSERT INTO album (artist_id, artist_name, name, en_name, profile_image, created_at, modified_at, is_removed)
-VALUES (1, '혁기', 'COME TO ME', 'COME TO ME', 'image/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (1, '혁기', 'COME TO ME', 'COME TO ME', 'image/album/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 3
 INSERT INTO album (artist_id, artist_name, name, en_name, profile_image, created_at, modified_at, is_removed)
-VALUES (1, '혁기', 'Underwater', 'Underwater', 'image/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (1, '혁기', 'Underwater', 'Underwater', 'image/album/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 4
 INSERT INTO album (artist_id, artist_name, name, en_name, profile_image, created_at, modified_at, is_removed)
-VALUES (1, '혁기', '프라하', 'Praha', 'image/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (1, '혁기', '프라하', 'Praha', 'image/album/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 5
 INSERT INTO album (artist_id, artist_name, name, en_name, profile_image, created_at, modified_at, is_removed)
-VALUES (1, '혁기', 'Is there an equation in Love? Pt. 2 (Original Motion Picture Soundtrack)', 'Is there an equation in Love? Pt. 2 (Original Motion Picture Soundtrack)', 'image/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (1, '혁기', 'Is there an equation in Love? Pt. 2 (Original Motion Picture Soundtrack)', 'Is there an equation in Love? Pt. 2 (Original Motion Picture Soundtrack)', 'image/album/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 6
 INSERT INTO album (artist_id, artist_name, name, en_name, profile_image, created_at, modified_at, is_removed)
-VALUES (2, '53X', 'C&C', 'C&C', 'image/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (2, '53X', 'C&C', 'C&C', 'image/album/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 7
 INSERT INTO album (artist_id, artist_name, name, en_name, profile_image, created_at, modified_at, is_removed)
-VALUES (2, '53X', 'About Money', 'About Money', 'image/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (2, '53X', 'About Money', 'About Money', 'image/album/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 8
 INSERT INTO album (artist_id, artist_name, name, en_name, profile_image, created_at, modified_at, is_removed)
-VALUES (null, null, '미녀 OST', '미녀 OST', 'image/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (null, null, '미녀 OST', '미녀 OST', 'image/album/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 9
 INSERT INTO album (artist_id, artist_name, name, en_name, profile_image, created_at, modified_at, is_removed)
-VALUES (6, '블루키', '미녀 Original Score', '미녀 Original Score', 'image/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (6, '블루키', '미녀 Original Score', '미녀 Original Score', 'image/album/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 10
 INSERT INTO album (artist_id, artist_name, name, en_name, profile_image, created_at, modified_at, is_removed)
-VALUES (7, '송민섭', 'A Trilogia', 'A Trilogia', 'image/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (7, '송민섭', 'A Trilogia', 'A Trilogia', 'image/album/album.jpg', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 
 -----------
