@@ -27,19 +27,19 @@ public class AlbumTrackListResponseDto {
     private String enName;
 
     @Schema(description = "대표 아티스트 정보")
-    private ArtistInfoDto artists;
+    private ArtistInfoDto artist;
 
     @Schema(description = "트랙별의 리스트")
     private List<TrackInfoListDto> tracks;
 
     @Builder
     public AlbumTrackListResponseDto(final Long albumId, final String albumImage, final String name,
-            final String enName, final ArtistInfoDto artists, final List<TrackInfoListDto> tracks) {
+            final String enName, final ArtistInfoDto artist, final List<TrackInfoListDto> tracks) {
         this.albumId = albumId;
         this.albumImage = albumImage;
         this.name = name;
         this.enName = enName;
-        this.artists = artists;
+        this.artist = artist;
         this.tracks = tracks;
     }
 }

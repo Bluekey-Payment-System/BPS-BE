@@ -160,11 +160,12 @@ public class AlbumController {
                             schema = @Schema(implementation = AlbumTrackListResponseDto.class)
                     )),
     })
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     @GetMapping("/{albumId}")
     public ResponseEntity<AlbumTrackListResponseDto> getAlbum(
             @PathVariable("albumId") Long albumId
     ) {
-        return null;
+        return ResponseEntity.ok(albumService.getAlbumTrackList(albumId));
     }
 
     // header 에 jwt 존재하는 ID 가져와서 조회 가능.

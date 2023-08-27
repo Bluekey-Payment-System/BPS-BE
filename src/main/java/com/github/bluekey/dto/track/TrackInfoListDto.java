@@ -1,5 +1,6 @@
 package com.github.bluekey.dto.track;
 
+import com.github.bluekey.entity.track.Track;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -29,9 +30,20 @@ public class TrackInfoListDto {
 
     @Builder
     public TrackInfoListDto(final Long trackId, final String name, final String enName, final boolean isOriginalTrack, final List<TrackArtistsDto> artists) {
+        this.trackId = trackId;
         this.name = name;
         this.enName = enName;
         this.isOriginalTrack = isOriginalTrack;
         this.artists = artists;
+    }
+
+    public static TrackInfoListDto from(Track track, List<TrackArtistsDto> artists) {
+        return TrackInfoListDto.builder()
+                .trackId(track.getId())
+                .name(track.getName())
+                .enName(track.getEnName())
+                .isOriginalTrack(track.isOriginalTrack())
+                .artists(artists)
+                .build();
     }
 }

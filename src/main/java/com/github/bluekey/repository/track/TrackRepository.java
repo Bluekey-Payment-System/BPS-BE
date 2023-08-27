@@ -16,4 +16,5 @@ public interface TrackRepository extends JpaRepository<Track, Long> {
     Optional<Track> findTrackByEnNameIgnoreCase(String enName);
 
     List<Track> findAllByAlbumId(Long albumId);
+    List<Track> findAllByAlbumIdAndIsRemovedFalse(Long albumId);
 }
