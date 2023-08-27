@@ -1,6 +1,7 @@
 package com.github.bluekey.dto.response.track;
 
 import com.github.bluekey.dto.track.TrackCommissionRateDto;
+import com.github.bluekey.entity.track.Track;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -40,5 +41,13 @@ public class TrackResponseDto {
         this.enName = enName;
         this.isOriginalTrack = isOriginalTrack;
         this.artists = artists;
+    }
+
+    public static TrackResponseDto from(Track track) {
+        return TrackResponseDto.builder()
+                .trackId(track.getId())
+                .name(track.getName())
+                .enName(track.getEnName())
+                .build();
     }
 }
