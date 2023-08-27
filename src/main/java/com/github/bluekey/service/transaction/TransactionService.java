@@ -84,6 +84,7 @@ public class TransactionService {
                 .distributorType(excelFileProcessManager.getDistributorType())
                 .build();
         originalTransactionRepository.save(originalTransaction);
+        ExcelFilesToDBMigration();
         return OriginalTransactionResponseDto.fromWithWarning(originalTransaction, excelFileProcessManager.getWarnings());
     }
 
