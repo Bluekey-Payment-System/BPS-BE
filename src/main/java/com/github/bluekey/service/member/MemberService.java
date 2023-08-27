@@ -4,12 +4,12 @@ import com.github.bluekey.dto.admin.AdminAccountDto;
 import com.github.bluekey.dto.admin.AdminProfileUpdateDto;
 import com.github.bluekey.dto.artist.ArtistAccountDto;
 import com.github.bluekey.dto.request.admin.AdminArtistProfileRequestDto;
-import com.github.bluekey.dto.request.admin.AdminProfileUpdateRequestDto;
 import com.github.bluekey.dto.request.artist.ArtistProfileRequestDto;
 import com.github.bluekey.dto.response.admin.AdminAccountsResponseDto;
 import com.github.bluekey.dto.response.admin.AdminProfileResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistAccountsResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistProfileResponseDto;
+import com.github.bluekey.dto.response.artist.SimpleArtistAccountListResponseDto;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.member.MemberType;
@@ -18,6 +18,8 @@ import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.exception.member.MemberNotFoundException;
 import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.util.ImageUploadUtil;
+
+import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -82,6 +84,12 @@ public class MemberService {
 				.totalItems(artistList.getTotalElements())
 				.contents(artistList.getContent().stream()
 						.map(ArtistAccountDto::from).collect(Collectors.toList())).build();
+	}
+
+	@Transactional(readOnly = true)
+	public SimpleArtistAccountListResponseDto getSimpleArtistAccounts() {
+		List<Member> artists = memberRepository.findMemberByRoleAndIsRemovedFalse(MemberRole.ARTIST);
+		return SimpleArtistAccountListResponseDto.from(artists);
 	}
 
 	public void validateAdminEmail(String email) {

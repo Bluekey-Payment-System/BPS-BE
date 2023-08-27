@@ -1,6 +1,7 @@
 package com.github.bluekey.dto.response.artist;
 
 import com.github.bluekey.dto.artist.SimpleArtistAccountDto;
+import com.github.bluekey.entity.member.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -8,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,7 +20,13 @@ public class SimpleArtistAccountListResponseDto {
     private List<SimpleArtistAccountDto> artists;
 
     @Builder
-    public SimpleArtistAccountListResponseDto(List<SimpleArtistAccountDto> artists) {
+    private SimpleArtistAccountListResponseDto(List<SimpleArtistAccountDto> artists) {
         this.artists = artists;
+    }
+
+    public static SimpleArtistAccountListResponseDto from(List<Member> artists) {
+        return SimpleArtistAccountListResponseDto.builder()
+                .artists(artists.stream().map(SimpleArtistAccountDto::new).collect(Collectors.toList()))
+                .build();
     }
 }
