@@ -3,6 +3,7 @@ package com.github.bluekey.processor;
 import com.github.bluekey.entity.transaction.ExcelDistributorType;
 import com.github.bluekey.processor.provider.AtoDistributorExcelFileProvider;
 import com.github.bluekey.processor.provider.ExcelFileProvider;
+import com.github.bluekey.processor.provider.MafiaDistributorExcelFileProvider;
 import com.github.bluekey.processor.provider.ThreePointOneFourDistributorExcelFileProvider;
 import com.github.bluekey.processor.type.MusicDistributorType;
 import com.github.bluekey.processor.validator.DBPersistenceValidator;
@@ -89,6 +90,11 @@ public class ExcelFileProcessManager implements ProcessManager{
             this.distributorType = ExcelDistributorType.THREE_POINT_ONE_FOUR;
             return new ThreePointOneFourDistributorExcelFileProvider(file, dbPersistenceValidator);
         }
+//        if(type.getCls().equals(MafiaDistributorExcelFileProvider.class)) {
+//            this.distributorType = ExcelDistributorType.MAFIA;
+//            return new MafiaDistributorExcelFileProvider(file, dbPersistenceValidator, fileName);
+//        }
+
         throw new IllegalArgumentException("Excel File Provider exception");
     }
 }
