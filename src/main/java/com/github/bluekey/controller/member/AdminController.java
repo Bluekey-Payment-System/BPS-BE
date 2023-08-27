@@ -10,6 +10,7 @@ import com.github.bluekey.dto.response.common.DashboardTotalInfoResponseDto;
 import com.github.bluekey.dto.response.common.MonthlyRevenueTrendResponseDto;
 import com.github.bluekey.dto.response.track.TracksSettlementAmountResponseDto;
 import com.github.bluekey.jwt.PrincipalConvertUtil;
+import com.github.bluekey.service.dashboard.SummaryDashBoardService;
 import com.github.bluekey.service.dashboard.TopTrackDashBoardService;
 import com.github.bluekey.service.member.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,6 +40,7 @@ public class AdminController {
 
 	private final MemberService memberService;
 	private final TopTrackDashBoardService topTrackDashBoardService;
+	private final SummaryDashBoardService summaryDashBoardService;
 
 	@Operation(summary = "월별 Top n 아티스트 매출액과 비율", description = "월별 Top n 아티스트 매출액과 비율")
 	@ApiResponses(value = {
@@ -73,11 +75,11 @@ public class AdminController {
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "정상 반환", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DashboardTotalInfoResponseDto.class))),
 	})
-	@GetMapping("/dashboard")
+	@GetMapping("/dashboard/summary")
 	public ResponseEntity<DashboardTotalInfoResponseDto> getDashboardTotalInfo(
 			@Parameter(description = "정보를 얻고 싶은 월 (format: yyyy-MM)") @RequestParam("monthly") String monthly
 	) {
-		return null;
+		return ResponseEntity.ok(summaryDashBoardService.getAdminDashBoardSummaryInformation(monthly, PrincipalConvertUtil.getMemberId()));
 	}
 
 	@Operation(summary = "월별 매출 추이", description = "월별 매출 추이")
