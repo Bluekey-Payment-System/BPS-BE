@@ -36,13 +36,13 @@ public class TrackMember extends BaseTimeEntity {
 	private String name;
 
 	@Column(nullable = false)
-	private int commissionRate;
+	private Integer commissionRate;
 
 	@Builder(builderClassName = "ByArtistBuilder", builderMethodName = "ByArtistBuilder")
-	public TrackMember(Track track, Member member, int commissionRate) {
+	public TrackMember(Track track, Long memberId, String name, int commissionRate) {
 		this.track = track;
-		this.memberId = member.getId();
-		this.name = member.getName();
+		this.memberId = memberId;
+		this.name = name;
 		this.commissionRate = commissionRate;
 	}
 
