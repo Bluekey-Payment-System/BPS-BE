@@ -92,13 +92,6 @@ public class MemberService {
 		return SimpleArtistAccountListResponseDto.from(artists);
 	}
 
-//	public void checkAdminAuthority(Long memberId) {
-//		Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
-//		if(member.getRole().equals(MemberRole.ARTIST)) {
-//			th
-//		}
-//	}
-
 	public void validateAdminEmail(String email) {
 		memberRepository.findMemberByEmailAndType(email, MemberType.ADMIN)
 				.ifPresent(member -> {throw new BusinessException(ErrorCode.INVALID_EMAIL_VALUE);
