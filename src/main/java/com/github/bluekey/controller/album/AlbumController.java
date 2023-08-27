@@ -90,7 +90,7 @@ public class AlbumController {
                             schema = @Schema(implementation = AlbumTopResponseDto.class)
                     )),
     })
-    @GetMapping("/{albumId}/dashboard/topTrack")
+    @GetMapping("/{albumId}/dashboard/top-track")
     public ResponseEntity<AlbumTopResponseDto> getAlbumTopList(
             @RequestParam("monthly") String monthly,
             @RequestParam("rank") Integer rank,

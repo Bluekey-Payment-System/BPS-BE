@@ -104,7 +104,7 @@ public class ArtistController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "아티스트 기준 당월 TOP N 트랙 매출 LIST 조회 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistTopResponseDto.class))),
     })
-    @GetMapping("/{memberId}/dashboard/topTrack")
+    @GetMapping("/{memberId}/dashboard/top-track")
     public ResponseEntity<ArtistTopResponseDto> getArtistTop(
             @RequestParam("monthly") LocalDate monthly,
             @RequestParam("rank") Integer rank,
