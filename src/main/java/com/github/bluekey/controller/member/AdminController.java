@@ -1,6 +1,7 @@
 package com.github.bluekey.controller.member;
 
 import com.github.bluekey.dto.admin.AdminProfileUpdateDto;
+import com.github.bluekey.dto.admin.AdminProfileViewDto;
 import com.github.bluekey.dto.request.admin.AdminProfileUpdateRequestDto;
 import com.github.bluekey.dto.request.transaction.OriginalTransactionRequestDto;
 import com.github.bluekey.dto.response.admin.AdminAccountsResponseDto;
@@ -139,5 +140,16 @@ public class AdminController {
 	public ResponseEntity<?> checkAuthority() {
 		Long memberId = PrincipalConvertUtil.getMemberId();
 		return ResponseEntity.ok().build();
+	}
+
+	@Operation(summary = "어드민 프로필 조회 API ", description = "어드민 프로필 조회 API")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "정상 반환",
+					content = @Content(mediaType = "application/json", schema = @Schema(implementation = AdminProfileViewDto.class))),
+	})
+	@PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+	@GetMapping("/profile")
+	public ResponseEntity<AdminProfileViewDto> getAdminProfile() {
+		return ResponseEntity.ok(memberService.getAdminProfile(PrincipalConvertUtil.getMemberId()));
 	}
 }

@@ -2,6 +2,7 @@ package com.github.bluekey.service.member;
 
 import com.github.bluekey.dto.admin.AdminAccountDto;
 import com.github.bluekey.dto.admin.AdminProfileUpdateDto;
+import com.github.bluekey.dto.admin.AdminProfileViewDto;
 import com.github.bluekey.dto.artist.ArtistAccountDto;
 import com.github.bluekey.dto.artist.ArtistProfileViewDto;
 import com.github.bluekey.dto.request.admin.AdminArtistProfileRequestDto;
@@ -98,6 +99,13 @@ public class MemberService {
 		Member member = memberRepository.findById(memberId)
 				.orElseThrow(MemberNotFoundException::new);
 		return ArtistProfileViewDto.from(member);
+	}
+
+	@Transactional(readOnly = true)
+	public AdminProfileViewDto getAdminProfile(Long memberId) {
+		Member member = memberRepository.findById(memberId)
+				.orElseThrow(MemberNotFoundException::new);
+		return AdminProfileViewDto.from(member);
 	}
 
 	public void validateAdminEmail(String email) {
