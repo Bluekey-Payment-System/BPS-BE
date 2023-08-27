@@ -75,7 +75,9 @@ public class ArtistController {
     public ArtistAlbumsListResponseDto getArtistAlbums(
             @RequestParam("page") Integer page,
             @RequestParam("size") Integer size,
+            @RequestParam(value = "keyword", required = false) String keyword,
             @PathVariable("memberId") Long memberId
+
     ) {
         return null;
     }
