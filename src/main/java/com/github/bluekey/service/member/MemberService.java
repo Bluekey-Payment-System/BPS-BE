@@ -3,6 +3,7 @@ package com.github.bluekey.service.member;
 import com.github.bluekey.dto.admin.AdminAccountDto;
 import com.github.bluekey.dto.admin.AdminProfileUpdateDto;
 import com.github.bluekey.dto.artist.ArtistAccountDto;
+import com.github.bluekey.dto.artist.ArtistProfileViewDto;
 import com.github.bluekey.dto.request.admin.AdminArtistProfileRequestDto;
 import com.github.bluekey.dto.request.artist.ArtistProfileRequestDto;
 import com.github.bluekey.dto.response.admin.AdminAccountsResponseDto;
@@ -90,6 +91,13 @@ public class MemberService {
 	public SimpleArtistAccountListResponseDto getSimpleArtistAccounts() {
 		List<Member> artists = memberRepository.findMemberByRoleAndIsRemovedFalse(MemberRole.ARTIST);
 		return SimpleArtistAccountListResponseDto.from(artists);
+	}
+
+	@Transactional(readOnly = true)
+	public ArtistProfileViewDto getArtistProfile(Long memberId) {
+		Member member = memberRepository.findById(memberId)
+				.orElseThrow(MemberNotFoundException::new);
+		return ArtistProfileViewDto.from(member);
 	}
 
 	public void validateAdminEmail(String email) {
