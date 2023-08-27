@@ -14,7 +14,8 @@ spring:
   batch:
     jdbc:
       initialize-schema: ALWAYS
-
+  server:
+    host: http://localhost:8080
   jpa:
     hibernate:
       ddl-auto: create

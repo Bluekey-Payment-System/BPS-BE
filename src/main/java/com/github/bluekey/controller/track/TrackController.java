@@ -23,7 +23,7 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequestMapping("/api/v1/tracks")
 @RequiredArgsConstructor
 public class TrackController {
-    private TrackService trackService;
+    private final TrackService trackService;
 
     @Operation(summary = "앨범의 트랙 등록" , description = "앨범의 트랙 등록")
     @ApiResponse(responseCode = "200",
