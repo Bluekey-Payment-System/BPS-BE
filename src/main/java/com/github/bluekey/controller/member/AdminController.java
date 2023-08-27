@@ -2,8 +2,6 @@ package com.github.bluekey.controller.member;
 
 import com.github.bluekey.dto.admin.AdminProfileUpdateDto;
 import com.github.bluekey.dto.admin.AdminProfileViewDto;
-import com.github.bluekey.dto.request.admin.AdminProfileUpdateRequestDto;
-import com.github.bluekey.dto.request.transaction.OriginalTransactionRequestDto;
 import com.github.bluekey.dto.response.admin.AdminAccountsResponseDto;
 import com.github.bluekey.dto.response.admin.AdminProfileResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistAccountsResponseDto;
@@ -12,7 +10,7 @@ import com.github.bluekey.dto.response.common.DashboardTotalInfoResponseDto;
 import com.github.bluekey.dto.response.common.MonthlyRevenueTrendResponseDto;
 import com.github.bluekey.dto.response.track.TracksSettlementAmountResponseDto;
 import com.github.bluekey.jwt.PrincipalConvertUtil;
-import com.github.bluekey.service.dashboard.DashBoardService;
+import com.github.bluekey.service.dashboard.TopTrackDashBoardService;
 import com.github.bluekey.service.member.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -40,7 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class AdminController {
 
 	private final MemberService memberService;
-	private final DashBoardService dashBoardService;
+	private final TopTrackDashBoardService topTrackDashBoardService;
 
 	@Operation(summary = "월별 Top n 아티스트 매출액과 비율", description = "월별 Top n 아티스트 매출액과 비율")
 	@ApiResponses(value = {
@@ -53,7 +51,7 @@ public class AdminController {
 			@Parameter(description = "Top 5위까지 알고 싶은 경우 rank=5") @RequestParam("rank") Integer rank
 	) {
 
-		return ResponseEntity.ok(dashBoardService.getTopArtists(monthly, rank));
+		return ResponseEntity.ok(topTrackDashBoardService.getTopArtists(monthly, rank));
 	}
 
 	@Operation(summary = "트랙별 정산 금액 리스트 (페이지네이션)", description = "트랙별 정산 금액 리스트 (페이지네이션)")

@@ -11,6 +11,7 @@ import com.github.bluekey.dto.response.admin.AdminArtistProfileListReponseDto;
 import com.github.bluekey.dto.response.artist.*;
 import com.github.bluekey.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.auth.AuthService;
+import com.github.bluekey.service.dashboard.TopTrackDashBoardService;
 import com.github.bluekey.service.member.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,6 +38,7 @@ public class ArtistController {
 
     private final AuthService authService;
     private final MemberService memberService;
+    private final TopTrackDashBoardService topTrackDashBoardService;
 
     @Operation(summary = "아티스트 정보 변경" , description = "아티스트 정보 변경")
     @ApiResponses(value = {
@@ -104,13 +106,12 @@ public class ArtistController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "아티스트 기준 당월 TOP N 트랙 매출 LIST 조회 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistTopResponseDto.class))),
     })
-    @GetMapping("/{memberId}/dashboard/top-track")
+    @GetMapping("/dashboard/top-track")
     public ResponseEntity<ArtistTopResponseDto> getArtistTop(
-            @RequestParam("monthly") LocalDate monthly,
-            @RequestParam("rank") Integer rank,
-            @PathVariable("memberId") Long memberId
+            @RequestParam("monthly") String monthly,
+            @RequestParam("rank") Integer rank
     ) {
-        return null;
+        return ResponseEntity.ok(topTrackDashBoardService.getArtistTopTracks(monthly, rank, PrincipalConvertUtil.getMemberId()));
     }
 
 
