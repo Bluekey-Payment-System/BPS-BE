@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
@@ -45,7 +46,7 @@ public class TransactionService {
     private final ExcelFileDBMigrationProcessManager excelFileDBMigrationProcessManager;
 
     public ListResponse<OriginalTransactionResponseDto> getOriginalTransactions(String uploadAt) {
-        List<OriginalTransaction> originalTransactions = originalTransactionRepository.findAllByUploadAt(uploadAt);
+        List<OriginalTransaction> originalTransactions = originalTransactionRepository.findAllByUploadAtAndIsRemovedFalse(uploadAt);
         return new ListResponse<>(originalTransactions.size(), originalTransactions.stream().map(OriginalTransactionResponseDto::from).collect(Collectors.toList()));
     }
 
@@ -57,8 +58,10 @@ public class TransactionService {
         return OriginalTransactionResponseDto.from(originalTransaction);
     }
 
+    @Transactional
     public OriginalTransactionResponseDto saveOriginalTransaction(MultipartFile file, OriginalTransactionRequestDto requestDto) {
         String uploadAt = requestDto.getUploadAt();
+        String fileName = file.getOriginalFilename();
 
         ExcelFileProcessManager excelFileProcessManager = new ExcelFileProcessManager(
                 file,
@@ -73,7 +76,10 @@ public class TransactionService {
             throw new ExcelUploadException(errors);
         }
 
-//        String s3Url = awsS3Manager.upload(file, uploadAt + "/" + file.getOriginalFilename(), S3PrefixType.EXCEL);
+        originalTransactionRepository.findOriginalTransactionByFileNameAndUploadAtAndIsRemovedFalse(fileName, uploadAt).ifPresent((originalTransaction) -> {
+                    throw new RuntimeException("이미 중복된 이름의 파일이 업로드되어 있습니다.");
+                });
+
         String s3Url = excelUploadUtil.uploadExcel(file, excelUploadUtil.getExcelKey(file.getOriginalFilename(), uploadAt));
 
 
