@@ -28,7 +28,6 @@ public class ExcelUploadUtil {
 	}
 
 	public void deleteExcel(String key) {
-		awsS3Manager.delete(key, excel);
+		awsS3Manager.delete(excel.getValue() + key, excel);
 	}
-
 }
