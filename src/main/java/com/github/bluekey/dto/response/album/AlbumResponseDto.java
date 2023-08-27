@@ -1,5 +1,6 @@
 package com.github.bluekey.dto.response.album;
 
+import com.github.bluekey.entity.album.Album;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -28,5 +29,14 @@ public class AlbumResponseDto {
 		this.name = name;
 		this.enName = enName;
 		this.memberId = memberId;
+	}
+
+	public static AlbumResponseDto from(Album album) {
+		return AlbumResponseDto.builder()
+				.albumId(album.getId())
+				.name(album.getName())
+				.enName(album.getEnName())
+				.memberId(album.getArtistId())
+				.build();
 	}
 }
