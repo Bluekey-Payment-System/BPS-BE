@@ -15,6 +15,7 @@ public class ImageUploadUtil {
 	private final AwsS3Manager awsS3Manager;
 	private final S3PrefixType image = S3PrefixType.IMAGE;
 	private final String S3_PROFILE_IMAGE_PREFIX = "profile/";
+	private final String S3_ALBUM_IMAGE_PREFIX = "album/";
 
 	public String uploadImage(MultipartFile file, String key) {
 		return awsS3Manager.upload(file, key, image);
@@ -31,6 +32,10 @@ public class ImageUploadUtil {
 
 	public String getProfileImageKey(String originalFilename, Long memberId) {
 		return S3_PROFILE_IMAGE_PREFIX + memberId + "/" + UUID.randomUUID() + getExtension(originalFilename);
+	}
+
+	public String getAlbumImageKey(String originalFilename, Long albumId) {
+		return S3_ALBUM_IMAGE_PREFIX + albumId + "/" + UUID.randomUUID() + getExtension(originalFilename);
 	}
 
 	private String getExtension(String filename) {

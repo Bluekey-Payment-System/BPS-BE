@@ -15,6 +15,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	Optional<Member> findMemberByLoginId(String loginId);
 	Optional<Member> findMemberByEnName(String enName);
 	Optional<Member> findMemberByName(String name);
+	Optional<Member> findMemberByIdAndIsRemovedFalse(Long id);
 
 	// Type 조건에 따른 Member 조회
 	@Query("select m from Member m where m.email.value = :email and m.type = :type")
@@ -22,6 +23,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	Optional<Member> findMemberByNameAndType(String name, MemberType type);
 	Optional<Member> findMemberByEnNameAndType(String enName, MemberType type);
 
+	// TODO: isRemoved 조건 추가
 	Page<Member> findMembersByType(MemberType type, PageRequest pageable);
 	Page<Member> findMembersByRole(MemberRole role, PageRequest pageable);
 
