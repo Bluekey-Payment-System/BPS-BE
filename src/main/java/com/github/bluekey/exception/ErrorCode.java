@@ -24,7 +24,7 @@ public enum ErrorCode {
     INVALID_TRACK_VALUE(HttpStatus.BAD_REQUEST, "T_001", "존재하지 않는 트랙입니다."),
     INVALID_ALBUM_VALUE(HttpStatus.BAD_REQUEST, "A_001", "존재하지 않는 앨범입니다."),
 
-    MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "M_001", "존재하지 않는 회원입니다."),
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "M_001", "존재하지 않는 회원입니다."),
 
     DUPLICATE_ARTIST_NAME(HttpStatus.CONFLICT, "AD_001", "이미 등록된 아티스트명과 동일한 닉네임은 사용할 수 없습니다."),
     INVALID_LOGIN_ID_VALUE(HttpStatus.CONFLICT, "AD_001", "이미 존재하는 아이디입니다."),
