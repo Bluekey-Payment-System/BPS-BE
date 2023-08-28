@@ -9,6 +9,7 @@ import com.github.bluekey.dto.request.artist.ArtistProfileRequestDto;
 import com.github.bluekey.dto.request.artist.ArtistRequestDto;
 import com.github.bluekey.dto.response.admin.AdminArtistProfileListReponseDto;
 import com.github.bluekey.dto.response.artist.*;
+import com.github.bluekey.dto.response.common.MonthlyTrendResponseDto;
 import com.github.bluekey.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.auth.AuthService;
 import com.github.bluekey.service.dashboard.BarChartDashboardService;
@@ -131,12 +132,13 @@ public class ArtistController {
         return ResponseEntity.ok(summaryDashBoardService.getArtistDashboardInformation(monthly, PrincipalConvertUtil.getMemberId()));
     }
 
+    // TODO: api 통일 필요
     @Operation(summary = "아티스트 대쉬보드 월별 정산액 LIST", description = "아티스트 대쉬보드 월별 정산액 LIST")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "아티스트 대쉬보드 월별 정산액 조회 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistMonthlyAccountsResponseDto.class))),
     })
     @GetMapping("/{memberId}/dashboard")
-    public ResponseEntity<ArtistMonthlyAccountsResponseDto> getArtistMonthlyAccounts(
+    public ResponseEntity<MonthlyTrendResponseDto> getArtistMonthlyAccounts(
             @RequestParam("startDate") String startDate,
             @RequestParam("endDate") String endDate,
             @PathVariable("memberId") Long memberId

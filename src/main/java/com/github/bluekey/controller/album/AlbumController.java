@@ -10,6 +10,7 @@ import com.github.bluekey.dto.response.album.AlbumTopResponseDto;
 import com.github.bluekey.dto.response.album.AlbumTrackAccountsResponseDto;
 import com.github.bluekey.dto.response.album.AlbumTrackListResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistAlbumsListResponseDto;
+import com.github.bluekey.dto.response.common.MonthlyTrendResponseDto;
 import com.github.bluekey.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.album.AlbumService;
 import com.github.bluekey.service.dashboard.BarChartDashboardService;
@@ -157,7 +158,7 @@ public class AlbumController {
                     ))
     })
     @GetMapping("/{albumId}/dashboard")
-    public ResponseEntity<AlbumMonthlyAccontsReponseDto> getAlbumMonthlyAccounts(
+    public ResponseEntity<MonthlyTrendResponseDto> getAlbumMonthlyAccounts(
             @RequestParam("startDate") String startDate,
             @RequestParam("endDate") String endDate,
             @PathVariable("albumId") Long albumId

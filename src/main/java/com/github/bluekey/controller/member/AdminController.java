@@ -7,9 +7,10 @@ import com.github.bluekey.dto.response.admin.AdminProfileResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistAccountsResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistsRevenueProportionResponseDto;
 import com.github.bluekey.dto.response.common.DashboardTotalInfoResponseDto;
-import com.github.bluekey.dto.response.common.MonthlyRevenueTrendResponseDto;
+import com.github.bluekey.dto.response.common.MonthlyTrendResponseDto;
 import com.github.bluekey.dto.response.track.TracksSettlementAmountResponseDto;
 import com.github.bluekey.jwt.PrincipalConvertUtil;
+import com.github.bluekey.service.dashboard.BarChartDashboardService;
 import com.github.bluekey.service.dashboard.SummaryDashBoardService;
 import com.github.bluekey.service.dashboard.TopTrackDashBoardService;
 import com.github.bluekey.service.member.MemberService;
@@ -41,6 +42,7 @@ public class AdminController {
 	private final MemberService memberService;
 	private final TopTrackDashBoardService topTrackDashBoardService;
 	private final SummaryDashBoardService summaryDashBoardService;
+	private final BarChartDashboardService barChartDashboardService;
 
 	@Operation(summary = "월별 Top n 아티스트 매출액과 비율", description = "월별 Top n 아티스트 매출액과 비율")
 	@ApiResponses(value = {
@@ -82,16 +84,17 @@ public class AdminController {
 		return ResponseEntity.ok(summaryDashBoardService.getAdminDashBoardSummaryInformation(monthly, PrincipalConvertUtil.getMemberId()));
 	}
 
+	// TODO: api 통일 필요
 	@Operation(summary = "월별 매출 추이", description = "월별 매출 추이")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "정상 반환", content = @Content(mediaType = "application/json", schema = @Schema(implementation = MonthlyRevenueTrendResponseDto.class))),
+			@ApiResponse(responseCode = "200", description = "정상 반환", content = @Content(mediaType = "application/json", schema = @Schema(implementation = MonthlyTrendResponseDto.class))),
 	})
 	@GetMapping("/dashboard/trend")
-	public ResponseEntity<MonthlyRevenueTrendResponseDto> getMonthlyRevenueTrend(
+	public ResponseEntity<MonthlyTrendResponseDto> getMonthlyRevenueTrend(
 			@Parameter(description = "월별 추이의 시작일 (format: yyyy-MM)") @RequestParam("startDate") String startDate,
 			@Parameter(description = "월별 추이의 종료일 (format: yyyy-MM)") @RequestParam("endDate") String endDate
 	) {
-		return null;
+		return ResponseEntity.ok(barChartDashboardService.getBarChartDashboard(startDate, endDate, PrincipalConvertUtil.getMemberId()));
 	}
 
 	@Operation(summary = "관리자 프로필 수정", description = "관리자 프로필 수정")
