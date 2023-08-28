@@ -14,15 +14,20 @@ public class AlbumMonthlyAccountsDto {
     private Integer month;
 
     @Schema(description = "정산액", example = "2142344")
-    private Long settlement;
+    private Double settlement;
 
     @Schema(description = "매출", example = "732143")
-    private Long revenue;
+    private double revenue;
+
+    @Schema(description = "순수익", example = "141234")
+    private Double netIncome;
 
     @Builder
-    public AlbumMonthlyAccountsDto(final Integer month, final Long settlement, final Long revenue) {
+    public AlbumMonthlyAccountsDto(final Integer month, final Double settlement,
+            final double revenue, final Double netIncome) {
         this.month = month;
         this.settlement = settlement;
         this.revenue = revenue;
+        this.netIncome = netIncome;
     }
 }
