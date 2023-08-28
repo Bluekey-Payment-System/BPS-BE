@@ -1,5 +1,6 @@
 package com.github.bluekey.dto.album;
 
+import com.github.bluekey.entity.album.Album;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -28,5 +29,14 @@ public class AlbumInfoDto {
         this.albumImage = albumImage;
         this.name = name;
         this.enName = enName;
+    }
+
+    public static AlbumInfoDto from(Album album) {
+        return AlbumInfoDto.builder()
+                .albumId(album.getId())
+                .albumImage(album.getProfileImage())
+                .name(album.getName())
+                .enName(album.getEnName())
+                .build();
     }
 }

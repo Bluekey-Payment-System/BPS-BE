@@ -21,6 +21,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -191,6 +193,11 @@ public class AlbumController {
             @RequestParam("size") Integer size,
             @RequestParam(value = "keyword", required = false) String keyword
     ) {
-        return null;
+        Pageable pageable = PageRequest.of(page, size);
+        if (keyword == null) {
+            return ResponseEntity.ok(albumService.getAlbums(pageable, PrincipalConvertUtil.getMemberId()));
+        } else {
+            return ResponseEntity.ok(albumService.getAlbums(pageable, PrincipalConvertUtil.getMemberId(), keyword));
+        }
     }
 }
