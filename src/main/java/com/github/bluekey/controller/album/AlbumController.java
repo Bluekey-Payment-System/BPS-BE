@@ -13,6 +13,7 @@ import com.github.bluekey.dto.response.artist.ArtistAlbumsListResponseDto;
 import com.github.bluekey.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.album.AlbumService;
 import com.github.bluekey.service.dashboard.BarChartDashboardService;
+import com.github.bluekey.service.dashboard.LineChartDashBoardService;
 import com.github.bluekey.service.dashboard.SummaryDashBoardService;
 import com.github.bluekey.service.dashboard.TopTrackDashBoardService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,6 +41,7 @@ public class AlbumController {
     private final TopTrackDashBoardService topTrackDashBoardService;
     private final SummaryDashBoardService summaryDashBoardService;
     private final BarChartDashboardService barChartDashboardService;
+    private final LineChartDashBoardService lineChartDashBoardService;
 
     @Operation(summary = "신규 앨범 등록" , description = "신규 앨범 등록")
     @ApiResponses(value = {
@@ -117,13 +119,14 @@ public class AlbumController {
                             schema = @Schema(implementation = AlbumTrackAccountsResponseDto.class)
                     ))
     })
-    @GetMapping("/{albumId}/dashboard/track")
+    @GetMapping("/{albumId}/dashboard/tracks")
     public ResponseEntity<AlbumTrackAccountsResponseDto> getAlbumTrackAccounts(
             @RequestParam("startDate") String startDate,
             @RequestParam("endDate") String endDate,
             @PathVariable("albumId") Long albumId
     ) {
-        return null;
+        return ResponseEntity.ok(lineChartDashBoardService
+                .getAlbumLineChartDashboard(startDate, endDate, albumId, PrincipalConvertUtil.getMemberId()));
     }
 
     // TODO 앨범상세의 기본정보 가져오기 (보류)
