@@ -1,7 +1,9 @@
 package com.github.bluekey.service.dashboard;
 
 import com.github.bluekey.dto.album.AlbumMonthlyAccountsDto;
+import com.github.bluekey.dto.artist.ArtistMonthlyAccountsDto;
 import com.github.bluekey.dto.response.album.AlbumMonthlyAccontsReponseDto;
+import com.github.bluekey.dto.response.artist.ArtistMonthlyAccountsResponseDto;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.transaction.Transaction;
@@ -55,6 +57,26 @@ public class BarChartDashboardService {
 				.build();
 	}
 
+	@Transactional(readOnly = true)
+	public ArtistMonthlyAccountsResponseDto getBarChartDashboard(String startDate, String endDate
+			, Long memberId) {
+
+		Member member = memberRepository.findById(memberId)
+				.orElseThrow(MemberNotFoundException::new);
+
+		List<ArtistMonthlyAccountsDto> contents = new ArrayList<>();
+
+		if (member.isAdmin()) {
+			contents = getMonthlyNetIncomeInfo(startDate, endDate);
+		} else if (member.getRole() == MemberRole.ARTIST) {
+			contents = getMonthlySettlementInfo(startDate, endDate, memberId);
+		}
+		return ArtistMonthlyAccountsResponseDto
+				.builder()
+				.contents(contents)
+				.build();
+	}
+
 	private List<AlbumMonthlyAccountsDto> getAdminAlbumMonthlyAccounts(String startDate, String endDate, Long albumId) {
 		List<AlbumMonthlyAccountsDto> contents = new ArrayList<>();
 
@@ -93,6 +115,47 @@ public class BarChartDashboardService {
 		}
 		return contents;
 	}
+
+
+	private List<ArtistMonthlyAccountsDto> getMonthlyNetIncomeInfo(String startDate, String endDate) {
+		List<ArtistMonthlyAccountsDto> contents = new ArrayList<>();
+
+		List<Transaction> transactions = transactionRepository.findTransactionsByDurationBetween(startDate, endDate);
+
+		Map<String, Double> amountMappedByDuration = getAdminAmountMappedByDuration(transactions);
+		Map<String, Double> netIncomeAmountMappedByDuration = getAdminNetIncomeAmountMappedByDuration(transactions);
+
+		for (Map.Entry<String, Double> entry : amountMappedByDuration.entrySet()) {
+			ArtistMonthlyAccountsDto dto = ArtistMonthlyAccountsDto
+					.builder()
+					.month(convertDate(entry.getKey()).getMonthValue())
+					.netIncome(netIncomeAmountMappedByDuration.get(entry.getKey()))
+					.revenue(entry.getValue())
+					.build();
+			contents.add(dto);
+		}
+		return contents;
+	}
+
+	private List<ArtistMonthlyAccountsDto> getMonthlySettlementInfo(String startDate, String endDate, Long memberId) {
+		List<ArtistMonthlyAccountsDto> contents = new ArrayList<>();
+		List<Transaction> transactions = transactionRepository.findTransactionsByDurationBetween(startDate, endDate);
+
+		Map<String, Double> amountMappedByDuration = getArtistAmountMappedByDuration(transactions, memberId);
+		Map<String, Double> settlementAmountMappedByDuration = getArtistSettlementAmountMappedByDuration(transactions, memberId);
+
+		for (Map.Entry<String, Double> entry : amountMappedByDuration.entrySet()) {
+			ArtistMonthlyAccountsDto dto = ArtistMonthlyAccountsDto
+					.builder()
+					.month(convertDate(entry.getKey()).getMonthValue())
+					.settlement(settlementAmountMappedByDuration.get(entry.getKey()))
+					.revenue(entry.getValue())
+					.build();
+			contents.add(dto);
+		}
+		return contents;
+	}
+
 
 	public LocalDate convertDate(String date) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -149,5 +212,45 @@ public class BarChartDashboardService {
 								Transaction::getDuration,
 								Collectors.summingDouble(Transaction::getAmount))
 						);
+	}
+
+	private Map<String, Double> getAdminAmountMappedByDuration(List<Transaction> transactions) {
+		return transactions.stream()
+				.collect(
+						Collectors.groupingBy(
+								Transaction::getDuration,
+								Collectors.summingDouble(Transaction::getAmount)
+						));
+	}
+
+	private Map<String, Double> getAdminNetIncomeAmountMappedByDuration(List<Transaction> transactions) {
+		return transactions.stream()
+				.collect(
+						Collectors.groupingBy(
+								Transaction::getDuration,
+								Collectors.summingDouble((t) -> getNetIncome(t.getAmount(), t.getTrackMember().getCommissionRate()))
+						));
+	}
+
+	private Map<String, Double> getArtistSettlementAmountMappedByDuration(List<Transaction> transactions, Long memberId) {
+		return transactions.stream()
+				.filter(transaction -> transaction.getTrackMember().isArtistTrack())
+				.filter(transaction -> transaction.getTrackMember().getMemberId().equals(memberId))
+				.collect(
+						Collectors.groupingBy(
+								Transaction::getDuration,
+								Collectors.summingDouble((t) -> getSettlement(t.getAmount(), t.getTrackMember().getCommissionRate()))
+						));
+	}
+
+	private Map<String, Double> getArtistAmountMappedByDuration(List<Transaction> transactions, Long memberId) {
+		return transactions.stream()
+				.filter(transaction -> transaction.getTrackMember().isArtistTrack())
+				.filter(transaction -> transaction.getTrackMember().getMemberId().equals(memberId))
+				.collect(
+						Collectors.groupingBy(
+								Transaction::getDuration,
+								Collectors.summingDouble(Transaction::getAmount))
+				);
 	}
 }
