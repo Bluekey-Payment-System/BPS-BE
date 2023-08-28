@@ -12,6 +12,7 @@ import com.github.bluekey.dto.response.album.AlbumTrackListResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistAlbumsListResponseDto;
 import com.github.bluekey.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.album.AlbumService;
+import com.github.bluekey.service.dashboard.BarChartDashboardService;
 import com.github.bluekey.service.dashboard.SummaryDashBoardService;
 import com.github.bluekey.service.dashboard.TopTrackDashBoardService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,6 +39,7 @@ public class AlbumController {
     private final AlbumService albumService;
     private final TopTrackDashBoardService topTrackDashBoardService;
     private final SummaryDashBoardService summaryDashBoardService;
+    private final BarChartDashboardService barChartDashboardService;
 
     @Operation(summary = "신규 앨범 등록" , description = "신규 앨범 등록")
     @ApiResponses(value = {
@@ -157,7 +159,9 @@ public class AlbumController {
             @RequestParam("endDate") String endDate,
             @PathVariable("albumId") Long albumId
     ) {
-        return null;
+        return ResponseEntity.ok(
+                barChartDashboardService.getAlbumBarChartDashboard(startDate, endDate,
+                albumId, PrincipalConvertUtil.getMemberId()));
     }
 
     @Operation(summary = "앨범의 트랙 리스트 조회", description = "앨범의 트랙 리스트 조회")
@@ -176,9 +180,6 @@ public class AlbumController {
         return ResponseEntity.ok(albumService.getAlbumTrackList(albumId));
     }
 
-    // header 에 jwt 존재하는 ID 가져와서 조회 가능.
-    // 아티스트면 본인 앨범만 조회, 어드민이면 전체 조회.
-    // 최신 등록순.
     @Operation(summary = "앨범 리스트 조회", description = "앨범 리스트 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "앨범 리스트 조회 완료",
