@@ -11,6 +11,7 @@ import com.github.bluekey.dto.response.admin.AdminArtistProfileListReponseDto;
 import com.github.bluekey.dto.response.artist.*;
 import com.github.bluekey.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.auth.AuthService;
+import com.github.bluekey.service.dashboard.SummaryDashBoardService;
 import com.github.bluekey.service.dashboard.TopTrackDashBoardService;
 import com.github.bluekey.service.member.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,6 +40,7 @@ public class ArtistController {
     private final AuthService authService;
     private final MemberService memberService;
     private final TopTrackDashBoardService topTrackDashBoardService;
+    private final SummaryDashBoardService summaryDashBoardService;
 
     @Operation(summary = "아티스트 정보 변경" , description = "아티스트 정보 변경")
     @ApiResponses(value = {
@@ -115,16 +117,16 @@ public class ArtistController {
     }
 
 
+    @PreAuthorize("hasRole('ARTIST')")
     @Operation(summary = "아티스트 대쉬보드 기본정보", description = "아티스트 대쉬보드 기본정보")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "아티스트 대쉬보드 조회 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistListResponseDto.class))),
+            @ApiResponse(responseCode = "200", description = "아티스트 대쉬보드 조회 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistSummaryResponseDto.class))),
     })
-    @GetMapping("/{memberId}/dashboard/summary")
-    public ResponseEntity<ArtistListResponseDto> getArtistDashboardSummary(
-            @RequestParam("monthly") String monthly,
-            @PathVariable("memberId") Long memberId
+    @GetMapping("/dashboard/summary")
+    public ResponseEntity<ArtistSummaryResponseDto> getArtistDashboardSummary(
+            @RequestParam("monthly") String monthly
     ) {
-        return null;
+        return ResponseEntity.ok(summaryDashBoardService.getArtistDashboardInformation(monthly, PrincipalConvertUtil.getMemberId()));
     }
 
     @Operation(summary = "아티스트 대쉬보드 월별 정산액 LIST", description = "아티스트 대쉬보드 월별 정산액 LIST")

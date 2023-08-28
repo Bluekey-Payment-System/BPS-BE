@@ -1,8 +1,9 @@
 package com.github.bluekey.service.dashboard;
 
-import com.github.bluekey.dto.artist.BestArtistDto;
+import com.github.bluekey.dto.artist.*;
 import com.github.bluekey.dto.common.TotalAndGrowthDto;
 import com.github.bluekey.dto.response.album.AlbumSummaryResponseDto;
+import com.github.bluekey.dto.response.artist.ArtistSummaryResponseDto;
 import com.github.bluekey.dto.response.common.DashboardTotalInfoResponseDto;
 import com.github.bluekey.dto.track.BestTrackDto;
 import com.github.bluekey.entity.album.Album;
@@ -16,7 +17,6 @@ import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.exception.member.MemberNotFoundException;
 import com.github.bluekey.repository.album.AlbumRepository;
 import com.github.bluekey.repository.member.MemberRepository;
-import com.github.bluekey.repository.track.TrackRepository;
 import com.github.bluekey.repository.transaction.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -90,6 +90,35 @@ public class SummaryDashBoardService {
                 .settlementAmount(
                         TotalAndGrowthDto.builder()
                                 .totalAmount((long) settlementAmount)
+                                .growthRate(settlementAmountGrowthRate)
+                                .build()
+                )
+                .build();
+    }
+
+    public ArtistSummaryResponseDto getArtistDashboardInformation(String monthly, Long memberId) {
+        double settlementAmount = 0.0;
+        double previousMonthSettlementAmount = 0.0;
+        double settlementAmountGrowthRate = 0.0;
+        List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
+        List<Transaction> previousMonthTransactions = transactionRepository.findTransactionsByDuration(getPreviousMonth(monthly));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> {throw new MemberNotFoundException();});
+
+        Map<TrackMember, Double> trackMemberMappedByAmount = getArtistTrackMemberMappedByAmount(member, transactions);
+        Map<TrackMember, Double> previousMonthlyTrackMemberMappedByAmount = getArtistTrackMemberMappedByAmount(member, previousMonthTransactions);
+
+        settlementAmount = getSettlementAmount(trackMemberMappedByAmount, memberId);
+        previousMonthSettlementAmount = getSettlementAmount(previousMonthlyTrackMemberMappedByAmount, memberId);
+        settlementAmountGrowthRate = getGrowthRate(previousMonthSettlementAmount, settlementAmount);
+
+
+
+        return ArtistSummaryResponseDto.builder()
+                .bestAlbum(getTotalBestAlbum(monthly, member, transactions, previousMonthTransactions))
+                .bestTrack(getTotalBestTrack(monthly, member, transactions, previousMonthTransactions))
+                .settlementAmount(
+                        ArtistMonthlySettlementInfoDto.builder()
+                                .totalAmount(settlementAmount)
                                 .growthRate(settlementAmountGrowthRate)
                                 .build()
                 )
@@ -236,6 +265,24 @@ public class SummaryDashBoardService {
         return previousMonth.format(DateTimeFormatter.ofPattern("yyyy-MM"));
     }
 
+    private Map<TrackMember, Double> getArtistTrackMemberMappedByAmount(Member member, List<Transaction> transactions) {
+        Map<TrackMember, Double> trackMemberMappedByAmount = transactions.stream()
+                .filter(transaction -> transaction.getTrackMember().getMemberId().equals(member.getId()))
+                .collect(Collectors.groupingBy(
+                        Transaction::getTrackMember,
+                        Collectors.summingDouble(Transaction::getAmount)
+                ));
+
+        return trackMemberMappedByAmount.entrySet().stream()
+                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+    }
+
     private Map<TrackMember, Double> getTrackMemberMappedByAmount(String monthly) {
         List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
         Map<TrackMember, Double> trackMemberMappedByAmount = transactions.stream()
@@ -308,6 +355,105 @@ public class SummaryDashBoardService {
                         LinkedHashMap::new
                 ));
         return sortedTrackMappedByAmount;
+    }
+
+    private ArtistMonthlyInfoDto getTotalBestAlbum(String monthly, Member member, List<Transaction> transactions, List<Transaction> previousMonthlyTransactions) {
+
+        Map<Album, Double> trackMappedByAmount = transactions.stream()
+                .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
+                .filter(transaction -> transaction.getTrackMember().getMemberId().equals(member.getId()))
+                .collect(Collectors.groupingBy(
+                        transaction -> transaction.getTrackMember().getTrack().getAlbum(),
+                        Collectors.summingDouble(Transaction::getAmount)
+                ));
+
+        Map<Album, Double> trackMappedByAmountPreviousMonthly = previousMonthlyTransactions.stream()
+                .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
+                .filter(transaction -> transaction.getTrackMember().getMemberId().equals(member.getId()))
+                .collect(Collectors.groupingBy(
+                        transaction -> transaction.getTrackMember().getTrack().getAlbum(),
+                        Collectors.summingDouble(Transaction::getAmount)
+                ));
+
+
+        Map<Album, Double> sortedTrackMappedByAmount = trackMappedByAmount.entrySet().stream()
+                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        Map<Album, Double> sortedTrackMappedByAmountPreviousMonthly = trackMappedByAmountPreviousMonthly.entrySet().stream()
+                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        Map.Entry<Album, Double> bestTrackInformation = sortedTrackMappedByAmount.entrySet().iterator().next();
+        return ArtistMonthlyInfoDto.builder()
+                .albumId(bestTrackInformation.getKey().getId())
+                .enName(bestTrackInformation.getKey().getEnName())
+                .name(bestTrackInformation.getKey().getName())
+                .growthRate(
+                        getGrowthRate(
+                                sortedTrackMappedByAmountPreviousMonthly.get(bestTrackInformation.getKey()),
+                                bestTrackInformation.getValue())
+                )
+                .build();
+    }
+
+    private ArtistMonthlyTrackInfoDto getTotalBestTrack(String monthly, Member member, List<Transaction> transactions, List<Transaction> previousMonthlyTransactions) {
+        Map<Track, Double> trackMappedByAmount = transactions.stream()
+                .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
+                .filter(transaction -> transaction.getTrackMember().getMemberId().equals(member.getId()))
+                .collect(Collectors.groupingBy(
+                        transaction -> transaction.getTrackMember().getTrack(),
+                        Collectors.summingDouble(Transaction::getAmount)
+                ));
+
+        Map<Track, Double> trackMappedByAmountPreviousMonthly = previousMonthlyTransactions.stream()
+                .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
+                .filter(transaction -> transaction.getTrackMember().getMemberId().equals(member.getId()))
+                .collect(Collectors.groupingBy(
+                        transaction -> transaction.getTrackMember().getTrack(),
+                        Collectors.summingDouble(Transaction::getAmount)
+                ));
+
+
+        Map<Track, Double> sortedTrackMappedByAmount = trackMappedByAmount.entrySet().stream()
+                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        Map<Track, Double> sortedTrackMappedByAmountPreviousMonthly = trackMappedByAmountPreviousMonthly.entrySet().stream()
+                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        Map.Entry<Track, Double> bestTrackInformation = sortedTrackMappedByAmount.entrySet().iterator().next();
+        return ArtistMonthlyTrackInfoDto.builder()
+                .trackId(bestTrackInformation.getKey().getId())
+                .enName(bestTrackInformation.getKey().getEnName())
+                .name(bestTrackInformation.getKey().getName())
+                .growthRate(
+                        getGrowthRate(
+                                sortedTrackMappedByAmountPreviousMonthly.get(bestTrackInformation.getKey()),
+                                bestTrackInformation.getValue())
+                )
+                .build();
     }
 
 
@@ -478,6 +624,4 @@ public class SummaryDashBoardService {
         }
         return Math.floor(percentage);
     }
-
-
 }

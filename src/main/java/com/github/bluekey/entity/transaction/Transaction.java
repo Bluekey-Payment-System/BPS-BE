@@ -8,11 +8,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 
 @Getter
 @Entity
-@Table(name = "transaction")
+@Table(name = "transaction", indexes = @Index(name = "transaction_duration", columnList = "duration"))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Transaction extends BaseTimeEntity {
 
