@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @Schema(description = "아티스트의 월별 정산 정보")
 public class ArtistMonthlyAccountsDto {
@@ -14,15 +13,20 @@ public class ArtistMonthlyAccountsDto {
     private Integer month;
 
     @Schema(description = "정산액", example = "2142344")
-    private Long settlement;
+    private Double settlement;
 
     @Schema(description = "매출", example = "732143")
-    private Long revenue;
+    private double revenue;
+
+    @Schema(description = "회사 순이익", example = "732143")
+    private Double netIncome;
 
     @Builder
-    public ArtistMonthlyAccountsDto(final Integer month, final Long settlement, final Long revenue) {
+    public ArtistMonthlyAccountsDto(final Integer month, final Double settlement,
+            final double revenue, final Double netIncome) {
         this.month = month;
         this.settlement = settlement;
         this.revenue = revenue;
+        this.netIncome = netIncome;
     }
 }
