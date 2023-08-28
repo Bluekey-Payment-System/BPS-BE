@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class BarChartDashboard {
+public class BarChartDashboardService {
 
 	private static final String MONTH_PREFIX = "-01";
 	private final TransactionRepository transactionRepository;
