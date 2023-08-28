@@ -12,6 +12,7 @@ import com.github.bluekey.dto.response.album.AlbumTrackListResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistAlbumsListResponseDto;
 import com.github.bluekey.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.album.AlbumService;
+import com.github.bluekey.service.dashboard.SummaryDashBoardService;
 import com.github.bluekey.service.dashboard.TopTrackDashBoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -34,6 +35,7 @@ public class AlbumController {
 
     private final AlbumService albumService;
     private final TopTrackDashBoardService topTrackDashBoardService;
+    private final SummaryDashBoardService summaryDashBoardService;
 
     @Operation(summary = "신규 앨범 등록" , description = "신규 앨범 등록")
     @ApiResponses(value = {
@@ -135,7 +137,7 @@ public class AlbumController {
             @PathVariable("albumId") Long albumId,
             @RequestParam("monthly") String monthly
     ) {
-        return null;
+        return ResponseEntity.ok(summaryDashBoardService.getAlbumSummary(albumId, monthly, PrincipalConvertUtil.getMemberId()));
     }
 
 
