@@ -13,9 +13,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Schema(description = "아티스트의 당월 정보")
-public class ArtistListResponseDto {
+public class ArtistSummaryResponseDto {
+
     @Schema(description = "당월 정산 정보")
-    private ArtistMonthlySettlementInfoDto settlement;
+    private ArtistMonthlySettlementInfoDto settlementAmount;
 
     @Schema(description = "당월 앨범 정보")
     private ArtistMonthlyInfoDto bestAlbum;
@@ -24,8 +25,8 @@ public class ArtistListResponseDto {
     private ArtistMonthlyTrackInfoDto bestTrack;
 
     @Builder
-    public ArtistListResponseDto(final ArtistMonthlySettlementInfoDto settlement, final ArtistMonthlyInfoDto bestAlbum, final ArtistMonthlyTrackInfoDto bestTrack) {
-        this.settlement = settlement;
+    public ArtistSummaryResponseDto(final ArtistMonthlySettlementInfoDto settlementAmount, final ArtistMonthlyInfoDto bestAlbum, final ArtistMonthlyTrackInfoDto bestTrack) {
+        this.settlementAmount = settlementAmount;
         this.bestAlbum = bestAlbum;
         this.bestTrack = bestTrack;
     }
