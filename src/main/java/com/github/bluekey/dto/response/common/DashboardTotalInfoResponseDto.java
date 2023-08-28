@@ -7,7 +7,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -16,16 +15,16 @@ public class DashboardTotalInfoResponseDto {
 	@Schema(description = "총 매출액과 증감률")
 	private TotalAndGrowthDto revenue;
 	@Schema(description = "총 회사 이익과 증감률")
-	private TotalAndGrowthDto netIncome;
+	private TotalAndGrowthDto newIncome;
 	@Schema(description = "총 정산액과 증감률")
 	private TotalAndGrowthDto settlementAmount;
 	@Schema(description = "월의 Best 아티스트 매출액과 비율")
 	private BestArtistDto bestArtist;
 
 	@Builder
-	public DashboardTotalInfoResponseDto(TotalAndGrowthDto revenue, TotalAndGrowthDto netIncome, TotalAndGrowthDto settlementAmount, BestArtistDto bestArtist) {
+	public DashboardTotalInfoResponseDto(TotalAndGrowthDto revenue, TotalAndGrowthDto newIncome, TotalAndGrowthDto settlementAmount, BestArtistDto bestArtist) {
 		this.revenue = revenue;
-		this.netIncome = netIncome;
+		this.newIncome = newIncome;
 		this.settlementAmount = settlementAmount;
 		this.bestArtist = bestArtist;
 	}

@@ -16,16 +16,16 @@ public class ArtistRevenueProportionDto {
 	private MemberBaseDto artist;
 
 	@Schema(description = "아티스트 매출액", example = "1000000")
-	private long revenue;
+	private double revenue;
 
 	@Schema(description = "아티스트 매출액 증감률", example = "2.1")
-	private double growthRate;
+	private Double growthRate;
 
 	@Schema(description = "아티스트 매출액 비율", example = "45")
 	private double proportion;
 
 	@Builder
-	public ArtistRevenueProportionDto(final MemberBaseDto artist, final long revenue, final double growthRate, final double proportion) {
+	public ArtistRevenueProportionDto(final MemberBaseDto artist, final double revenue, final Double growthRate, final double proportion) {
 		this.artist = artist;
 		this.revenue = revenue;
 		this.growthRate = growthRate;
