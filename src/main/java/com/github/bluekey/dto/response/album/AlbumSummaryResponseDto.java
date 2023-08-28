@@ -17,7 +17,6 @@ public class AlbumSummaryResponseDto {
 	private Long albumId;
 	@Schema(description = "앨범명", example = "내 마음은")
 	private String name;
-
 	@Schema(description = "앨범 영어명", example = "mind")
 	private String enName;
 	@Schema(description = "총 매출액과 증감률")
