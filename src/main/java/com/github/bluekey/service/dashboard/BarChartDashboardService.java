@@ -1,7 +1,11 @@
 package com.github.bluekey.service.dashboard;
 
 import com.github.bluekey.dto.album.AlbumMonthlyAccountsDto;
+import com.github.bluekey.dto.artist.ArtistMonthlyAccountsDto;
+import com.github.bluekey.dto.common.MonthlyTrendDto;
 import com.github.bluekey.dto.response.album.AlbumMonthlyAccontsReponseDto;
+import com.github.bluekey.dto.response.artist.ArtistMonthlyAccountsResponseDto;
+import com.github.bluekey.dto.response.common.MonthlyTrendResponseDto;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.transaction.Transaction;
@@ -33,7 +37,7 @@ public class BarChartDashboardService {
 	private final AlbumRepository albumRepository;
 
 	@Transactional(readOnly = true)
-	public AlbumMonthlyAccontsReponseDto getAlbumBarChartDashboard(String startDate, String endDate
+	public MonthlyTrendResponseDto getAlbumBarChartDashboard(String startDate, String endDate
 			, Long albumId, Long memberId) {
 
 		Member member = memberRepository.findById(memberId)
@@ -42,32 +46,84 @@ public class BarChartDashboardService {
 		albumRepository.findById(albumId)
 				.orElseThrow(() -> new BusinessException(ErrorCode.ALBUM_NOT_FOUND));
 
-		List<AlbumMonthlyAccountsDto> contents = new ArrayList<>();
+		List<MonthlyTrendDto> contents = new ArrayList<>();
 
 		if (member.isAdmin()) {
-			contents = getAdminAlbumMonthlyAccounts(startDate, endDate, albumId);
+			contents = getMonthlyAlbumNetIncomeInfo(startDate, endDate, albumId);
 		} else if (member.getRole() == MemberRole.ARTIST) {
-			contents = getArtistAlbumMonthlyAccounts(startDate, endDate, albumId, memberId);
+			contents = getMonthlyAlbumSettlementInfo(startDate, endDate, albumId, memberId);
 		}
-		return AlbumMonthlyAccontsReponseDto
+		return MonthlyTrendResponseDto
 				.builder()
 				.contents(contents)
 				.build();
 	}
 
-	private List<AlbumMonthlyAccountsDto> getAdminAlbumMonthlyAccounts(String startDate, String endDate, Long albumId) {
-		List<AlbumMonthlyAccountsDto> contents = new ArrayList<>();
+	@Transactional(readOnly = true)
+	public MonthlyTrendResponseDto getBarChartDashboard(String startDate, String endDate
+			, Long memberId) {
 
+		Member member = memberRepository.findById(memberId)
+				.orElseThrow(MemberNotFoundException::new);
+
+		List<MonthlyTrendDto> contents = new ArrayList<>();
+
+		if (member.isAdmin()) {
+			contents = getMonthlyNetIncomeInfo(startDate, endDate);
+		} else if (member.getRole() == MemberRole.ARTIST) {
+			contents = getMonthlySettlementInfo(startDate, endDate, memberId);
+		}
+		return MonthlyTrendResponseDto
+				.builder()
+				.contents(contents)
+				.build();
+	}
+
+	private List<MonthlyTrendDto> getMonthlyAlbumNetIncomeInfo(String startDate, String endDate, Long albumId) {
 		List<Transaction> transactions = transactionRepository.findTransactionsByDurationBetween(startDate, endDate);
 
 		Map<String, Double> amountMappedByDuration = getAdminAmountMappedByDuration(transactions, albumId);
 		Map<String, Double> netIncomeAmountMappedByDuration = getAdminNetIncomeAmountMappedByDuration(transactions, albumId);
 
+		return getNetIncomeContent(amountMappedByDuration, netIncomeAmountMappedByDuration);
+	}
+
+	private List<MonthlyTrendDto> getMonthlyAlbumSettlementInfo(String startDate, String endDate, Long albumId, Long memberId) {
+		List<Transaction> transactions = transactionRepository.findTransactionsByDurationBetween(startDate, endDate);
+
+		Map<String, Double> amountMappedByDuration = getArtistAmountMappedByDuration(transactions, albumId, memberId);
+		Map<String, Double> settlementAmountMappedByDuration = getArtistSettlementAmountMappedByDuration(transactions, albumId, memberId);
+
+		return getSettlementContent(amountMappedByDuration, settlementAmountMappedByDuration);
+	}
+
+
+	private List<MonthlyTrendDto> getMonthlyNetIncomeInfo(String startDate, String endDate) {
+		List<Transaction> transactions = transactionRepository.findTransactionsByDurationBetween(startDate, endDate);
+
+		Map<String, Double> amountMappedByDuration = getAdminAmountMappedByDuration(transactions);
+		Map<String, Double> netIncomeAmountMappedByDuration = getAdminNetIncomeAmountMappedByDuration(transactions);
+
+		return getNetIncomeContent(amountMappedByDuration, netIncomeAmountMappedByDuration);
+	}
+
+	private List<MonthlyTrendDto> getMonthlySettlementInfo(String startDate, String endDate, Long memberId) {
+		List<Transaction> transactions = transactionRepository.findTransactionsByDurationBetween(startDate, endDate);
+
+		Map<String, Double> amountMappedByDuration = getArtistAmountMappedByDuration(transactions, memberId);
+		Map<String, Double> settlementAmountMappedByDuration = getArtistSettlementAmountMappedByDuration(transactions, memberId);
+
+		return getSettlementContent(amountMappedByDuration, settlementAmountMappedByDuration);
+	}
+
+	private List<MonthlyTrendDto> getSettlementContent(Map<String, Double> amountMappedByDuration,
+			Map<String, Double> settlementAmountMappedByDuration) {
+		List<MonthlyTrendDto> contents = new ArrayList<>();
 		for (Map.Entry<String, Double> entry : amountMappedByDuration.entrySet()) {
-			AlbumMonthlyAccountsDto dto = AlbumMonthlyAccountsDto
+			MonthlyTrendDto dto = MonthlyTrendDto
 					.builder()
 					.month(convertDate(entry.getKey()).getMonthValue())
-					.netIncome(netIncomeAmountMappedByDuration.get(entry.getKey()))
+					.settlement(settlementAmountMappedByDuration.get(entry.getKey()))
 					.revenue(entry.getValue())
 					.build();
 			contents.add(dto);
@@ -75,18 +131,14 @@ public class BarChartDashboardService {
 		return contents;
 	}
 
-	private List<AlbumMonthlyAccountsDto> getArtistAlbumMonthlyAccounts(String startDate, String endDate, Long albumId, Long memberId) {
-		List<AlbumMonthlyAccountsDto> contents = new ArrayList<>();
-		List<Transaction> transactions = transactionRepository.findTransactionsByDurationBetween(startDate, endDate);
-
-		Map<String, Double> amountMappedByDuration = getArtistAmountMappedByDuration(transactions, albumId, memberId);
-		Map<String, Double> settlementAmountMappedByDuration = getArtistSettlementAmountMappedByDuration(transactions, albumId, memberId);
-
+	private List<MonthlyTrendDto> getNetIncomeContent(Map<String, Double> amountMappedByDuration,
+			Map<String, Double> netIncomeAmountMappedByDuration) {
+		List<MonthlyTrendDto> contents = new ArrayList<>();
 		for (Map.Entry<String, Double> entry : amountMappedByDuration.entrySet()) {
-			AlbumMonthlyAccountsDto dto = AlbumMonthlyAccountsDto
+			MonthlyTrendDto dto = MonthlyTrendDto
 					.builder()
 					.month(convertDate(entry.getKey()).getMonthValue())
-					.settlement(settlementAmountMappedByDuration.get(entry.getKey()))
+					.netIncome(netIncomeAmountMappedByDuration.get(entry.getKey()))
 					.revenue(entry.getValue())
 					.build();
 			contents.add(dto);
@@ -149,5 +201,45 @@ public class BarChartDashboardService {
 								Transaction::getDuration,
 								Collectors.summingDouble(Transaction::getAmount))
 						);
+	}
+
+	private Map<String, Double> getAdminAmountMappedByDuration(List<Transaction> transactions) {
+		return transactions.stream()
+				.collect(
+						Collectors.groupingBy(
+								Transaction::getDuration,
+								Collectors.summingDouble(Transaction::getAmount)
+						));
+	}
+
+	private Map<String, Double> getAdminNetIncomeAmountMappedByDuration(List<Transaction> transactions) {
+		return transactions.stream()
+				.collect(
+						Collectors.groupingBy(
+								Transaction::getDuration,
+								Collectors.summingDouble((t) -> getNetIncome(t.getAmount(), t.getTrackMember().getCommissionRate()))
+						));
+	}
+
+	private Map<String, Double> getArtistSettlementAmountMappedByDuration(List<Transaction> transactions, Long memberId) {
+		return transactions.stream()
+				.filter(transaction -> transaction.getTrackMember().isArtistTrack())
+				.filter(transaction -> transaction.getTrackMember().getMemberId().equals(memberId))
+				.collect(
+						Collectors.groupingBy(
+								Transaction::getDuration,
+								Collectors.summingDouble((t) -> getSettlement(t.getAmount(), t.getTrackMember().getCommissionRate()))
+						));
+	}
+
+	private Map<String, Double> getArtistAmountMappedByDuration(List<Transaction> transactions, Long memberId) {
+		return transactions.stream()
+				.filter(transaction -> transaction.getTrackMember().isArtistTrack())
+				.filter(transaction -> transaction.getTrackMember().getMemberId().equals(memberId))
+				.collect(
+						Collectors.groupingBy(
+								Transaction::getDuration,
+								Collectors.summingDouble(Transaction::getAmount))
+				);
 	}
 }
