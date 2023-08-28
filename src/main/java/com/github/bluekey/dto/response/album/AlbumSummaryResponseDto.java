@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 @Schema(description = "앨범 요약 정보")
 public class AlbumSummaryResponseDto {
 
+	@Schema(description = "앨범 PK", example = "1")
+	private Long albumId;
 	@Schema(description = "앨범명", example = "내 마음은")
 	private String name;
 
@@ -28,7 +30,8 @@ public class AlbumSummaryResponseDto {
 	private BestTrackDto bestTrack;
 
 	@Builder
-	public AlbumSummaryResponseDto(final String name, final String enName, final TotalAndGrowthDto revenue, final TotalAndGrowthDto newIncome, final TotalAndGrowthDto settlementAmount, final BestTrackDto bestTrack) {
+	public AlbumSummaryResponseDto(final Long albumId, final String name, final String enName, final TotalAndGrowthDto revenue, final TotalAndGrowthDto newIncome, final TotalAndGrowthDto settlementAmount, final BestTrackDto bestTrack) {
+		this.albumId = albumId;
 		this.name = name;
 		this.enName = enName;
 		this.revenue = revenue;

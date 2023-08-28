@@ -137,11 +137,22 @@ public class SummaryDashBoardService {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> {throw new MemberNotFoundException();});
         if (member.getRole().equals(MemberRole.ARTIST)) {
             return AlbumSummaryResponseDto.builder()
+                    .albumId(album.getId())
                     .name(album.getName())
                     .enName(album.getEnName())
                     .bestTrack(bestTrack)
-                    .revenue(null)
-                    .newIncome(null)
+                    .revenue(
+                            TotalAndGrowthDto.builder()
+                            .totalAmount(null)
+                            .growthRate(null)
+                            .build()
+                    )
+                    .newIncome(
+                            TotalAndGrowthDto.builder()
+                                    .totalAmount(null)
+                                    .growthRate(null)
+                                    .build()
+                    )
                     .settlementAmount(
                             TotalAndGrowthDto.builder()
                                     .totalAmount((long) settlementAmount)
@@ -151,6 +162,7 @@ public class SummaryDashBoardService {
                     .build();
         } else {
             return AlbumSummaryResponseDto.builder()
+                    .albumId(album.getId())
                     .name(album.getName())
                     .enName(album.getEnName())
                     .bestTrack(bestTrack)
