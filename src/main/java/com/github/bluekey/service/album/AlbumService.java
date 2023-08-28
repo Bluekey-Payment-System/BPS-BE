@@ -30,6 +30,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -135,13 +136,32 @@ public class AlbumService {
 	public ArtistAlbumsListResponseDto getAlbums(Pageable pageable, Long memberId, String keyword) {
 		Member member = memberRepository.findMemberByIdAndIsRemovedFalse(memberId)
 				.orElseThrow(MemberNotFoundException::new);
+
+		Long totalItems = null;
+		List<AlbumInfoDto> contents = new ArrayList<>();
+
 		if (member.isAdmin()) {
+			Page<Album> albums = albumRepository.findAllByIsRemovedFalseAndSearchByKeyword(pageable, keyword);
+
+			totalItems = albums.getTotalElements();
+			contents = albums.getContent().stream().map(AlbumInfoDto::from).collect(Collectors.toList());
 
 		} else if (member.isUser()) {
+			List<TrackMember> trackMembers = trackMemberRepository.findAllByMemberIdAndIsRemovedFalse(memberId);
 
+			Set<Album> filteredAlbums = filterAlbumsByKeyword(trackMembers, keyword);
+
+			totalItems = (long) filteredAlbums.size();
+
+			List<Album> albumList = filteredAlbums.stream().sorted(Comparator.comparing(Album::getCreatedAt).reversed()).collect(Collectors.toList());
+			albumList = paginateAlbums(albumList, pageable);
+			contents = albumList.stream().map(AlbumInfoDto::from).collect(Collectors.toList());
 		}
-		Page<Album> albums = albumRepository.findAllByIsRemovedFalseOrderByCreatedAtDesc(pageable);
-		return null;
+		return ArtistAlbumsListResponseDto
+				.builder()
+				.totalItems(totalItems)
+				.contents(contents)
+				.build();
 	}
 
 	@Transactional(readOnly = true)
@@ -185,6 +205,23 @@ public class AlbumService {
 		} else {
 			return albums.subList((int) pageable.getOffset(), end);
 		}
+	}
+
+	private Set<Album> filterAlbumsByKeyword(List<TrackMember> trackMembers, String keyword) {
+		return trackMembers.stream()
+				.map(TrackMember::getTrack)
+				.map(track -> getAlbumIfNameContainsKeyword(track, keyword))
+				.filter(Objects::nonNull)
+				.collect(Collectors.toSet());
+	}
+
+	private Album getAlbumIfNameContainsKeyword(Track track, String keyword) {
+		String albumName = track.getAlbum().getName();
+		String albumEnName = track.getAlbum().getEnName();
+
+		return (albumName != null && albumName.contains(keyword)) ||
+				(albumEnName != null && albumEnName.contains(keyword)) ?
+				track.getAlbum() : null;
 	}
 
 	private void updateAlbumImage(MultipartFile file, Album album) {
