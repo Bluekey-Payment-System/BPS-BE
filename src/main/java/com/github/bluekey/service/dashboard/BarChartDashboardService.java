@@ -44,7 +44,7 @@ public class BarChartDashboardService {
 
 		List<AlbumMonthlyAccountsDto> contents = new ArrayList<>();
 
-		if (member.getRole() == MemberRole.ADMIN || member.getRole() == MemberRole.SUPER_ADMIN) {
+		if (member.isAdmin()) {
 			contents = getAdminAlbumMonthlyAccounts(startDate, endDate, albumId);
 		} else if (member.getRole() == MemberRole.ARTIST) {
 			contents = getArtistAlbumMonthlyAccounts(startDate, endDate, albumId, memberId);
