@@ -10,6 +10,7 @@ import com.github.bluekey.dto.response.album.AlbumTopResponseDto;
 import com.github.bluekey.dto.response.album.AlbumTrackAccountsResponseDto;
 import com.github.bluekey.dto.response.album.AlbumTrackListResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistAlbumsListResponseDto;
+import com.github.bluekey.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.album.AlbumService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -18,6 +19,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -185,6 +190,11 @@ public class AlbumController {
             @RequestParam("size") Integer size,
             @RequestParam(value = "keyword", required = false) String keyword
     ) {
-        return null;
+        Pageable pageable = PageRequest.of(page, size);
+        if (keyword == null) {
+            return ResponseEntity.ok(albumService.getAlbums(pageable, PrincipalConvertUtil.getMemberId()));
+        } else {
+            return ResponseEntity.ok(albumService.getAlbums(pageable, PrincipalConvertUtil.getMemberId(), keyword));
+        }
     }
 }

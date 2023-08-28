@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface TrackMemberRepository extends JpaRepository<TrackMember, Long> {
     Optional<TrackMember> findTrackMemberByNameAndTrack(String name, Track track);
     List<TrackMember> findTrackMembersByTrack(Track track);
+
+    List<TrackMember> findAllByMemberIdAndIsRemovedFalse(Long memberId);
 }
