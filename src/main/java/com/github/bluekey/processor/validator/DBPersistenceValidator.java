@@ -40,6 +40,18 @@ public class DBPersistenceValidator {
         return true;
     }
 
+    public boolean hasNotExistArtistWithExcelName(String artistName) {
+        Optional<Member> memberFindByEnName = memberRepository.findMemberByEnName(artistName);
+        if (memberFindByEnName.isPresent()) {
+            return false;
+        }
+        Optional<Member> memberFindByKoName = memberRepository.findMemberByName(artistName);
+        if (memberFindByKoName.isPresent()) {
+            return false;
+        }
+        return true;
+    }
+
     public boolean hasNotExistedAlbum(Cell cell) {
         DataFormatter dataFormatter = new DataFormatter();
         String albumName = dataFormatter.formatCellValue(cell);

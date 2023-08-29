@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Schema(description = "어드민 계정 정보")
-public class AdminAccountDto {
+public class AdminProfileViewDto {
 	@Schema(description = "어드민 멤버 아이디", example = "1")
 	private Long memberId;
 	@Schema(description = "어드민 닉네임", example = "admin")
@@ -19,22 +19,26 @@ public class AdminAccountDto {
 	private String loginId;
 	@Schema(description = "이메일", example = "bluekey@gmail.com")
 	private String email;
+	@Schema(description = "프로필 이미지", example = "https://bluekey.com/profile/1")
+	private String profileImage;
 
 	@Builder
-	public AdminAccountDto(final Long memberId, final String nickname, final String loginId,
-			final String email) {
+	public AdminProfileViewDto(final Long memberId, final String nickname, final String loginId,
+			final String email, final String profileImage) {
 		this.memberId = memberId;
 		this.nickname = nickname;
 		this.loginId = loginId;
 		this.email = email;
+		this.profileImage = profileImage;
 	}
 
-	public static AdminAccountDto from(Member member) {
-		return AdminAccountDto.builder()
+	public static AdminProfileViewDto from(Member member) {
+		return AdminProfileViewDto.builder()
 				.memberId(member.getId())
 			.nickname(member.getName())
 			.loginId(member.getLoginId())
 			.email(member.getEmail().getValue())
+			.profileImage(member.getProfileImage())
 			.build();
 	}
 }

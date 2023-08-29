@@ -14,15 +14,8 @@ spring:
   batch:
     jdbc:
       initialize-schema: ALWAYS
-  mail:
-    host: smtp.naver.com
-    port: 465
-    username:  # 이메일 변경 필요
-    password:  # 비밀번호 변경 필요
-    properties:
-      mail.smtp.auth: true
-      mail.smtp.ssl.enable: true
-      mail.smtp.ssl.trust: smtp.naver.com
+  server:
+    host: http://localhost:8080
   jpa:
     hibernate:
       ddl-auto: create

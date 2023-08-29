@@ -1,6 +1,8 @@
 package com.github.bluekey.dto.request.track;
 
 import com.github.bluekey.dto.track.TrackCommissionRateDto;
+import com.github.bluekey.entity.album.Album;
+import com.github.bluekey.entity.track.Track;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,13 +21,13 @@ public class TrackRequestDto {
     private String enName;
 
     @Schema(description = "블루키 오리지널 트랙", example = "false")
-    private boolean isOriginalTrack;
+    private Boolean isOriginalTrack;
 
     @Schema(description = "트랙별 요율정보")
     private List<TrackCommissionRateDto> artists;
 
     @Builder
-    public TrackRequestDto(final String name, final String enName, final boolean isOriginalTrack,
+    public TrackRequestDto(final String name, final String enName, final Boolean isOriginalTrack,
             final List<TrackCommissionRateDto> artists) {
         this.name = name;
         this.enName = enName;
@@ -33,4 +35,12 @@ public class TrackRequestDto {
         this.artists = artists;
     }
 
+    public Track toTrack(Album album) {
+        return Track.ByTrackBuilder()
+                .album(album)
+                .name(name)
+                .enName(enName)
+                .isOriginalTrack(isOriginalTrack)
+                .build();
+    }
 }

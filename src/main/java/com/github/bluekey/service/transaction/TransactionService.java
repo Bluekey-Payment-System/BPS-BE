@@ -5,6 +5,7 @@ import com.github.bluekey.dto.request.transaction.OriginalTransactionRequestDto;
 import com.github.bluekey.dto.response.common.ListResponse;
 import com.github.bluekey.dto.response.transaction.OriginalTransactionResponseDto;
 import com.github.bluekey.entity.transaction.OriginalTransaction;
+import com.github.bluekey.exception.transaction.AlreadyOriginalTransactionExistException;
 import com.github.bluekey.exception.transaction.ExcelUploadException;
 import com.github.bluekey.processor.ExcelFileDBMigrationProcessManager;
 import com.github.bluekey.processor.ExcelFileProcessManager;
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
@@ -45,20 +47,28 @@ public class TransactionService {
     private final ExcelFileDBMigrationProcessManager excelFileDBMigrationProcessManager;
 
     public ListResponse<OriginalTransactionResponseDto> getOriginalTransactions(String uploadAt) {
-        List<OriginalTransaction> originalTransactions = originalTransactionRepository.findAllByUploadAt(uploadAt);
+        List<OriginalTransaction> originalTransactions = originalTransactionRepository.findAllByUploadAtAndIsRemovedFalse(uploadAt);
         return new ListResponse<>(originalTransactions.size(), originalTransactions.stream().map(OriginalTransactionResponseDto::from).collect(Collectors.toList()));
     }
 
+    @Transactional
     public OriginalTransactionResponseDto removeOriginalTransaction(Long id) {
         OriginalTransaction originalTransaction = originalTransactionRepository.findByIdOrElseThrow(id);
 
-        // 삭제 로직
+        originalTransaction.remove();
+        originalTransactionRepository.save(originalTransaction);
+        excelUploadUtil.deleteExcel(excelUploadUtil.getExcelKey(originalTransaction.getFileName(), originalTransaction.getUploadAt()));
+
+        originalTransaction.getTransactions()
+                .forEach(transaction -> transaction.remove());
 
         return OriginalTransactionResponseDto.from(originalTransaction);
     }
 
+    @Transactional
     public OriginalTransactionResponseDto saveOriginalTransaction(MultipartFile file, OriginalTransactionRequestDto requestDto) {
-        String uploadAt = requestDto.getUploadAt();
+        String uploadAt = requestDto.getUploadMonth();
+        String fileName = file.getOriginalFilename();
 
         ExcelFileProcessManager excelFileProcessManager = new ExcelFileProcessManager(
                 file,
@@ -73,17 +83,21 @@ public class TransactionService {
             throw new ExcelUploadException(errors);
         }
 
-//        String s3Url = awsS3Manager.upload(file, uploadAt + "/" + file.getOriginalFilename(), S3PrefixType.EXCEL);
+        originalTransactionRepository.findOriginalTransactionByFileNameAndUploadAtAndIsRemovedFalse(fileName, uploadAt).ifPresent((originalTransaction) -> {
+                    throw new AlreadyOriginalTransactionExistException();
+                });
+
         String s3Url = excelUploadUtil.uploadExcel(file, excelUploadUtil.getExcelKey(file.getOriginalFilename(), uploadAt));
 
 
         OriginalTransaction originalTransaction = OriginalTransaction.builder()
-                .uploadAt(requestDto.getUploadAt())
+                .uploadAt(requestDto.getUploadMonth())
                 .fileName(file.getOriginalFilename())
                 .fileUrl(s3Url)
                 .distributorType(excelFileProcessManager.getDistributorType())
                 .build();
         originalTransactionRepository.save(originalTransaction);
+        ExcelFilesToDBMigration();
         return OriginalTransactionResponseDto.fromWithWarning(originalTransaction, excelFileProcessManager.getWarnings());
     }
 

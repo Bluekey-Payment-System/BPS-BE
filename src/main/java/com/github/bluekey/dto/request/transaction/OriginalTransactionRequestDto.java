@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @Schema(description = "파일 업로드 요청")
 public class OriginalTransactionRequestDto {
 
-    @Schema(description = "유통사 엑셀 파일을 업로드 하는 시점", example = "2023-08")
-    private String uploadAt;
+    @Schema(description = "유통사 엑셀 파일을 업로드 하는 시점", example = "202308")
+    private String uploadMonth;
 
     public OriginalTransactionRequestDto(final String uploadAt) {
-        this.uploadAt = uploadAt;
+        this.uploadMonth = uploadMonth;
     }
 }

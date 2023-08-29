@@ -1,5 +1,6 @@
 package com.github.bluekey.dto.artist;
 
+import com.github.bluekey.entity.member.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -16,14 +17,11 @@ public class SimpleArtistAccountDto {
     private String name;
     @Schema(description = "아티스트 이름(영문)", example = "Hyukki")
     private String enName;
-    @Schema(description = "요율", example = "50")
-    private Integer commissionRate;
 
     @Builder
-    public SimpleArtistAccountDto(Long memberId, String name, String enName, Integer commissionRate) {
-        this.memberId = memberId;
-        this.name = name;
-        this.enName = enName;
-        this.commissionRate = commissionRate;
+    public SimpleArtistAccountDto(Member member) {
+        this.memberId = member.getId();
+        this.name = member.getName();
+        this.enName = member.getEnName();
     }
 }

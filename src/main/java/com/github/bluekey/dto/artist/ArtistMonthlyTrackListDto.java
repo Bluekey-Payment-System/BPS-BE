@@ -20,24 +20,24 @@ public class ArtistMonthlyTrackListDto {
     private ArtistMonthlyAlbumDto album;
 
     @Schema(description = "아티스트 정보 리스트")
-    private ArtistMonthlyArtistsDto artists;
+    private List<ArtistMonthlyArtistsDto> artists;
 
     @Schema(description = "매출액", example = "123314")
-    private Long revenue;
+    private Integer revenue;
 
     @Schema(description = "수익액", example = "1234")
-    private Long netIncome;
+    private Integer netIncome;
 
     @Schema(description = "정산액", example = "1234")
-    private Long settlementAmount;
+    private Integer settlementAmount;
 
     @Schema(description = "요율", example = "60")
-    private Double commissionRate;
+    private Integer commissionRate;
 
     @Builder
     public ArtistMonthlyTrackListDto(final ArtistMonthlyTrackDto track, final ArtistMonthlyAlbumDto album,
-            final ArtistMonthlyArtistsDto artists, final Long revenue, final Long netIncome,
-            final Long settlementAmount, final Double commissionRate) {
+            final List<ArtistMonthlyArtistsDto> artists, final Integer revenue, final Integer netIncome,
+            final Integer settlementAmount, final Integer commissionRate) {
         this.track = track;
         this.album = album;
         this.artists = artists;

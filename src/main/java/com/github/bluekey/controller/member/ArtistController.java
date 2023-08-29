@@ -3,13 +3,19 @@ package com.github.bluekey.controller.member;
 import static org.springframework.http.ResponseEntity.ok;
 
 import com.github.bluekey.dto.artist.ArtistAccountDto;
+import com.github.bluekey.dto.artist.ArtistProfileViewDto;
 import com.github.bluekey.dto.request.admin.AdminArtistProfileRequestDto;
 import com.github.bluekey.dto.request.artist.ArtistProfileRequestDto;
 import com.github.bluekey.dto.request.artist.ArtistRequestDto;
 import com.github.bluekey.dto.response.admin.AdminArtistProfileListReponseDto;
 import com.github.bluekey.dto.response.artist.*;
+import com.github.bluekey.dto.response.common.MonthlyTrendResponseDto;
 import com.github.bluekey.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.auth.AuthService;
+import com.github.bluekey.service.dashboard.BarChartDashboardService;
+import com.github.bluekey.service.dashboard.MonthlyTracksDashBoardService;
+import com.github.bluekey.service.dashboard.SummaryDashBoardService;
+import com.github.bluekey.service.dashboard.TopTrackDashBoardService;
 import com.github.bluekey.service.member.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,6 +25,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,6 +44,10 @@ public class ArtistController {
 
     private final AuthService authService;
     private final MemberService memberService;
+    private final TopTrackDashBoardService topTrackDashBoardService;
+    private final SummaryDashBoardService summaryDashBoardService;
+    private final BarChartDashboardService barChartDashboardService;
+    private final MonthlyTracksDashBoardService monthlyTracksDashBoardService;
 
     @Operation(summary = "아티스트 정보 변경" , description = "아티스트 정보 변경")
     @ApiResponses(value = {
@@ -44,9 +56,9 @@ public class ArtistController {
     @PatchMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ArtistProfileResponseDto> artistProfileUpdate(
             @Parameter(schema = @Schema(implementation = ArtistProfileRequestDto.class), description = "Artist 수정 API 입니다.")
-            @RequestPart("data") @Valid ArtistProfileRequestDto requestDto,
+            @RequestPart(value = "data", required = false) @Valid ArtistProfileRequestDto requestDto,
             @Parameter(description = "multipart/form-data 형식의 프로필 이미지 데이터, key 값은 file 입니다.")
-            @RequestParam("file") MultipartFile file) {
+            @RequestParam(value = "file", required = false) MultipartFile file) {
         return ok(memberService.updateArtistProfile(requestDto, file, PrincipalConvertUtil.getMemberId()));
     }
 
@@ -62,11 +74,12 @@ public class ArtistController {
             @Parameter(schema = @Schema(implementation = ArtistRequestDto.class), description = "Artist 등록 API 입니다.")
             @RequestPart("data") @Valid ArtistRequestDto requestDto,
             @Parameter(description = "multipart/form-data 형식의 프로필 이미지 데이터, key 값은 file 입니다.")
-            @RequestParam("file") MultipartFile file
+            @RequestParam(value = "file", required = false) MultipartFile file
             ) {
         return ok(authService.createArtist(file, requestDto));
     }
 
+    @Deprecated
     @Operation(summary = "관리자가 등록한 아티스트의 앨범 LIST", description = "관리자가 등록한 아티스트의 앨범 LIST")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "관리자가 등록한 아티스트의 앨범 LIST 조회 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistAlbumsListResponseDto.class))),
@@ -75,7 +88,9 @@ public class ArtistController {
     public ArtistAlbumsListResponseDto getArtistAlbums(
             @RequestParam("page") Integer page,
             @RequestParam("size") Integer size,
+            @RequestParam(value = "keyword", required = false) String keyword,
             @PathVariable("memberId") Long memberId
+
     ) {
         return null;
     }
@@ -86,54 +101,54 @@ public class ArtistController {
     })
     @GetMapping("/{memberId}/dashboard/track")
     public ResponseEntity<ArtistMonthlyTrackListResponseDto> getArtistMonthlyTracks(
-            @RequestParam("monthly") LocalDate monthly,
+            @RequestParam("monthly") String monthly,
             @RequestParam("page") Integer page,
             @RequestParam("size") Integer size,
             @RequestParam(value = "sortBy", required = false) String sortBy,
-            @RequestParam("searchBy") String searchBy,
+            @RequestParam("searchType") String searchType,
             @RequestParam(value = "keyword", required = false) String keyword,
             @PathVariable("memberId") Long memberId
     ) {
-        return null;
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(monthlyTracksDashBoardService.getArtistTracks(monthly, pageable, sortBy, searchType, keyword, memberId));
     }
 
     @Operation(summary = "아티스트 기준 당월 TOP N 트랙 매출 LIST", description = "아티스트 기준 당월 TOP N 트랙 매출 LIST")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "아티스트 기준 당월 TOP N 트랙 매출 LIST 조회 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistTopResponseDto.class))),
     })
-    @GetMapping("/{memberId}/dashboard/topTrack")
+    @GetMapping("/dashboard/top-track")
     public ResponseEntity<ArtistTopResponseDto> getArtistTop(
-            @RequestParam("monthly") LocalDate monthly,
-            @RequestParam("rank") Integer rank,
-            @PathVariable("memberId") Long memberId
+            @RequestParam("monthly") String monthly,
+            @RequestParam("rank") Integer rank
     ) {
-        return null;
+        return ResponseEntity.ok(topTrackDashBoardService.getArtistTopTracks(monthly, rank, PrincipalConvertUtil.getMemberId()));
     }
 
 
+    @PreAuthorize("hasRole('ARTIST')")
     @Operation(summary = "아티스트 대쉬보드 기본정보", description = "아티스트 대쉬보드 기본정보")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "아티스트 대쉬보드 조회 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistListResponseDto.class))),
+            @ApiResponse(responseCode = "200", description = "아티스트 대쉬보드 조회 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistSummaryResponseDto.class))),
     })
-    @GetMapping("/{memberId}/dashboard/summary")
-    public ResponseEntity<ArtistListResponseDto> getArtistDashboardSummary(
-            @RequestParam("monthly") String monthly,
-            @PathVariable("memberId") Long memberId
+    @GetMapping("/dashboard/summary")
+    public ResponseEntity<ArtistSummaryResponseDto> getArtistDashboardSummary(
+            @RequestParam("monthly") String monthly
     ) {
-        return null;
+        return ResponseEntity.ok(summaryDashBoardService.getArtistDashboardInformation(monthly, PrincipalConvertUtil.getMemberId()));
     }
 
     @Operation(summary = "아티스트 대쉬보드 월별 정산액 LIST", description = "아티스트 대쉬보드 월별 정산액 LIST")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "아티스트 대쉬보드 월별 정산액 조회 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistMonthlyAccountsResponseDto.class))),
+            @ApiResponse(responseCode = "200", description = "아티스트 대쉬보드 월별 정산액 조회 완료",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistMonthlyAccountsResponseDto.class))),
     })
-    @GetMapping("/{memberId}/dashboard")
-    public ResponseEntity<ArtistMonthlyAccountsResponseDto> getArtistMonthlyAccounts(
+    @GetMapping("/dashboard/trend")
+    public ResponseEntity<MonthlyTrendResponseDto> getArtistMonthlyAccounts(
             @RequestParam("startDate") String startDate,
-            @RequestParam("endDate") String endDate,
-            @PathVariable("memberId") Long memberId
+            @RequestParam("endDate") String endDate
     ) {
-        return null;
+        return ok(barChartDashboardService.getBarChartDashboard(startDate, endDate, PrincipalConvertUtil.getMemberId()));
     }
 
     @Operation(summary = "Admin이 아티스트의 정보 변경" , description = "Admin이 아티스트의 정보 변경")
@@ -169,7 +184,17 @@ public class ArtistController {
     })
     @GetMapping("/simple")
     public ResponseEntity<SimpleArtistAccountListResponseDto> getSimpleArtists() {
-        return ok().build();
+        return ok(memberService.getSimpleArtistAccounts());
     }
 
+    @Operation(summary = "아티스트 프로필 조회", description = "아티스트 프로필 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "아티스트 프로필 조회 완료",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistProfileViewDto.class))),
+    })
+    @PreAuthorize("hasRole('ARTIST')")
+    @GetMapping("/profile")
+    public ResponseEntity<ArtistProfileViewDto> getArtistProfile() {
+        return ok(memberService.getArtistProfile(PrincipalConvertUtil.getMemberId()));
+    }
 }

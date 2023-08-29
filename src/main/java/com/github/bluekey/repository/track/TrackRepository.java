@@ -2,6 +2,7 @@ package com.github.bluekey.repository.track;
 
 import com.github.bluekey.entity.album.Album;
 import com.github.bluekey.entity.track.Track;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -13,4 +14,7 @@ public interface TrackRepository extends JpaRepository<Track, Long> {
 
     Optional<Track> findTrackByNameIgnoreCase(String name);
     Optional<Track> findTrackByEnNameIgnoreCase(String enName);
+
+    List<Track> findAllByAlbumId(Long albumId);
+    List<Track> findAllByAlbumIdAndIsRemovedFalse(Long albumId);
 }

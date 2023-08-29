@@ -19,4 +19,10 @@ public class ArtistsRevenueProportionResponseDto {
 	public ArtistsRevenueProportionResponseDto(final List<ArtistRevenueProportionDto> contents) {
 		this.contents = contents;
 	}
+
+	public static ArtistsRevenueProportionResponseDto from(List<ArtistRevenueProportionDto> contents) {
+		return ArtistsRevenueProportionResponseDto.builder()
+				.contents(contents)
+				.build();
+	}
 }

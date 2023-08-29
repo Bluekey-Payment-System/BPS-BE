@@ -3,6 +3,7 @@ package com.github.bluekey.exception;
 import com.github.bluekey.exception.transaction.ExcelUploadException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -34,6 +35,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_INPUT_TYPE);
         log.debug("Parameter type is invalid: {}", ex.getMessage());
+        return new ResponseEntity<>(response, response.getStatus());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        ErrorResponse response = ErrorResponse.of(ErrorCode.AUTHENTICATION_FAILED);
+        log.debug("Authentication not allowed: {}", ex.getMessage());
         return new ResponseEntity<>(response, response.getStatus());
     }
 

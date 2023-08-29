@@ -1,5 +1,6 @@
 package com.github.bluekey.controller.album;
 
+import com.github.bluekey.dto.album.NewAlbumInfoDto;
 import com.github.bluekey.dto.request.album.AlbumsRegisterRequestDto;
 import com.github.bluekey.dto.response.album.AlbumIdResponseDto;
 import com.github.bluekey.dto.response.album.AlbumMonthlyAccontsReponseDto;
@@ -9,6 +10,13 @@ import com.github.bluekey.dto.response.album.AlbumTopResponseDto;
 import com.github.bluekey.dto.response.album.AlbumTrackAccountsResponseDto;
 import com.github.bluekey.dto.response.album.AlbumTrackListResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistAlbumsListResponseDto;
+import com.github.bluekey.dto.response.common.MonthlyTrendResponseDto;
+import com.github.bluekey.jwt.PrincipalConvertUtil;
+import com.github.bluekey.service.album.AlbumService;
+import com.github.bluekey.service.dashboard.BarChartDashboardService;
+import com.github.bluekey.service.dashboard.LineChartDashBoardService;
+import com.github.bluekey.service.dashboard.SummaryDashBoardService;
+import com.github.bluekey.service.dashboard.TopTrackDashBoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,14 +24,26 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "Albums", description = "Album 관련 API")
 @RestController
 @RequestMapping("/api/v1/albums")
 @RequiredArgsConstructor
 public class AlbumController {
+
+    private final AlbumService albumService;
+    private final TopTrackDashBoardService topTrackDashBoardService;
+    private final SummaryDashBoardService summaryDashBoardService;
+    private final BarChartDashboardService barChartDashboardService;
+    private final LineChartDashBoardService lineChartDashBoardService;
 
     @Operation(summary = "신규 앨범 등록" , description = "신규 앨범 등록")
     @ApiResponses(value = {
@@ -35,9 +55,14 @@ public class AlbumController {
                     )
             )
     })
-    @PostMapping
-    public ResponseEntity<AlbumResponseDto> albumsInsert(@RequestBody AlbumsRegisterRequestDto dto) {
-        return null;
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AlbumResponseDto> albumsInsert(
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestPart("data") NewAlbumInfoDto dto
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(albumService.createAlbum(file, dto));
     }
 
     @Operation(summary = "앨범정보 변경" , description = "앨범정보 변경")
@@ -64,9 +89,10 @@ public class AlbumController {
                             schema = @Schema(implementation = AlbumResponseDto.class)
                     ))
     })
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     @DeleteMapping("/{albumId}")
     public ResponseEntity<AlbumIdResponseDto> albumsDelete(@PathVariable("albumId") Long albumId) {
-        return null;
+        return ResponseEntity.ok(albumService.deleteAlbum(albumId));
     }
 
     @Operation(summary = "앨범의 당월 매출 TOP n 트랙 LIST 정보", description = "앨범의 당월 매출 TOP n 트랙 LIST 정보")
@@ -77,13 +103,14 @@ public class AlbumController {
                             schema = @Schema(implementation = AlbumTopResponseDto.class)
                     )),
     })
-    @GetMapping("/{albumId}/dashboard/topTrack")
+    @GetMapping("/{albumId}/dashboard/top-track")
     public ResponseEntity<AlbumTopResponseDto> getAlbumTopList(
             @RequestParam("monthly") String monthly,
             @RequestParam("rank") Integer rank,
             @PathVariable("albumId") Long albumId
     ) {
-        return null;
+
+        return ResponseEntity.ok(topTrackDashBoardService.getTopTracks(albumId, monthly, rank, PrincipalConvertUtil.getMemberId()));
     }
 
     @Operation(summary = "앨범의 트랙별 정산 LIST", description = "앨범의 트랙별 정산 LIST")
@@ -94,13 +121,14 @@ public class AlbumController {
                             schema = @Schema(implementation = AlbumTrackAccountsResponseDto.class)
                     ))
     })
-    @GetMapping("/{albumId}/dashboard/track")
+    @GetMapping("/{albumId}/dashboard/tracks")
     public ResponseEntity<AlbumTrackAccountsResponseDto> getAlbumTrackAccounts(
             @RequestParam("startDate") String startDate,
             @RequestParam("endDate") String endDate,
             @PathVariable("albumId") Long albumId
     ) {
-        return null;
+        return ResponseEntity.ok(lineChartDashBoardService
+                .getAlbumLineChartDashboard(startDate, endDate, albumId, PrincipalConvertUtil.getMemberId()));
     }
 
     // TODO 앨범상세의 기본정보 가져오기 (보류)
@@ -118,7 +146,7 @@ public class AlbumController {
             @PathVariable("albumId") Long albumId,
             @RequestParam("monthly") String monthly
     ) {
-        return null;
+        return ResponseEntity.ok(summaryDashBoardService.getAlbumSummary(albumId, monthly, PrincipalConvertUtil.getMemberId()));
     }
 
 
@@ -131,12 +159,14 @@ public class AlbumController {
                     ))
     })
     @GetMapping("/{albumId}/dashboard")
-    public ResponseEntity<AlbumMonthlyAccontsReponseDto> getAlbumMonthlyAccounts(
+    public ResponseEntity<MonthlyTrendResponseDto> getAlbumMonthlyAccounts(
             @RequestParam("startDate") String startDate,
             @RequestParam("endDate") String endDate,
             @PathVariable("albumId") Long albumId
     ) {
-        return null;
+        return ResponseEntity.ok(
+                barChartDashboardService.getAlbumBarChartDashboard(startDate, endDate,
+                albumId, PrincipalConvertUtil.getMemberId()));
     }
 
     @Operation(summary = "앨범의 트랙 리스트 조회", description = "앨범의 트랙 리스트 조회")
@@ -147,16 +177,14 @@ public class AlbumController {
                             schema = @Schema(implementation = AlbumTrackListResponseDto.class)
                     )),
     })
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     @GetMapping("/{albumId}")
     public ResponseEntity<AlbumTrackListResponseDto> getAlbum(
             @PathVariable("albumId") Long albumId
     ) {
-        return null;
+        return ResponseEntity.ok(albumService.getAlbumTrackList(albumId));
     }
 
-    // header 에 jwt 존재하는 ID 가져와서 조회 가능.
-    // 아티스트면 본인 앨범만 조회, 어드민이면 전체 조회.
-    // 최신 등록순.
     @Operation(summary = "앨범 리스트 조회", description = "앨범 리스트 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "앨범 리스트 조회 완료",
@@ -171,6 +199,11 @@ public class AlbumController {
             @RequestParam("size") Integer size,
             @RequestParam(value = "keyword", required = false) String keyword
     ) {
-        return null;
+        Pageable pageable = PageRequest.of(page, size);
+        if (keyword == null) {
+            return ResponseEntity.ok(albumService.getAlbums(pageable, PrincipalConvertUtil.getMemberId()));
+        } else {
+            return ResponseEntity.ok(albumService.getAlbums(pageable, PrincipalConvertUtil.getMemberId(), keyword));
+        }
     }
 }

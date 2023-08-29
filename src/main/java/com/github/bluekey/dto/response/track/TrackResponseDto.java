@@ -1,12 +1,16 @@
 package com.github.bluekey.dto.response.track;
 
 import com.github.bluekey.dto.track.TrackCommissionRateDto;
+import com.github.bluekey.entity.track.Track;
+import com.github.bluekey.entity.track.TrackMember;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 import lombok.NoArgsConstructor;
 
 @Getter
@@ -26,13 +30,13 @@ public class TrackResponseDto {
     private String enName;
 
     @Schema(description = "블루키 오리지널 뮤직", example = "true")
-    private boolean isOriginalTrack;
+    private Boolean isOriginalTrack;
 
     @Schema(description = "참여한 아티스트 리스트")
     private List<TrackCommissionRateDto> artists;
 
     @Builder
-    public TrackResponseDto(final Long trackId, final Long albumId, final String name,
+    private TrackResponseDto(final Long trackId, final Long albumId, final String name,
             final String enName, final boolean isOriginalTrack, final List<TrackCommissionRateDto> artists) {
         this.trackId = trackId;
         this.albumId = albumId;
@@ -40,5 +44,17 @@ public class TrackResponseDto {
         this.enName = enName;
         this.isOriginalTrack = isOriginalTrack;
         this.artists = artists;
+    }
+
+    public static TrackResponseDto from(Track track, List<TrackMember> trackMembers) {
+        List<TrackCommissionRateDto> artists = trackMembers.stream().map(TrackCommissionRateDto::new).collect(Collectors.toList());
+        return TrackResponseDto.builder()
+                .trackId(track.getId())
+                .albumId(track.getAlbum().getId())
+                .name(track.getName())
+                .enName(track.getEnName())
+                .isOriginalTrack(track.isOriginalTrack())
+                .artists(artists)
+                .build();
     }
 }
