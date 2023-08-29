@@ -89,10 +89,10 @@ public class AdminController {
 		return ResponseEntity.ok(summaryDashBoardService.getAdminDashBoardSummaryInformation(monthly, PrincipalConvertUtil.getMemberId()));
 	}
 
-	// TODO: api 통일 필요
 	@Operation(summary = "월별 매출 추이", description = "월별 매출 추이")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "정상 반환", content = @Content(mediaType = "application/json", schema = @Schema(implementation = MonthlyTrendResponseDto.class))),
+			@ApiResponse(responseCode = "200", description = "정상 반환",
+					content = @Content(mediaType = "application/json", schema = @Schema(implementation = MonthlyTrendResponseDto.class))),
 	})
 	@GetMapping("/dashboard/trend")
 	public ResponseEntity<MonthlyTrendResponseDto> getMonthlyRevenueTrend(

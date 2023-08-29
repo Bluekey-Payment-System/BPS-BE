@@ -1,10 +1,6 @@
 package com.github.bluekey.service.dashboard;
 
-import com.github.bluekey.dto.album.AlbumMonthlyAccountsDto;
-import com.github.bluekey.dto.artist.ArtistMonthlyAccountsDto;
 import com.github.bluekey.dto.common.MonthlyTrendDto;
-import com.github.bluekey.dto.response.album.AlbumMonthlyAccontsReponseDto;
-import com.github.bluekey.dto.response.artist.ArtistMonthlyAccountsResponseDto;
 import com.github.bluekey.dto.response.common.MonthlyTrendResponseDto;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
@@ -96,7 +92,6 @@ public class BarChartDashboardService {
 
 		return getSettlementContent(amountMappedByDuration, settlementAmountMappedByDuration);
 	}
-
 
 	private List<MonthlyTrendDto> getMonthlyNetIncomeInfo(String startDate, String endDate) {
 		List<Transaction> transactions = transactionRepository.findTransactionsByDurationBetween(startDate, endDate);

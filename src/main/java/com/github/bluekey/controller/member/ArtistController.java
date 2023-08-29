@@ -79,6 +79,7 @@ public class ArtistController {
         return ok(authService.createArtist(file, requestDto));
     }
 
+    @Deprecated
     @Operation(summary = "관리자가 등록한 아티스트의 앨범 LIST", description = "관리자가 등록한 아티스트의 앨범 LIST")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "관리자가 등록한 아티스트의 앨범 LIST 조회 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistAlbumsListResponseDto.class))),
@@ -137,18 +138,17 @@ public class ArtistController {
         return ResponseEntity.ok(summaryDashBoardService.getArtistDashboardInformation(monthly, PrincipalConvertUtil.getMemberId()));
     }
 
-    // TODO: api 통일 필요
     @Operation(summary = "아티스트 대쉬보드 월별 정산액 LIST", description = "아티스트 대쉬보드 월별 정산액 LIST")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "아티스트 대쉬보드 월별 정산액 조회 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistMonthlyAccountsResponseDto.class))),
+            @ApiResponse(responseCode = "200", description = "아티스트 대쉬보드 월별 정산액 조회 완료",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistMonthlyAccountsResponseDto.class))),
     })
-    @GetMapping("/{memberId}/dashboard")
+    @GetMapping("/dashboard/trend")
     public ResponseEntity<MonthlyTrendResponseDto> getArtistMonthlyAccounts(
             @RequestParam("startDate") String startDate,
-            @RequestParam("endDate") String endDate,
-            @PathVariable("memberId") Long memberId
+            @RequestParam("endDate") String endDate
     ) {
-        return ok(barChartDashboardService.getBarChartDashboard(startDate, endDate, memberId));
+        return ok(barChartDashboardService.getBarChartDashboard(startDate, endDate, PrincipalConvertUtil.getMemberId()));
     }
 
     @Operation(summary = "Admin이 아티스트의 정보 변경" , description = "Admin이 아티스트의 정보 변경")
