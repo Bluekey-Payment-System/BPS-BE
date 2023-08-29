@@ -11,6 +11,7 @@ import com.github.bluekey.dto.response.common.MonthlyTrendResponseDto;
 import com.github.bluekey.dto.response.track.TracksSettlementAmountResponseDto;
 import com.github.bluekey.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.dashboard.BarChartDashboardService;
+import com.github.bluekey.service.dashboard.MonthlyTracksDashBoardService;
 import com.github.bluekey.service.dashboard.SummaryDashBoardService;
 import com.github.bluekey.service.dashboard.TopTrackDashBoardService;
 import com.github.bluekey.service.member.MemberService;
@@ -23,6 +24,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,6 +45,7 @@ public class AdminController {
 	private final TopTrackDashBoardService topTrackDashBoardService;
 	private final SummaryDashBoardService summaryDashBoardService;
 	private final BarChartDashboardService barChartDashboardService;
+	private final MonthlyTracksDashBoardService monthlyTracksDashBoardService;
 
 	@Operation(summary = "월별 Top n 아티스트 매출액과 비율", description = "월별 Top n 아티스트 매출액과 비율")
 	@ApiResponses(value = {
@@ -70,7 +73,8 @@ public class AdminController {
 			@Parameter(description = "검색 타입 곡명 or 앨범명") @RequestParam("searchType") String searchType,
 			@Parameter(description = "검색할 키워드") @RequestParam(value = "keyword", required = false) String keyword
 	) {
-		return null;
+		Pageable pageable = PageRequest.of(page, size);
+		return ResponseEntity.ok(monthlyTracksDashBoardService.getAdminTracks(monthly, pageable, searchType, keyword));
 	}
 
 	@Operation(summary = "대시보드에 보여질 정보", description = "대시보드에 보여질 정보")
