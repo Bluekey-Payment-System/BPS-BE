@@ -1,7 +1,12 @@
 package com.github.bluekey.service.dashboard;
 
 import com.github.bluekey.dto.album.AlbumBaseDto;
+import com.github.bluekey.dto.artist.ArtistMonthlyAlbumDto;
+import com.github.bluekey.dto.artist.ArtistMonthlyArtistsDto;
+import com.github.bluekey.dto.artist.ArtistMonthlyTrackDto;
+import com.github.bluekey.dto.artist.ArtistMonthlyTrackListDto;
 import com.github.bluekey.dto.common.MemberBaseDto;
+import com.github.bluekey.dto.response.artist.ArtistMonthlyTrackListResponseDto;
 import com.github.bluekey.dto.response.track.TracksSettlementAmountResponseDto;
 import com.github.bluekey.dto.track.TrackBaseDto;
 import com.github.bluekey.dto.track.TrackSettlementAmountDto;
@@ -29,6 +34,108 @@ public class MonthlyTracksDashBoardService {
     private final TrackMemberRepository trackMemberRepository;
     private final TransactionRepository transactionRepository;
     private final MemberRepository memberRepository;
+
+    public ArtistMonthlyTrackListResponseDto getArtistTracks(String monthly, Pageable pageable, String sortBy, String searchType, String keyword, Long memberId) {
+        List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
+        List<ArtistMonthlyTrackListDto> contents = new ArrayList<>();
+
+        Map<Track, Double> trackMappedByAmount = transactions.stream()
+                .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
+                .filter(transaction -> transaction.getTrackMember().getMemberId().equals(memberId))
+                .filter(transaction -> {
+                    if (keyword == null) {
+                        return true;
+                    }
+
+                    String convertedKeyword = keyword.toLowerCase();
+                    Track track = transaction.getTrackMember().getTrack();
+                    String trackName = track.getName().toLowerCase();
+                    String trackEnName = track.getEnName().toLowerCase();
+
+                    if (searchType.equals("trackName")) {
+                        return trackName.contains(convertedKeyword) || trackEnName.contains(convertedKeyword);
+                    } else if (searchType.equals("albumName")) {
+                        Album album = track.getAlbum();
+                        String albumName = album.getName().toLowerCase();
+                        String albumEnName = album.getEnName().toLowerCase();
+                        return albumName.contains(convertedKeyword) || albumEnName.contains(convertedKeyword);
+                    }
+                    return false;
+                })
+                .collect(Collectors.groupingBy(
+                        transaction -> transaction.getTrackMember().getTrack(),
+                        Collectors.summingDouble(Transaction::getAmount)
+                ));
+
+        Map<Track, Double> sortedTrackMappedByAmount = trackMappedByAmount.entrySet().stream()
+                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        for (Map.Entry<Track, Double> entry : sortedTrackMappedByAmount.entrySet()) {
+            Track track = entry.getKey();
+            Album album = track.getAlbum();
+            List<TrackMember> trackMembers = track.getTrackMembers();
+            List<ArtistMonthlyArtistsDto> artists = new ArrayList<>();
+            Double amount = entry.getValue();
+
+            ArtistMonthlyTrackDto trackBaseDto = ArtistMonthlyTrackDto.builder()
+                    .trackId(track.getId())
+                    .name(track.getName())
+                    .enName(track.getEnName())
+                    .build();
+            ArtistMonthlyAlbumDto albumBaseDto = ArtistMonthlyAlbumDto.builder()
+                    .albumId(album.getId())
+                    .name(album.getName())
+                    .enName(album.getEnName())
+                    .build();
+            Integer totalCommissionRate = 0;
+            for (TrackMember trackMember : trackMembers) {
+                Long id = trackMember.getMemberId();
+                Optional<Member> member = memberRepository.findById(id);
+                ArtistMonthlyArtistsDto artistMonthlyArtistsDto;
+                if (member.isPresent()) {
+                    artistMonthlyArtistsDto = ArtistMonthlyArtistsDto.from(member.get());
+                    if (trackMember.getMemberId().equals(memberId)) {
+                        totalCommissionRate = trackMember.getCommissionRate();
+                    }
+                } else {
+                    artistMonthlyArtistsDto = ArtistMonthlyArtistsDto.builder()
+                            .name(trackMember.getName())
+                            .build();
+                }
+
+                artists.add(artistMonthlyArtistsDto);
+            }
+            int revenue = getCalculateAmount(amount);
+            int newIncome = getCalculateAmount(amount - (amount * 33 / 1000));
+            int settlementAmount = getCalculateAmount(newIncome * totalCommissionRate) / 100;
+            int commissionRate = totalCommissionRate;
+
+            ArtistMonthlyTrackListDto artistMonthlyTrackListDto = ArtistMonthlyTrackListDto.builder()
+                    .track(trackBaseDto)
+                    .album(albumBaseDto)
+                    .artists(artists)
+                    .settlementAmount(settlementAmount)
+                    .revenue(revenue)
+                    .newIncome(newIncome)
+                    .commissionRate(commissionRate)
+                    .build();
+
+            contents.add(artistMonthlyTrackListDto);
+        }
+
+        log.info("trackMappedByAmount = {}", sortedTrackMappedByAmount);
+
+        return ArtistMonthlyTrackListResponseDto.builder()
+                .totalItems(contents.size())
+                .contents(getPage(contents, pageable.getPageNumber(), pageable.getPageSize()))
+                .build();
+    }
 
 
     public TracksSettlementAmountResponseDto getAdminTracks(String monthly, Pageable pageable, String searchType, String keyword) {

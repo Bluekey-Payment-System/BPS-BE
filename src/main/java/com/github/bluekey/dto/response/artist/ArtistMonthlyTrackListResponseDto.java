@@ -13,13 +13,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ArtistMonthlyTrackListResponseDto {
     @Schema(description = "총 아이템 개수", example = "300")
-    private Long totalItems;
+    private int totalItems;
 
     @Schema(description = "앨범 정보")
     private List<ArtistMonthlyTrackListDto> contents;
 
     @Builder
-    public ArtistMonthlyTrackListResponseDto(final Long totalItems, final List<ArtistMonthlyTrackListDto> contents) {
+    public ArtistMonthlyTrackListResponseDto(final int totalItems, final List<ArtistMonthlyTrackListDto> contents) {
         this.totalItems = totalItems;
         this.contents = contents;
     }
