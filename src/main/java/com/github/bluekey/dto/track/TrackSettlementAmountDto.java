@@ -22,19 +22,19 @@ public class TrackSettlementAmountDto {
 	@Schema(description = "트랙 매출액", example = "1000000")
 	private Integer revenue;
 	@Schema(description = "회사 순이익", example = "100000")
-	private Integer newIncome;
+	private Integer netIncome;
 	@Schema(description = "트랙 정산 금액", example = "900000")
 	private Integer settlementAmount;
 	@Schema(description = "요율", example = "90")
 	private Integer commissionRate;
 
 	@Builder
-	public TrackSettlementAmountDto(final TrackBaseDto track, final AlbumBaseDto album, final List<MemberBaseDto> artists, final Integer revenue, final Integer newIncome, final Integer settlementAmount, final Integer commissionRate) {
+	public TrackSettlementAmountDto(final TrackBaseDto track, final AlbumBaseDto album, final List<MemberBaseDto> artists, final Integer revenue, final Integer netIncome, final Integer settlementAmount, final Integer commissionRate) {
 		this.track = track;
 		this.album = album;
 		this.artists = artists;
 		this.revenue = revenue;
-		this.newIncome = newIncome;
+		this.netIncome = netIncome;
 		this.settlementAmount = settlementAmount;
 		this.commissionRate = commissionRate;
 	}

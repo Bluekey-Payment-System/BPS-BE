@@ -26,7 +26,7 @@ public class ArtistMonthlyTrackListDto {
     private Integer revenue;
 
     @Schema(description = "수익액", example = "1234")
-    private Integer newIncome;
+    private Integer netIncome;
 
     @Schema(description = "정산액", example = "1234")
     private Integer settlementAmount;
@@ -36,13 +36,13 @@ public class ArtistMonthlyTrackListDto {
 
     @Builder
     public ArtistMonthlyTrackListDto(final ArtistMonthlyTrackDto track, final ArtistMonthlyAlbumDto album,
-            final List<ArtistMonthlyArtistsDto> artists, final Integer revenue, final Integer newIncome,
+            final List<ArtistMonthlyArtistsDto> artists, final Integer revenue, final Integer netIncome,
             final Integer settlementAmount, final Integer commissionRate) {
         this.track = track;
         this.album = album;
         this.artists = artists;
         this.revenue = revenue;
-        this.newIncome = newIncome;
+        this.netIncome = netIncome;
         this.settlementAmount = settlementAmount;
         this.commissionRate = commissionRate;
     }

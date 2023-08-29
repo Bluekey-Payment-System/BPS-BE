@@ -44,9 +44,9 @@ public class SummaryDashBoardService {
         double totalPreviousMonthRevenue = 0.0;
         Double revenueGrowthRate;
 
-        double newIncome;
-        double previousMonthNewIncome;
-        Double newIncomeGrowthRate;
+        double netIncome;
+        double previousMonthnetIncome;
+        Double netIncomeGrowthRate;
 
         double settlementAmount;
         double previousMonthSettlementAmount;
@@ -64,15 +64,15 @@ public class SummaryDashBoardService {
         }
         revenueGrowthRate = getGrowthRate(totalPreviousMonthRevenue, totalRevenue);
 
-        newIncome = getIncome(totalRevenue);
-        previousMonthNewIncome = getIncome(totalPreviousMonthRevenue);
-        newIncomeGrowthRate = getGrowthRate(previousMonthNewIncome, newIncome);
+        netIncome = getIncome(totalRevenue);
+        previousMonthnetIncome = getIncome(totalPreviousMonthRevenue);
+        netIncomeGrowthRate = getGrowthRate(previousMonthnetIncome, netIncome);
 
         settlementAmount = getSettlementAmount(trackMemberMappedByAmount, memberId);
         previousMonthSettlementAmount = getSettlementAmount(previousMonthlyTrackMemberMappedByAmount, memberId);
         settlementAmountGrowthRate = getGrowthRate(previousMonthSettlementAmount, settlementAmount);
 
-        log.info("data = {} {} {} {} {} {}", totalRevenue, totalPreviousMonthRevenue, newIncome, previousMonthNewIncome, settlementAmount, previousMonthSettlementAmount);
+        log.info("data = {} {} {} {} {} {}", totalRevenue, totalPreviousMonthRevenue, netIncome, previousMonthnetIncome, settlementAmount, previousMonthSettlementAmount);
         return DashboardTotalInfoResponseDto.builder()
                 .bestArtist(bestArtist)
                 .revenue(
@@ -81,10 +81,10 @@ public class SummaryDashBoardService {
                                 .growthRate(revenueGrowthRate)
                                 .build()
                 )
-                .newIncome(
+                .netIncome(
                         TotalAndGrowthDto.builder()
-                                .totalAmount((long) newIncome)
-                                .growthRate(newIncomeGrowthRate)
+                                .totalAmount((long) netIncome)
+                                .growthRate(netIncomeGrowthRate)
                                 .build()
                 )
                 .settlementAmount(
@@ -134,9 +134,9 @@ public class SummaryDashBoardService {
         double totalPreviousMonthRevenue = 0.0;
         double revenueGrowthRate = 0.0;
 
-        double newIncome = 0.0;
-        double previousMonthNewIncome = 0.0;
-        double newIncomeGrowthRate = 0.0;
+        double netIncome = 0.0;
+        double previousMonthnetIncome = 0.0;
+        double netIncomeGrowthRate = 0.0;
 
         double settlementAmount = 0.0;
         double previousMonthSettlementAmount = 0.0;
@@ -155,9 +155,9 @@ public class SummaryDashBoardService {
 
         revenueGrowthRate = getGrowthRate(totalPreviousMonthRevenue, totalRevenue);
 
-        newIncome = getIncome(totalRevenue);
-        previousMonthNewIncome = getIncome(totalPreviousMonthRevenue);
-        newIncomeGrowthRate = getGrowthRate(previousMonthNewIncome, newIncome);
+        netIncome = getIncome(totalRevenue);
+        previousMonthnetIncome = getIncome(totalPreviousMonthRevenue);
+        netIncomeGrowthRate = getGrowthRate(previousMonthnetIncome, netIncome);
 
         settlementAmount = getAdminAlbumSettlementAmount(trackMemberMappedByAmount, memberId);
         previousMonthSettlementAmount = getAdminAlbumSettlementAmount(previousMonthlyTrackMemberMappedByAmount, memberId);
@@ -176,7 +176,7 @@ public class SummaryDashBoardService {
                             .growthRate(null)
                             .build()
                     )
-                    .newIncome(
+                    .netIncome(
                             TotalAndGrowthDto.builder()
                                     .totalAmount(null)
                                     .growthRate(null)
@@ -201,9 +201,9 @@ public class SummaryDashBoardService {
                                     .growthRate(revenueGrowthRate)
                                     .build()
                     )
-                    .newIncome(TotalAndGrowthDto.builder()
-                            .totalAmount((long) newIncome)
-                            .growthRate(newIncomeGrowthRate)
+                    .netIncome(TotalAndGrowthDto.builder()
+                            .totalAmount((long) netIncome)
+                            .growthRate(netIncomeGrowthRate)
                             .build()
                     )
                     .settlementAmount(

@@ -112,8 +112,8 @@ public class MonthlyTracksDashBoardService {
                 artists.add(artistMonthlyArtistsDto);
             }
             int revenue = getCalculateAmount(amount);
-            int newIncome = getCalculateAmount(amount - (amount * 33 / 1000));
-            int settlementAmount = getCalculateAmount(newIncome * totalCommissionRate) / 100;
+            int netIncome = getCalculateAmount(amount - (amount * 33 / 1000));
+            int settlementAmount = getCalculateAmount(netIncome * totalCommissionRate) / 100;
             int commissionRate = totalCommissionRate;
 
             ArtistMonthlyTrackListDto artistMonthlyTrackListDto = ArtistMonthlyTrackListDto.builder()
@@ -122,7 +122,7 @@ public class MonthlyTracksDashBoardService {
                     .artists(artists)
                     .settlementAmount(settlementAmount)
                     .revenue(revenue)
-                    .newIncome(newIncome)
+                    .netIncome(netIncome)
                     .commissionRate(commissionRate)
                     .build();
 
@@ -213,8 +213,8 @@ public class MonthlyTracksDashBoardService {
                 artists.add(memberBaseDto);
             }
             int revenue = getCalculateAmount(amount);
-            int newIncome = getCalculateAmount(amount - (amount * 33 / 1000));
-            int settlementAmount = getCalculateAmount(newIncome * ((100 - totalCommissionRate))) / 100;
+            int netIncome = getCalculateAmount(amount - (amount * 33 / 1000));
+            int settlementAmount = getCalculateAmount(netIncome * ((100 - totalCommissionRate))) / 100;
             int commissionRate = 100 - totalCommissionRate;
 
             TrackSettlementAmountDto trackSettlementAmountDto = TrackSettlementAmountDto.builder()
@@ -223,7 +223,7 @@ public class MonthlyTracksDashBoardService {
                     .artists(artists)
                     .settlementAmount(settlementAmount)
                     .revenue(revenue)
-                    .newIncome(newIncome)
+                    .netIncome(netIncome)
                     .commissionRate(commissionRate)
                     .build();
 
