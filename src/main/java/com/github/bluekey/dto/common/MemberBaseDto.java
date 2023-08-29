@@ -1,12 +1,11 @@
 package com.github.bluekey.dto.common;
 
+import com.github.bluekey.entity.member.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -25,5 +24,13 @@ public class MemberBaseDto {
 		this.memberId = memberId;
 		this.name = name;
 		this.enName = enName;
+	}
+
+	public static MemberBaseDto from(Member member) {
+		return MemberBaseDto.builder()
+				.memberId(member.getId())
+				.name(member.getName())
+				.enName(member.getEnName())
+				.build();
 	}
 }
