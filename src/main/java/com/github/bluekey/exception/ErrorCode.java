@@ -35,7 +35,8 @@ public enum ErrorCode {
     // Transaction 400~
     TRANSACTION_ALREADY_BATCH(HttpStatus.BAD_REQUEST, "TR_001", "{%s} 파일에 대해 이미 배치 작업이 완료된 transaction이 존재합니다."),
     ORIGINAL_TRANSACTION_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "TR_002", "이미 존재하는 엑셀파일이 존재합니다."),
-    TRANSACTION_INVALID_EXCEL_READER_VALUE(HttpStatus.BAD_REQUEST, "TR_003", "엑셀 파일을 읽는 중 에러가 발생했습니다.");
+    TRANSACTION_INVALID_EXCEL_READER_VALUE(HttpStatus.BAD_REQUEST, "TR_003", "엑셀 파일을 읽는 중 에러가 발생했습니다."),
+    TRANSACTION_INVALID_EXCEL_FILE_NAME(HttpStatus.BAD_REQUEST, "TR_004", "엑셀 파일명 포맷이 잘못됬습니다.");
     private final HttpStatus status;
     private final String code;
     private final String message;

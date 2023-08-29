@@ -1,6 +1,8 @@
 package com.github.bluekey.processor;
 
 import com.github.bluekey.entity.transaction.ExcelDistributorType;
+import com.github.bluekey.exception.BusinessException;
+import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.processor.provider.AtoDistributorExcelFileProvider;
 import com.github.bluekey.processor.provider.ExcelFileProvider;
 import com.github.bluekey.processor.provider.MafiaDistributorExcelFileProvider;
@@ -78,7 +80,7 @@ public class ExcelFileProcessManager implements ProcessManager{
                 return determineExcelFileProviderWithMusicDistributorType(type);
             }
         }
-        throw new IllegalArgumentException("Unsupported file");
+        throw new BusinessException(ErrorCode.TRANSACTION_INVALID_EXCEL_FILE_NAME);
     }
 
     private ExcelFileProvider determineExcelFileProviderWithMusicDistributorType(MusicDistributorType type) {
