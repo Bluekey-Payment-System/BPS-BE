@@ -96,8 +96,8 @@ public class AdminController {
 	})
 	@GetMapping("/dashboard/trend")
 	public ResponseEntity<MonthlyTrendResponseDto> getMonthlyRevenueTrend(
-			@Parameter(description = "월별 추이의 시작일 (format: yyyy-MM)") @RequestParam("startDate") String startDate,
-			@Parameter(description = "월별 추이의 종료일 (format: yyyy-MM)") @RequestParam("endDate") String endDate
+			@Parameter(description = "월별 추이의 시작일 (format: yyyyMM)") @RequestParam("startDate") String startDate,
+			@Parameter(description = "월별 추이의 종료일 (format: yyyyMM)") @RequestParam("endDate") String endDate
 	) {
 		return ResponseEntity.ok(barChartDashboardService.getBarChartDashboard(startDate, endDate, PrincipalConvertUtil.getMemberId()));
 	}

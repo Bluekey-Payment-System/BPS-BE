@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class BarChartDashboardService {
 
-	private static final String MONTH_PREFIX = "-01";
+	private static final String MONTH_PREFIX = "01";
 	private final TransactionRepository transactionRepository;
 	private final MemberRepository memberRepository;
 	private final AlbumRepository albumRepository;
@@ -147,7 +147,7 @@ public class BarChartDashboardService {
 	}
 
 	public LocalDate convertDate(String date) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		return LocalDate.parse(date + MONTH_PREFIX, formatter);
 	}
 
