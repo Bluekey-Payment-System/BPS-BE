@@ -77,10 +77,10 @@ public class AuthService {
 		if (file.isEmpty()) {
 			return ArtistAccountDto.from(member);
 		}
-
 		// S3 업로드 로직
 		String fileUrl = imageUploadUtil.uploadImage(file, S3_PROFILE_IMAGE_PREFIX + member.getId() + "/" + file.getOriginalFilename()+ "-" +member.getCreatedAt());
 		member.updateProfileImage(fileUrl);
+		encodeMemberPassword(member);
 		memberRepository.save(member);
 		return ArtistAccountDto.from(member);
 	}
