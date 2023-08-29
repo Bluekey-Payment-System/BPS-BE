@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TopTrackDashBoardService {
 
-    private static final String MONTH_PREFIX = "-01";
+    private static final String MONTH_PREFIX = "01";
     private final MemberRepository memberRepository;
     private final TransactionRepository transactionRepository;
 
@@ -414,8 +414,8 @@ public class TopTrackDashBoardService {
     }
 
     private String getPreviousMonth(String monthly) {
-        LocalDate date = LocalDate.parse(monthly + MONTH_PREFIX, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        LocalDate date = LocalDate.parse(monthly + MONTH_PREFIX, DateTimeFormatter.ofPattern("yyyyMMdd"));
         LocalDate previousMonth = date.minusMonths(1);
-        return previousMonth.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+        return previousMonth.format(DateTimeFormatter.ofPattern("yyyyMM"));
     }
 }

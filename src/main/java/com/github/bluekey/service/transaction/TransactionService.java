@@ -67,7 +67,7 @@ public class TransactionService {
 
     @Transactional
     public OriginalTransactionResponseDto saveOriginalTransaction(MultipartFile file, OriginalTransactionRequestDto requestDto) {
-        String uploadAt = requestDto.getUploadAt();
+        String uploadAt = requestDto.getUploadMonth();
         String fileName = file.getOriginalFilename();
 
         ExcelFileProcessManager excelFileProcessManager = new ExcelFileProcessManager(
@@ -91,7 +91,7 @@ public class TransactionService {
 
 
         OriginalTransaction originalTransaction = OriginalTransaction.builder()
-                .uploadAt(requestDto.getUploadAt())
+                .uploadAt(requestDto.getUploadMonth())
                 .fileName(file.getOriginalFilename())
                 .fileUrl(s3Url)
                 .distributorType(excelFileProcessManager.getDistributorType())

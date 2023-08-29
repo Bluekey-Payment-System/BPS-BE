@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class SummaryDashBoardService {
-    private static final String MONTH_PREFIX = "-01";
+    private static final String MONTH_PREFIX = "01";
     private final TransactionRepository transactionRepository;
     private final MemberRepository memberRepository;
     private final AlbumRepository albumRepository;
@@ -260,9 +260,9 @@ public class SummaryDashBoardService {
     }
 
     private String getPreviousMonth(String monthly) {
-        LocalDate date = LocalDate.parse(monthly + MONTH_PREFIX, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        LocalDate date = LocalDate.parse(monthly + MONTH_PREFIX, DateTimeFormatter.ofPattern("yyyyMMdd"));
         LocalDate previousMonth = date.minusMonths(1);
-        return previousMonth.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+        return previousMonth.format(DateTimeFormatter.ofPattern("yyyyMM"));
     }
 
     private Map<TrackMember, Double> getArtistTrackMemberMappedByAmount(Member member, List<Transaction> transactions) {

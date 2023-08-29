@@ -41,7 +41,7 @@ public class TransactionController {
     })
     @GetMapping
     public ResponseEntity<ListResponse<OriginalTransactionResponseDto>> getOriginalTransactionHistory(
-            @Parameter(description = "엑셀파일이 업로드된 날짜 (format: yyyy-MM)") @RequestParam String monthly
+            @Parameter(description = "엑셀파일이 업로드된 날짜 (format: yyyyMM)") @RequestParam String monthly
             ) {
         return ResponseEntity.ok(transactionService.getOriginalTransactions(monthly));
     }
