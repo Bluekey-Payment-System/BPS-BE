@@ -25,6 +25,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -106,7 +107,7 @@ public class AdminController {
 			@ApiResponse(responseCode = "200", description = "정상 반환"),
 	})
 	@PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
-	@PatchMapping("/profile")
+	@PatchMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public AdminProfileResponseDto updateAdminProfile(
 			@RequestPart("data") AdminProfileUpdateDto dto,
 			@Parameter(description = "multipart/form-data 형식의 이미지 파일 데이터, key 값은 file 입니다.")
