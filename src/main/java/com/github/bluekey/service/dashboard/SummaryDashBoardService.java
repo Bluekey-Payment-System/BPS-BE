@@ -468,9 +468,6 @@ public class SummaryDashBoardService {
         Map<Track, Double> sortedTrackMappedByAmountPreviousMonthly = new LinkedHashMap<>();
 
         List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
-        if (transactions.isEmpty()) {
-            return null;
-        }
         List<Transaction> previousMonthlyTransactions = transactionRepository.findTransactionsByDuration(previousMonthly);
 
         if (member.getRole().equals(MemberRole.ARTIST)) {
@@ -547,6 +544,10 @@ public class SummaryDashBoardService {
                     ));
         }
 
+        if (sortedTrackMappedByAmount.isEmpty()) {
+            return null;
+        }
+
         Map.Entry<Track, Double> bestTrackInformation = sortedTrackMappedByAmount.entrySet().iterator().next();
         return BestTrackDto.builder()
                 .trackId(bestTrackInformation.getKey().getId())
@@ -565,9 +566,6 @@ public class SummaryDashBoardService {
         String previousMonthly = getPreviousMonth(monthly);
 
         List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
-        if (transactions.isEmpty()) {
-            return null;
-        }
         List<Transaction> previousMonthlyTransactions = transactionRepository.findTransactionsByDuration(previousMonthly);
 
         Map<Long, Double> artistMappedByAmount = transactions.stream()
@@ -602,6 +600,10 @@ public class SummaryDashBoardService {
                         (e1, e2) -> e1,
                         LinkedHashMap::new
                 ));
+
+        if (sortedArtistMappedByAmount.isEmpty()) {
+            return null;
+        }
 
         Map.Entry<Long, Double> bestArtistInformation = sortedArtistMappedByAmount.entrySet().iterator().next();
 
