@@ -107,15 +107,14 @@ public class TransactionService {
 
         String year = uploadAt.substring(0, 4);
         String month = uploadAt.substring(4, 6);
-        List<Member> artists = memberRepository.findMemberByRoleAndIsRemovedFalse(MemberRole.ARTIST);
-        artists.forEach(artist -> {
-            try {
-                emailSender.sendMail(artist.getEmail().getValue(), "Bluekey music 정산 알림",
-                        artist.getName(), year, month);
-            } catch (MessagingException | IOException e) {
-                log.error("{}에게 메일 전송 실패 : {}", artist.getName(), e.getMessage());
-            }
-        });
+
+        try {
+            emailSender.sendMail("wnl383@naver.com", "Bluekey music 정산 알림","조세영", year, month);
+        } catch (MessagingException | IOException e) {
+            log.error("메일 전송 실패 : {}", e.getMessage());
+        }
+        // TODO: 추후 메일 전송 로직을 다음 메서드로 변경
+//        sendMailAfterUpload(year, month);
         return OriginalTransactionResponseDto.fromWithWarning(originalTransaction, excelFileProcessManager.getWarnings());
     }
 
@@ -138,5 +137,18 @@ public class TransactionService {
         } catch (Exception e) {
             throw new RuntimeException("Error while reading Excel file from S3", e);
         }
+    }
+
+    // TODO: 메일 전송 로직을 다음 메서드로 변경
+    private void sendMailAfterUpload(String year, String month) {
+        List<Member> artists = memberRepository.findMemberByRoleAndIsRemovedFalse(MemberRole.ARTIST);
+        artists.forEach(artist -> {
+            try {
+                emailSender.sendMail(artist.getEmail().getValue(), "Bluekey music 정산 알림",
+                        artist.getName(), year, month);
+            } catch (MessagingException | IOException e) {
+                log.error("{}에게 메일 전송 실패 : {}", artist.getName(), e.getMessage());
+            }
+        });
     }
 }
