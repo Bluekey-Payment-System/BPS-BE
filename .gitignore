@@ -40,3 +40,4 @@ out/
 
 /**/resources/application-aws.yml
 /**/resources/application-auth.yml
+/**/resources/application-mail.yml
