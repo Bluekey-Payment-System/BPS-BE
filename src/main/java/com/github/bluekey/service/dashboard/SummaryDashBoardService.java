@@ -42,15 +42,15 @@ public class SummaryDashBoardService {
         BestArtistDto bestArtist = getBestArtist(monthly);
         double totalRevenue = 0.0;
         double totalPreviousMonthRevenue = 0.0;
-        double revenueGrowthRate;
+        Double revenueGrowthRate;
 
         double newIncome;
         double previousMonthNewIncome;
-        double newIncomeGrowthRate;
+        Double newIncomeGrowthRate;
 
         double settlementAmount;
         double previousMonthSettlementAmount;
-        double settlementAmountGrowthRate;
+        Double settlementAmountGrowthRate;
 
         Map<TrackMember, Double> trackMemberMappedByAmount = getTrackMemberMappedByAmount(monthly);
         Map<TrackMember, Double> previousMonthlyTrackMemberMappedByAmount = getPreviousMonthlyTrackMemberMappedByAmount(monthly);
@@ -623,9 +623,14 @@ public class SummaryDashBoardService {
     }
 
     private Double getGrowthRate(Double previousMonthAmount, double amount) {
-        if (previousMonthAmount == null) {
+        if (previousMonthAmount == null || amount == 0.0) {
             return null;
         }
+
+        if (previousMonthAmount == 0.0) {
+            return null;
+        }
+
         double percentage = (amount - previousMonthAmount) / previousMonthAmount * 100;
         if (0 < percentage && percentage < 10) {
             return Math.floor(percentage * 10) / 10;
