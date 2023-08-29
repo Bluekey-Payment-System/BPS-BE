@@ -189,7 +189,7 @@ public class MemberService {
 	public AdminArtistProfileListReponseDto getArtistsPagination(Pageable pageable, String monthly, String keyword) {
 		List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
 		List<Transaction> previousMonthTransactions = transactionRepository.findTransactionsByDuration(getPreviousMonth(monthly));
-		List<Member> artists = memberRepository.findMemberByRoleAndIsRemovedFalse(MemberRole.ARTIST);
+		List<Member> artists = memberRepository.findMembersByRoleAndIsRemovedFalseAndNameContainingIgnoreCaseOrEnNameContainingIgnoreCase(MemberRole.ARTIST, keyword, keyword);
 		List<AdminArtistProfileListDto> adminArtistProfiles = new ArrayList<>();
 
 		for (Member artist : artists) {
@@ -202,6 +202,7 @@ public class MemberService {
 
 			Map<Long, Double> artistMappedByAmount = transactions.stream()
 					.filter(transaction -> transaction.getTrackMember().getMemberId() != null)
+//					.filter(transaction -> filterSearchKeyword(keyword, artist))
 					.collect(Collectors.groupingBy(
 							transaction -> transaction.getTrackMember().getMemberId(),
 							Collectors.summingDouble(Transaction::getAmount)
@@ -218,6 +219,7 @@ public class MemberService {
 
 			Map<Long, Double> artistPreviousMonthMappedByAmount = previousMonthTransactions.stream()
 					.filter(transaction -> transaction.getTrackMember().getMemberId() != null)
+//					.filter(transaction -> filterSearchKeyword(keyword, artist))
 					.collect(Collectors.groupingBy(
 							transaction -> transaction.getTrackMember().getMemberId(),
 							Collectors.summingDouble(Transaction::getAmount)
@@ -234,6 +236,7 @@ public class MemberService {
 
 			Map<TrackMember, Double> trackMemberMappedByAmount = transactions.stream()
 					.filter(transaction -> transaction.getTrackMember().getMemberId() != null)
+//					.filter(transaction -> filterSearchKeyword(keyword, artist))
 					.collect(Collectors.groupingBy(
 							Transaction::getTrackMember,
 							Collectors.summingDouble(Transaction::getAmount)
@@ -250,6 +253,7 @@ public class MemberService {
 
 			Map<Track, Double> trackMappedByAmount = transactions.stream()
 					.filter(transaction -> transaction.getTrackMember().getMemberId() != null)
+//					.filter(transaction -> filterSearchKeyword(keyword, artist))
 					.collect(Collectors.groupingBy(
 							transaction -> transaction.getTrackMember().getTrack(),
 							Collectors.summingDouble(Transaction::getAmount)
@@ -346,5 +350,18 @@ public class MemberService {
 
 		// toIndex exclusive
 		return sourceList.subList(fromIndex, Math.min(fromIndex + pageSize, sourceList.size()));
+	}
+
+	@Deprecated
+	private Boolean filterSearchKeyword(String keyword, Member artist) {
+		if (keyword == null) {
+			return true;
+		}
+
+		String convertedKeyword = keyword.toLowerCase();;
+		String artistName = artist.getName().toLowerCase();
+		String artistEnName = artist.getEnName().toLowerCase();
+
+		return artistName.contains(convertedKeyword) || artistEnName.contains(convertedKeyword);
 	}
 }
