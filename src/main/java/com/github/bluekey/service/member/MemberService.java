@@ -1,13 +1,16 @@
 package com.github.bluekey.service.member;
 
 import com.github.bluekey.dto.admin.AdminAccountDto;
+import com.github.bluekey.dto.admin.AdminArtistProfileListDto;
 import com.github.bluekey.dto.admin.AdminProfileUpdateDto;
 import com.github.bluekey.dto.admin.AdminProfileViewDto;
 import com.github.bluekey.dto.artist.ArtistAccountDto;
+import com.github.bluekey.dto.artist.ArtistProfileDto;
 import com.github.bluekey.dto.artist.ArtistProfileViewDto;
 import com.github.bluekey.dto.request.admin.AdminArtistProfileRequestDto;
 import com.github.bluekey.dto.request.artist.ArtistProfileRequestDto;
 import com.github.bluekey.dto.response.admin.AdminAccountsResponseDto;
+import com.github.bluekey.dto.response.admin.AdminArtistProfileListReponseDto;
 import com.github.bluekey.dto.response.admin.AdminProfileResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistAccountsResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistProfileResponseDto;
@@ -15,14 +18,22 @@ import com.github.bluekey.dto.response.artist.SimpleArtistAccountListResponseDto
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.member.MemberType;
+import com.github.bluekey.entity.track.Track;
+import com.github.bluekey.entity.track.TrackMember;
+import com.github.bluekey.entity.transaction.Transaction;
 import com.github.bluekey.exception.BusinessException;
 import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.exception.member.MemberNotFoundException;
 import com.github.bluekey.repository.member.MemberRepository;
+import com.github.bluekey.repository.track.TrackMemberRepository;
+import com.github.bluekey.repository.transaction.TransactionRepository;
 import com.github.bluekey.util.ImageUploadUtil;
 
-import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,6 +47,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class MemberService {
 
 	private final MemberRepository memberRepository;
+	private final TransactionRepository transactionRepository;
 	private final ImageUploadUtil imageUploadUtil;
 
 	@Transactional
@@ -172,5 +184,167 @@ public class MemberService {
 			validateAdminNickname(nickname);
 			member.updateName(nickname);
 		}
+	}
+
+	public AdminArtistProfileListReponseDto getArtistsPagination(Pageable pageable, String monthly, String keyword) {
+		List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
+		List<Transaction> previousMonthTransactions = transactionRepository.findTransactionsByDuration(getPreviousMonth(monthly));
+		List<Member> artists = memberRepository.findMemberByRoleAndIsRemovedFalse(MemberRole.ARTIST);
+		List<AdminArtistProfileListDto> adminArtistProfiles = new ArrayList<>();
+
+		for (Member artist : artists) {
+			ArtistProfileDto artistProfileDto = ArtistProfileDto.builder()
+					.memberId(artist.getId())
+					.name(artist.getName())
+					.enName(artist.getEnName())
+					.profileImage(artist.getProfileImage())
+					.build();
+
+			Map<Long, Double> artistMappedByAmount = transactions.stream()
+					.filter(transaction -> transaction.getTrackMember().getMemberId() != null)
+					.collect(Collectors.groupingBy(
+							transaction -> transaction.getTrackMember().getMemberId(),
+							Collectors.summingDouble(Transaction::getAmount)
+					));
+
+			Map<Long, Double> sortedArtistMappedByAmount = artistMappedByAmount.entrySet().stream()
+					.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+					.collect(Collectors.toMap(
+							Map.Entry::getKey,
+							Map.Entry::getValue,
+							(e1, e2) -> e1,
+							LinkedHashMap::new
+					));
+
+			Map<Long, Double> artistPreviousMonthMappedByAmount = previousMonthTransactions.stream()
+					.filter(transaction -> transaction.getTrackMember().getMemberId() != null)
+					.collect(Collectors.groupingBy(
+							transaction -> transaction.getTrackMember().getMemberId(),
+							Collectors.summingDouble(Transaction::getAmount)
+					));
+
+			Map<Long, Double> sortedPreviousMonthArtistMappedByAmount = artistPreviousMonthMappedByAmount.entrySet().stream()
+					.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+					.collect(Collectors.toMap(
+							Map.Entry::getKey,
+							Map.Entry::getValue,
+							(e1, e2) -> e1,
+							LinkedHashMap::new
+					));
+
+			Map<TrackMember, Double> trackMemberMappedByAmount = transactions.stream()
+					.filter(transaction -> transaction.getTrackMember().getMemberId() != null)
+					.collect(Collectors.groupingBy(
+							Transaction::getTrackMember,
+							Collectors.summingDouble(Transaction::getAmount)
+					));
+
+			Map<TrackMember, Double> sortedTrackMemberMappedByAmount = trackMemberMappedByAmount.entrySet().stream()
+					.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+					.collect(Collectors.toMap(
+							Map.Entry::getKey,
+							Map.Entry::getValue,
+							(e1, e2) -> e1,
+							LinkedHashMap::new
+					));
+
+			Map<Track, Double> trackMappedByAmount = transactions.stream()
+					.filter(transaction -> transaction.getTrackMember().getMemberId() != null)
+					.collect(Collectors.groupingBy(
+							transaction -> transaction.getTrackMember().getTrack(),
+							Collectors.summingDouble(Transaction::getAmount)
+					));
+
+			Map<Track, Double> sortedTrackMappedByAmount = trackMappedByAmount.entrySet().stream()
+					.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+					.collect(Collectors.toMap(
+							Map.Entry::getKey,
+							Map.Entry::getValue,
+							(e1, e2) -> e1,
+							LinkedHashMap::new
+					));
+
+			double netIncome = 0.0;
+			double representativeTrackAmount = 0.0;
+			String representativeTrackName = "";
+
+			for (Map.Entry<TrackMember, Double> entry : sortedTrackMemberMappedByAmount.entrySet()) {
+				TrackMember trackMember = entry.getKey();
+				Double amount = entry.getValue();
+				if (trackMember.getMemberId().equals(artist.getId())) {
+					int commissionRate = trackMember.getCommissionRate();
+					netIncome += amount * commissionRate / 100;
+
+					Double trackAmount = sortedTrackMappedByAmount.get(trackMember.getTrack());
+					if (representativeTrackAmount < trackAmount) {
+						representativeTrackName = trackMember.getTrack().getName();
+						representativeTrackAmount = trackAmount;
+					}
+				}
+			}
+
+
+			Double amount;
+			amount = sortedArtistMappedByAmount.get(artist.getId());
+			if (amount == null) {
+				amount = 0.0;
+			}
+			Double previousMonthAmount = 0.0;
+			previousMonthAmount = sortedPreviousMonthArtistMappedByAmount.get(artist.getId());
+			if (previousMonthAmount == null) {
+				previousMonthAmount = 0.0;
+			}
+
+			AdminArtistProfileListDto artistProfileListDto = AdminArtistProfileListDto.builder()
+					.artist(artistProfileDto)
+					.revenue((int) Math.floor(amount))
+					.netIncome((int) Math.floor(netIncome))
+					.settlementAmount((int) Math.floor(netIncome - (netIncome * 33) / 1000))
+					.representativeTrack(representativeTrackName)
+					.monthlyIncreaseRate(getGrowthRate(previousMonthAmount, amount))
+					.build();
+
+			adminArtistProfiles.add(artistProfileListDto);
+		}
+		return AdminArtistProfileListReponseDto.builder()
+				.totalItems(adminArtistProfiles.size())
+				.contents(getPage(adminArtistProfiles, pageable.getPageNumber(), pageable.getPageSize()))
+				.build();
+	}
+
+	private Double getGrowthRate(Double previousMonthAmount, double amount) {
+		if (previousMonthAmount == null || amount == 0.0) {
+			return null;
+		}
+
+		if (previousMonthAmount == 0.0) {
+			return null;
+		}
+
+		double percentage = (amount - previousMonthAmount) / previousMonthAmount * 100;
+		if (0 < percentage && percentage < 10) {
+			return Math.floor(percentage * 10) / 10;
+		}
+		return Math.floor(percentage);
+	}
+
+	private String getPreviousMonth(String monthly) {
+		LocalDate date = LocalDate.parse(monthly + "01", DateTimeFormatter.ofPattern("yyyyMMdd"));
+		LocalDate previousMonth = date.minusMonths(1);
+		return previousMonth.format(DateTimeFormatter.ofPattern("yyyyMM"));
+	}
+
+	public static <T> List<T> getPage(List<T> sourceList, int page, int pageSize) {
+		if (pageSize <= 0) {
+			throw new IllegalArgumentException("invalid page size: " + pageSize);
+		}
+
+		int fromIndex = (page) * pageSize;
+		if (sourceList == null || sourceList.size() <= fromIndex) {
+			return Collections.emptyList();
+		}
+
+		// toIndex exclusive
+		return sourceList.subList(fromIndex, Math.min(fromIndex + pageSize, sourceList.size()));
 	}
 }

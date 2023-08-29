@@ -17,13 +17,13 @@ public class AdminArtistProfileListDto {
     private ArtistProfileDto artist;
 
     @Schema(description = "매출액", example = "300")
-    private Long revenue;
+    private Integer revenue;
 
     @Schema(description = "순수익", example = "1234")
-    private Long netIncome;
+    private Integer netIncome;
 
     @Schema(description = "정산액", example = "1234124")
-    private Long settlementAmount;
+    private Integer settlementAmount;
 
     @Schema(description = "대표 트랙명", example = "love")
     private String representativeTrack;
@@ -32,8 +32,8 @@ public class AdminArtistProfileListDto {
     private Double monthlyIncreaseRate;
 
     @Builder
-    public AdminArtistProfileListDto(final ArtistProfileDto artist, final Long revenue,
-            final Long netIncome, final Long settlementAmount, final String representativeTrack,
+    public AdminArtistProfileListDto(final ArtistProfileDto artist, final Integer revenue,
+            final Integer netIncome, final Integer settlementAmount, final String representativeTrack,
             final Double monthlyIncreaseRate) {
         this.artist = artist;
         this.revenue = revenue;

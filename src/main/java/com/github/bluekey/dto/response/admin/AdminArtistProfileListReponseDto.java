@@ -15,13 +15,13 @@ import lombok.NoArgsConstructor;
 @Schema(description = "어드민 아티스트 프로필 리스트")
 public class AdminArtistProfileListReponseDto {
     @Schema(description = "총 아이템 개수", example = "300")
-    private Long totalItems;
+    private int totalItems;
 
     @Schema(description = "아티스트 상세 정보")
     private List<AdminArtistProfileListDto> contents;
 
     @Builder
-    public AdminArtistProfileListReponseDto(final Long totalItems, final List<AdminArtistProfileListDto> contents) {
+    public AdminArtistProfileListReponseDto(final int totalItems, final List<AdminArtistProfileListDto> contents) {
         this.totalItems = totalItems;
         this.contents = contents;
     }

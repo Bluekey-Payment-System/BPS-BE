@@ -175,7 +175,8 @@ public class ArtistController {
             @RequestParam("monthly") String monthly,
             @RequestParam(value = "keyword", required = false) String keyword
     ) {
-        return null;
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(memberService.getArtistsPagination(pageable, monthly, keyword));
     }
 
     @Operation(summary = "드롭다운 UI에서 사용되는 아티스트 리스트 조회", description = "트랙곡 추가할 시에 드롭다운 UI에서 사용되는 아티스트 리스트 조회")

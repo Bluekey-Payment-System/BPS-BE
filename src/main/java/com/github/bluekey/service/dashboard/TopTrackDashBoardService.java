@@ -403,9 +403,14 @@ public class TopTrackDashBoardService {
     }
 
     private Double getGrowthRate(Double previousMonthAmount, double amount) {
-        if (previousMonthAmount == null) {
+        if (previousMonthAmount == null || amount == 0.0) {
             return null;
         }
+
+        if (previousMonthAmount == 0.0) {
+            return null;
+        }
+
         double percentage = (amount - previousMonthAmount) / previousMonthAmount * 100;
         if (0 < percentage && percentage < 10) {
             return Math.floor(percentage * 10) / 10;
