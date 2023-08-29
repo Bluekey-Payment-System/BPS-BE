@@ -13,6 +13,7 @@ import com.github.bluekey.dto.response.common.MonthlyTrendResponseDto;
 import com.github.bluekey.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.auth.AuthService;
 import com.github.bluekey.service.dashboard.BarChartDashboardService;
+import com.github.bluekey.service.dashboard.MonthlyTracksDashBoardService;
 import com.github.bluekey.service.dashboard.SummaryDashBoardService;
 import com.github.bluekey.service.dashboard.TopTrackDashBoardService;
 import com.github.bluekey.service.member.MemberService;
@@ -24,6 +25,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -44,6 +47,7 @@ public class ArtistController {
     private final TopTrackDashBoardService topTrackDashBoardService;
     private final SummaryDashBoardService summaryDashBoardService;
     private final BarChartDashboardService barChartDashboardService;
+    private final MonthlyTracksDashBoardService monthlyTracksDashBoardService;
 
     @Operation(summary = "아티스트 정보 변경" , description = "아티스트 정보 변경")
     @ApiResponses(value = {
@@ -96,15 +100,16 @@ public class ArtistController {
     })
     @GetMapping("/{memberId}/dashboard/track")
     public ResponseEntity<ArtistMonthlyTrackListResponseDto> getArtistMonthlyTracks(
-            @RequestParam("monthly") LocalDate monthly,
+            @RequestParam("monthly") String monthly,
             @RequestParam("page") Integer page,
             @RequestParam("size") Integer size,
             @RequestParam(value = "sortBy", required = false) String sortBy,
-            @RequestParam("searchBy") String searchBy,
+            @RequestParam("searchType") String searchType,
             @RequestParam(value = "keyword", required = false) String keyword,
             @PathVariable("memberId") Long memberId
     ) {
-        return null;
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(monthlyTracksDashBoardService.getArtistTracks(monthly, pageable, sortBy, searchType, keyword, memberId));
     }
 
     @Operation(summary = "아티스트 기준 당월 TOP N 트랙 매출 LIST", description = "아티스트 기준 당월 TOP N 트랙 매출 LIST")
