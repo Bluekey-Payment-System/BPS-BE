@@ -47,16 +47,27 @@ public class AlbumService {
 	@Transactional
 	public AlbumResponseDto createAlbum(MultipartFile file, NewAlbumInfoDto dto) {
 		Member member = null;
+		Album album;
 		if (dto.getMemberId() != null) {
 			member = memberRepository.findMemberByIdAndIsRemovedFalse(dto.getMemberId())
 					.orElseThrow(MemberNotFoundException::new);
 		}
-		Album album = Album
-				.ByAlbumWithRepresentativeArtistBuilder()
-				.member(member)
-				.name(dto.getName())
-				.enName(dto.getEnName())
-				.build();
+
+		if (dto.getMemberId() != null) {
+			album = Album
+					.ByAlbumWithRepresentativeArtistBuilder()
+					.member(member)
+					.name(dto.getName())
+					.enName(dto.getEnName())
+					.build();
+		} else {
+			album = Album
+					.ByAlbumWithOutRepresentativeArtistBuilder()
+					.name(dto.getName())
+					.enName(dto.getEnName())
+					.build();
+		}
+
 		Album saveAlbum = albumRepository.save(album);
 		updateAlbumImage(file, saveAlbum);
 		return AlbumResponseDto.from(album);
