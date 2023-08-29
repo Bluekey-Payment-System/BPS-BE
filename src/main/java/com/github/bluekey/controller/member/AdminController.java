@@ -109,9 +109,9 @@ public class AdminController {
 	@PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
 	@PatchMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public AdminProfileResponseDto updateAdminProfile(
-			@RequestPart("data") AdminProfileUpdateDto dto,
+			@RequestPart(value = "data", required = false) AdminProfileUpdateDto dto,
 			@Parameter(description = "multipart/form-data 형식의 이미지 파일 데이터, key 값은 file 입니다.")
-			@RequestParam("file") MultipartFile file) {
+			@RequestParam(value = "file", required = false) MultipartFile file) {
 		return memberService.updateAdminProfile(dto, file, PrincipalConvertUtil.getMemberId());
 	}
 

@@ -52,9 +52,9 @@ public class ArtistController {
     @PatchMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ArtistProfileResponseDto> artistProfileUpdate(
             @Parameter(schema = @Schema(implementation = ArtistProfileRequestDto.class), description = "Artist 수정 API 입니다.")
-            @RequestPart("data") @Valid ArtistProfileRequestDto requestDto,
+            @RequestPart(value = "data", required = false) @Valid ArtistProfileRequestDto requestDto,
             @Parameter(description = "multipart/form-data 형식의 프로필 이미지 데이터, key 값은 file 입니다.")
-            @RequestParam("file") MultipartFile file) {
+            @RequestParam(value = "file", required = false) MultipartFile file) {
         return ok(memberService.updateArtistProfile(requestDto, file, PrincipalConvertUtil.getMemberId()));
     }
 
@@ -70,7 +70,7 @@ public class ArtistController {
             @Parameter(schema = @Schema(implementation = ArtistRequestDto.class), description = "Artist 등록 API 입니다.")
             @RequestPart("data") @Valid ArtistRequestDto requestDto,
             @Parameter(description = "multipart/form-data 형식의 프로필 이미지 데이터, key 값은 file 입니다.")
-            @RequestParam("file") MultipartFile file
+            @RequestParam(value = "file", required = false) MultipartFile file
             ) {
         return ok(authService.createArtist(file, requestDto));
     }

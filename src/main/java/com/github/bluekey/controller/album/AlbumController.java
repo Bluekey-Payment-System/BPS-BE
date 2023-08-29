@@ -58,7 +58,7 @@ public class AlbumController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AlbumResponseDto> albumsInsert(
-            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "file", required = false) MultipartFile file,
             @RequestPart("data") NewAlbumInfoDto dto
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
