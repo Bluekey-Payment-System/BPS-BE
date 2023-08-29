@@ -4,9 +4,12 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.github.bluekey.dto.request.transaction.OriginalTransactionRequestDto;
 import com.github.bluekey.dto.response.common.ListResponse;
 import com.github.bluekey.dto.response.transaction.OriginalTransactionResponseDto;
+import com.github.bluekey.entity.member.Member;
+import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.transaction.OriginalTransaction;
 import com.github.bluekey.exception.transaction.AlreadyOriginalTransactionExistException;
 import com.github.bluekey.exception.transaction.ExcelUploadException;
+import com.github.bluekey.mail.EmailSender;
 import com.github.bluekey.processor.ExcelFileDBMigrationProcessManager;
 import com.github.bluekey.processor.ExcelFileProcessManager;
 import com.github.bluekey.processor.ExcelRowException;
@@ -18,6 +21,8 @@ import com.github.bluekey.repository.transaction.OriginalTransactionRepository;
 import com.github.bluekey.s3.manager.AwsS3Manager;
 import com.github.bluekey.s3.manager.S3PrefixType;
 import com.github.bluekey.util.ExcelUploadUtil;
+import java.io.IOException;
+import javax.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -45,6 +50,7 @@ public class TransactionService {
     private final AwsS3Manager awsS3Manager;
     private final ExcelUploadUtil excelUploadUtil;
     private final ExcelFileDBMigrationProcessManager excelFileDBMigrationProcessManager;
+    private final EmailSender emailSender;
 
     public ListResponse<OriginalTransactionResponseDto> getOriginalTransactions(String uploadAt) {
         List<OriginalTransaction> originalTransactions = originalTransactionRepository.findAllByUploadAtAndIsRemovedFalse(uploadAt);
@@ -98,6 +104,18 @@ public class TransactionService {
                 .build();
         originalTransactionRepository.save(originalTransaction);
         ExcelFilesToDBMigration();
+
+        String year = uploadAt.substring(0, 4);
+        String month = uploadAt.substring(4, 6);
+        List<Member> artists = memberRepository.findMemberByRoleAndIsRemovedFalse(MemberRole.ARTIST);
+        artists.forEach(artist -> {
+            try {
+                emailSender.sendMail(artist.getEmail().getValue(), "Bluekey music 정산 알림",
+                        artist.getName(), year, month);
+            } catch (MessagingException | IOException e) {
+                log.error("{}에게 메일 전송 실패 : {}", artist.getName(), e.getMessage());
+            }
+        });
         return OriginalTransactionResponseDto.fromWithWarning(originalTransaction, excelFileProcessManager.getWarnings());
     }
 
