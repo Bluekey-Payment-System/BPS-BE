@@ -70,16 +70,10 @@ public class AuthService {
 
 		Member member = memberRepository.save(dto.toArtist());
 
-		if (file == null) {
-			return ArtistAccountDto.from(member);
+		if (file != null && !file.isEmpty()) {
+			String fileUrl = imageUploadUtil.uploadImage(file, S3_PROFILE_IMAGE_PREFIX + member.getId() + "/" + file.getOriginalFilename()+ "-" +member.getCreatedAt());
+			member.updateProfileImage(fileUrl);
 		}
-
-		if (file.isEmpty()) {
-			return ArtistAccountDto.from(member);
-		}
-		// S3 업로드 로직
-		String fileUrl = imageUploadUtil.uploadImage(file, S3_PROFILE_IMAGE_PREFIX + member.getId() + "/" + file.getOriginalFilename()+ "-" +member.getCreatedAt());
-		member.updateProfileImage(fileUrl);
 		encodeMemberPassword(member);
 		memberRepository.save(member);
 		return ArtistAccountDto.from(member);
