@@ -70,7 +70,11 @@ public class AuthService {
 
 		Member member = memberRepository.save(dto.toArtist());
 
-		if (file.isEmpty() || file == null) {
+		if (file == null) {
+			return ArtistAccountDto.from(member);
+		}
+
+		if (file.isEmpty()) {
 			return ArtistAccountDto.from(member);
 		}
 
