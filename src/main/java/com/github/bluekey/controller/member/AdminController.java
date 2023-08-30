@@ -95,6 +95,7 @@ public class AdminController {
 					content = @Content(mediaType = "application/json", schema = @Schema(implementation = MonthlyTrendResponseDto.class))),
 	})
 	@GetMapping("/dashboard/trend")
+	@PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
 	public ResponseEntity<MonthlyTrendResponseDto> getMonthlyRevenueTrend(
 			@Parameter(description = "월별 추이의 시작일 (format: yyyyMM)") @RequestParam("startDate") String startDate,
 			@Parameter(description = "월별 추이의 종료일 (format: yyyyMM)") @RequestParam("endDate") String endDate
