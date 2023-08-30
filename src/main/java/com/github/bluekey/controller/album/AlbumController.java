@@ -73,6 +73,7 @@ public class AlbumController {
                             schema = @Schema(implementation = AlbumResponseDto.class)
                     )),
     })
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     @PatchMapping("/{albumId}")
     public ResponseEntity<AlbumResponseDto> albumsUpdate(
             @RequestBody AlbumsRegisterRequestDto dto,
@@ -109,7 +110,6 @@ public class AlbumController {
             @RequestParam("rank") Integer rank,
             @PathVariable("albumId") Long albumId
     ) {
-
         return ResponseEntity.ok(topTrackDashBoardService.getTopTracks(albumId, monthly, rank, PrincipalConvertUtil.getMemberId()));
     }
 
