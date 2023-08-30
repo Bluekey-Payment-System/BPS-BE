@@ -99,7 +99,7 @@ public class SummaryDashBoardService {
     public ArtistSummaryResponseDto getArtistDashboardInformation(String monthly, Long memberId) {
         double settlementAmount = 0.0;
         double previousMonthSettlementAmount = 0.0;
-        double settlementAmountGrowthRate = 0.0;
+        Double settlementAmountGrowthRate = 0.0;
         List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
         List<Transaction> previousMonthTransactions = transactionRepository.findTransactionsByDuration(getPreviousMonth(monthly));
         Member member = memberRepository.findById(memberId).orElseThrow(() -> {throw new MemberNotFoundException();});
