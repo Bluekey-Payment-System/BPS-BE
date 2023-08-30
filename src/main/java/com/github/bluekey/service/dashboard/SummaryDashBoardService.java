@@ -111,8 +111,6 @@ public class SummaryDashBoardService {
         previousMonthSettlementAmount = getSettlementAmount(previousMonthlyTrackMemberMappedByAmount, memberId);
         settlementAmountGrowthRate = getGrowthRate(previousMonthSettlementAmount, settlementAmount);
 
-
-
         return ArtistSummaryResponseDto.builder()
                 .bestAlbum(getTotalBestAlbum(monthly, member, transactions, previousMonthTransactions))
                 .bestTrack(getTotalBestTrack(monthly, member, transactions, previousMonthTransactions))
@@ -394,17 +392,33 @@ public class SummaryDashBoardService {
                         LinkedHashMap::new
                 ));
 
-        Map.Entry<Album, Double> bestTrackInformation = sortedTrackMappedByAmount.entrySet().iterator().next();
-        return ArtistMonthlyInfoDto.builder()
-                .albumId(bestTrackInformation.getKey().getId())
-                .enName(bestTrackInformation.getKey().getEnName())
-                .name(bestTrackInformation.getKey().getName())
-                .growthRate(
-                        getGrowthRate(
-                                sortedTrackMappedByAmountPreviousMonthly.get(bestTrackInformation.getKey()),
-                                bestTrackInformation.getValue())
-                )
-                .build();
+        Map.Entry<Album, Double> bestTrackInformation = sortedTrackMappedByAmount.entrySet()
+                .stream()
+                .findFirst()
+                .orElse(null);
+//        Album bestAlbum = albumRepository.findById(bestTrackInformation.getKey().getId()).orElseThrow(() -> {
+//            throw new BusinessException(ErrorCode.ALBUM_NOT_FOUND);
+//        });
+        if(bestTrackInformation != null) {
+            return ArtistMonthlyInfoDto.builder()
+                    .albumId(bestTrackInformation.getKey().getId())
+                    .enName(bestTrackInformation.getKey().getEnName())
+                    .name(bestTrackInformation.getKey().getName())
+                    .growthRate(
+                            getGrowthRate(
+                                    sortedTrackMappedByAmountPreviousMonthly.get(bestTrackInformation.getKey()),
+                                    bestTrackInformation.getValue())
+                    )
+                    .build();
+        } else {
+            return ArtistMonthlyInfoDto.builder()
+                    .albumId(null)
+                    .enName(null)
+                    .name(null)
+                    .growthRate(null)
+                    .build();
+        }
+
     }
 
     private ArtistMonthlyTrackInfoDto getTotalBestTrack(String monthly, Member member, List<Transaction> transactions, List<Transaction> previousMonthlyTransactions) {
@@ -443,17 +457,30 @@ public class SummaryDashBoardService {
                         LinkedHashMap::new
                 ));
 
-        Map.Entry<Track, Double> bestTrackInformation = sortedTrackMappedByAmount.entrySet().iterator().next();
-        return ArtistMonthlyTrackInfoDto.builder()
-                .trackId(bestTrackInformation.getKey().getId())
-                .enName(bestTrackInformation.getKey().getEnName())
-                .name(bestTrackInformation.getKey().getName())
-                .growthRate(
-                        getGrowthRate(
-                                sortedTrackMappedByAmountPreviousMonthly.get(bestTrackInformation.getKey()),
-                                bestTrackInformation.getValue())
-                )
-                .build();
+        Map.Entry<Track, Double> bestTrackInformation = sortedTrackMappedByAmount.entrySet()
+                .stream()
+                .findFirst()
+                .orElse(null);
+        if (bestTrackInformation != null) {
+            return ArtistMonthlyTrackInfoDto.builder()
+                    .trackId(bestTrackInformation.getKey().getId())
+                    .enName(bestTrackInformation.getKey().getEnName())
+                    .name(bestTrackInformation.getKey().getName())
+                    .growthRate(
+                            getGrowthRate(
+                                    sortedTrackMappedByAmountPreviousMonthly.get(bestTrackInformation.getKey()),
+                                    bestTrackInformation.getValue())
+                    )
+                    .build();
+        } else {
+            return ArtistMonthlyTrackInfoDto.builder()
+                    .trackId(null)
+                    .enName(null)
+                    .name(null)
+                    .growthRate(null)
+                    .build();
+        }
+
     }
 
 

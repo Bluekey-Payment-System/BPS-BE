@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Schema(description = "아티스트의 당월 정보")
 public class ArtistMonthlyInfoDto {
     @Schema(description = "앨범ID", example = "1")
-    private long albumId;
+    private Long albumId;
 
     @Schema(description = "앨범한글명", example = "앨범명2")
     private String name;
@@ -24,7 +24,7 @@ public class ArtistMonthlyInfoDto {
     private Double growthRate;
 
     @Builder
-    public ArtistMonthlyInfoDto(final long albumId, final String name, final String enName, final Double growthRate) {
+    public ArtistMonthlyInfoDto(final Long albumId, final String name, final String enName, final Double growthRate) {
         this.albumId = albumId;
         this.name = name;
         this.enName = enName;
