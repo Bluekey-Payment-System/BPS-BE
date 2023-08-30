@@ -132,15 +132,15 @@ public class SummaryDashBoardService {
 
         double totalRevenue = 0.0;
         double totalPreviousMonthRevenue = 0.0;
-        double revenueGrowthRate = 0.0;
+        Double revenueGrowthRate = 0.0;
 
         double netIncome = 0.0;
         double previousMonthnetIncome = 0.0;
-        double netIncomeGrowthRate = 0.0;
+        Double netIncomeGrowthRate = 0.0;
 
         double settlementAmount = 0.0;
         double previousMonthSettlementAmount = 0.0;
-        double settlementAmountGrowthRate = 0.0;
+        Double settlementAmountGrowthRate = 0.0;
 
         Map<TrackMember, Double> trackMemberMappedByAmount = getAlbumTrackMemberMappedByAmount(monthly, memberId, albumId);
         Map<TrackMember, Double> previousMonthlyTrackMemberMappedByAmount = getAlbumTrackMemberMappedByAmount(getPreviousMonth(monthly), memberId, albumId);
