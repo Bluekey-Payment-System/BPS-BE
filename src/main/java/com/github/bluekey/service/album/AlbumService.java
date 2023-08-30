@@ -211,6 +211,7 @@ public class AlbumService {
 				.filter(track ->
 						track.getTrackMembers()
 								.stream()
+								.filter(TrackMember::isArtistTrack)
 								.anyMatch(trackMember -> trackMember.getMemberId().equals(memberId))).count();
 		return count > 0;
 	}
