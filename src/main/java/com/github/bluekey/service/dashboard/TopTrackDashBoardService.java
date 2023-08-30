@@ -11,9 +11,12 @@ import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.track.Track;
 import com.github.bluekey.entity.transaction.Transaction;
+import com.github.bluekey.exception.AuthenticationException;
+import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.exception.member.MemberNotFoundException;
 import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.repository.transaction.TransactionRepository;
+import com.github.bluekey.service.album.AlbumService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,6 +34,7 @@ public class TopTrackDashBoardService {
     private static final String MONTH_PREFIX = "01";
     private final MemberRepository memberRepository;
     private final TransactionRepository transactionRepository;
+    private final AlbumService albumService;
 
     public ArtistsRevenueProportionResponseDto getTopArtists(String monthly, int rank) {
         String previousMonthly = getPreviousMonth(monthly);
@@ -150,6 +154,8 @@ public class TopTrackDashBoardService {
         List<Transaction> previousMonthlyTransactions = transactionRepository.findTransactionsByDuration(previousMonthly);
 
         if (member.getRole().equals(MemberRole.ARTIST)) {
+            if (!albumService.isAlbumParticipant(albumId, memberId))
+                throw new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED);
             trackMappedByAmount = transactions.stream()
                     .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
                     .filter((transaction -> transaction.getTrackMember().getMemberId().equals(member.getId()) &&

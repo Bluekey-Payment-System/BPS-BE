@@ -12,12 +12,14 @@ import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.track.Track;
 import com.github.bluekey.entity.track.TrackMember;
 import com.github.bluekey.entity.transaction.Transaction;
+import com.github.bluekey.exception.AuthenticationException;
 import com.github.bluekey.exception.BusinessException;
 import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.exception.member.MemberNotFoundException;
 import com.github.bluekey.repository.album.AlbumRepository;
 import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.repository.transaction.TransactionRepository;
+import com.github.bluekey.service.album.AlbumService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,7 @@ public class SummaryDashBoardService {
     private final TransactionRepository transactionRepository;
     private final MemberRepository memberRepository;
     private final AlbumRepository albumRepository;
+    private final AlbumService albumService;
 
     @Transactional(readOnly = true)
     public DashboardTotalInfoResponseDto getAdminDashBoardSummaryInformation(String monthly, Long memberId) {
@@ -161,8 +164,11 @@ public class SummaryDashBoardService {
         previousMonthSettlementAmount = getAdminAlbumSettlementAmount(previousMonthlyTrackMemberMappedByAmount, memberId);
         settlementAmountGrowthRate = getGrowthRate(previousMonthSettlementAmount, settlementAmount);
 
+        // TODO: 해당 부분을 위에서 확인하는 것이 더 좋아보임
         Member member = memberRepository.findById(memberId).orElseThrow(() -> {throw new MemberNotFoundException();});
         if (member.getRole().equals(MemberRole.ARTIST)) {
+            if (!albumService.isAlbumParticipant(albumId, memberId))
+                throw new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED);
             return AlbumSummaryResponseDto.builder()
                     .albumId(album.getId())
                     .name(album.getName())
