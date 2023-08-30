@@ -100,6 +100,7 @@ public class SummaryDashBoardService {
         double settlementAmount = 0.0;
         double previousMonthSettlementAmount = 0.0;
         Double settlementAmountGrowthRate = 0.0;
+        Member artist = memberRepository.findById(memberId).orElseThrow(() -> {throw new MemberNotFoundException();});
         List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
         List<Transaction> previousMonthTransactions = transactionRepository.findTransactionsByDuration(getPreviousMonth(monthly));
         Member member = memberRepository.findById(memberId).orElseThrow(() -> {throw new MemberNotFoundException();});
@@ -112,6 +113,9 @@ public class SummaryDashBoardService {
         settlementAmountGrowthRate = getGrowthRate(previousMonthSettlementAmount, settlementAmount);
 
         return ArtistSummaryResponseDto.builder()
+                .memberId(artist.getId())
+                .name(artist.getName())
+                .enName(artist.getEnName())
                 .bestAlbum(getTotalBestAlbum(monthly, member, transactions, previousMonthTransactions))
                 .bestTrack(getTotalBestTrack(monthly, member, transactions, previousMonthTransactions))
                 .settlementAmount(
@@ -265,6 +269,7 @@ public class SummaryDashBoardService {
 
     private Map<TrackMember, Double> getArtistTrackMemberMappedByAmount(Member member, List<Transaction> transactions) {
         Map<TrackMember, Double> trackMemberMappedByAmount = transactions.stream()
+                .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
                 .filter(transaction -> transaction.getTrackMember().getMemberId().equals(member.getId()))
                 .collect(Collectors.groupingBy(
                         Transaction::getTrackMember,
