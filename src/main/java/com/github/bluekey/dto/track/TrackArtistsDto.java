@@ -32,12 +32,12 @@ public class TrackArtistsDto {
         this.commissionRate = commissionRate;
     }
 
-    public static TrackArtistsDto from(Member member) {
+    public static TrackArtistsDto from(Member member, TrackMember trackMember) {
         return TrackArtistsDto.builder()
                 .memberId(member.getId())
                 .name(member.getName())
                 .enName(member.getEnName())
-                .commissionRate(member.getCommissionRate())
+                .commissionRate(trackMember.getCommissionRate())
                 .build();
     }
 
