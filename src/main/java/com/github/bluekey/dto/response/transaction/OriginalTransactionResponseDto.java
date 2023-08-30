@@ -40,6 +40,7 @@ public class OriginalTransactionResponseDto {
                 .id(originalTransaction.getId())
                 .name(originalTransaction.getFileName())
                 .uploadAt(originalTransaction.getCreatedAt())
+                .warnings(new ArrayList<>())
                 .build();
     }
 
