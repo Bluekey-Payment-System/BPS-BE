@@ -201,6 +201,20 @@ public class AlbumService {
 				.build();
 	}
 
+	@Transactional(readOnly = true)
+	public boolean isAlbumParticipant(Long memberId, Long AlbumId) {
+		Album album = albumRepository.findAlbumByIdAndIsRemovedFalse(AlbumId)
+				.orElseThrow(() -> new BusinessException(ErrorCode.ALBUM_NOT_FOUND));
+
+		Long count = album.getTracks()
+				.stream()
+				.filter(track ->
+						track.getTrackMembers()
+								.stream()
+								.anyMatch(trackMember -> trackMember.getMemberId().equals(memberId))).count();
+		return count > 0;
+	}
+
 	private List<Album> paginateAlbums(List<Album> albums, Pageable pageable) {
 		int end = (int) Math.min(pageable.getOffset() + pageable.getPageSize(), albums.size());
 		if (albums.size() <= pageable.getOffset()) {
