@@ -18,10 +18,14 @@ public class SimpleArtistAccountDto {
     @Schema(description = "아티스트 이름(영문)", example = "Hyukki")
     private String enName;
 
+    @Schema(description = "요율", example = "30")
+    private Integer commissionRate;
+
     @Builder
     public SimpleArtistAccountDto(Member member) {
         this.memberId = member.getId();
         this.name = member.getName();
         this.enName = member.getEnName();
+        this.commissionRate = member.getCommissionRate();
     }
 }
