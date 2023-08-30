@@ -19,4 +19,5 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     List<Transaction> findTransactionsByDuration(String duration);
 
     List<Transaction> findTransactionsByDurationBetween(String startDate, String endDate);
+    List<Transaction> findTransactionsByOriginalTransaction(OriginalTransaction originalTransaction);
 }

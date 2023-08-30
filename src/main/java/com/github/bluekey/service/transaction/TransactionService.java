@@ -7,6 +7,7 @@ import com.github.bluekey.dto.response.transaction.OriginalTransactionResponseDt
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.transaction.OriginalTransaction;
+import com.github.bluekey.entity.transaction.Transaction;
 import com.github.bluekey.exception.transaction.AlreadyOriginalTransactionExistException;
 import com.github.bluekey.exception.transaction.ExcelUploadException;
 import com.github.bluekey.mail.EmailSender;
@@ -18,6 +19,7 @@ import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.repository.track.TrackMemberRepository;
 import com.github.bluekey.repository.track.TrackRepository;
 import com.github.bluekey.repository.transaction.OriginalTransactionRepository;
+import com.github.bluekey.repository.transaction.TransactionRepository;
 import com.github.bluekey.s3.manager.AwsS3Manager;
 import com.github.bluekey.s3.manager.S3PrefixType;
 import com.github.bluekey.util.ExcelUploadUtil;
@@ -43,6 +45,7 @@ import java.util.stream.Collectors;
 public class TransactionService {
     private static final int ERROR_THRESHOLD = 0;
     private final OriginalTransactionRepository originalTransactionRepository;
+    private final TransactionRepository transactionRepository;
     private final MemberRepository memberRepository;
     private final AlbumRepository albumRepository;
     private final TrackRepository trackRepository;
@@ -63,10 +66,13 @@ public class TransactionService {
 
         originalTransaction.remove();
         originalTransactionRepository.save(originalTransaction);
+
+        List<Transaction> transactions = transactionRepository.findTransactionsByOriginalTransaction(originalTransaction);
+        transactionRepository.deleteAllInBatch(transactions);
+
         excelUploadUtil.deleteExcel(excelUploadUtil.getExcelKey(originalTransaction.getFileName(), originalTransaction.getUploadAt()));
 
-        originalTransaction.getTransactions()
-                .forEach(transaction -> transaction.remove());
+
 
         return OriginalTransactionResponseDto.from(originalTransaction);
     }
