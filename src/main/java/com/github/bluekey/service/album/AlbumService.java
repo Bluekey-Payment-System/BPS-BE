@@ -114,7 +114,7 @@ public class AlbumService {
 									Member memberInfo = memberRepository
 											.findMemberByIdAndIsRemovedFalse(member.getMemberId())
 											.orElseThrow(MemberNotFoundException::new);
-									return TrackArtistsDto.from(memberInfo);
+									return TrackArtistsDto.from(memberInfo, member);
 								} else {
 									return TrackArtistsDto.from(member);
 								}
