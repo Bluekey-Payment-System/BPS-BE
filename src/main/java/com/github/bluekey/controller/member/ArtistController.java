@@ -117,25 +117,26 @@ public class ArtistController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "아티스트 기준 당월 TOP N 트랙 매출 LIST 조회 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistTopResponseDto.class))),
     })
-    @GetMapping("/dashboard/top-track")
+    @GetMapping("/{memberId}/dashboard/top-track")
     public ResponseEntity<ArtistTopResponseDto> getArtistTop(
             @RequestParam("monthly") String monthly,
-            @RequestParam("rank") Integer rank
+            @RequestParam("rank") Integer rank,
+            @PathVariable("memberId") Long memberId
     ) {
-        return ResponseEntity.ok(topTrackDashBoardService.getArtistTopTracks(monthly, rank, PrincipalConvertUtil.getMemberId()));
+        return ResponseEntity.ok(topTrackDashBoardService.getArtistTopTracks(monthly, rank, memberId));
     }
 
 
-    @PreAuthorize("hasRole('ARTIST')")
     @Operation(summary = "아티스트 대쉬보드 기본정보", description = "아티스트 대쉬보드 기본정보")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "아티스트 대쉬보드 조회 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistSummaryResponseDto.class))),
     })
-    @GetMapping("/dashboard/summary")
+    @GetMapping("/{memberId}/dashboard/summary")
     public ResponseEntity<ArtistSummaryResponseDto> getArtistDashboardSummary(
-            @RequestParam("monthly") String monthly
+            @RequestParam("monthly") String monthly,
+            @PathVariable("memberId") Long memberId
     ) {
-        return ResponseEntity.ok(summaryDashBoardService.getArtistDashboardInformation(monthly, PrincipalConvertUtil.getMemberId()));
+        return ResponseEntity.ok(summaryDashBoardService.getArtistDashboardInformation(monthly, memberId));
     }
 
     @Operation(summary = "아티스트 대쉬보드 월별 정산액 LIST", description = "아티스트 대쉬보드 월별 정산액 LIST")
@@ -143,12 +144,13 @@ public class ArtistController {
             @ApiResponse(responseCode = "200", description = "아티스트 대쉬보드 월별 정산액 조회 완료",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistMonthlyAccountsResponseDto.class))),
     })
-    @GetMapping("/dashboard/trend")
+    @GetMapping("/{memberId}/dashboard/trend")
     public ResponseEntity<MonthlyTrendResponseDto> getArtistMonthlyAccounts(
             @RequestParam("startDate") String startDate,
-            @RequestParam("endDate") String endDate
+            @RequestParam("endDate") String endDate,
+            @PathVariable("memberId") Long memberId
     ) {
-        return ok(barChartDashboardService.getBarChartDashboard(startDate, endDate, PrincipalConvertUtil.getMemberId()));
+        return ok(barChartDashboardService.getBarChartDashboard(startDate, endDate, memberId));
     }
 
     @Operation(summary = "Admin이 아티스트의 정보 변경" , description = "Admin이 아티스트의 정보 변경")
