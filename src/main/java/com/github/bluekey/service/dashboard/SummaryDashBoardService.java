@@ -64,13 +64,15 @@ public class SummaryDashBoardService {
         }
         revenueGrowthRate = getGrowthRate(totalPreviousMonthRevenue, totalRevenue);
 
-        netIncome = getIncome(totalRevenue);
-        previousMonthnetIncome = getIncome(totalPreviousMonthRevenue);
-        netIncomeGrowthRate = getGrowthRate(previousMonthnetIncome, netIncome);
-
         settlementAmount = getSettlementAmount(trackMemberMappedByAmount, memberId);
         previousMonthSettlementAmount = getSettlementAmount(previousMonthlyTrackMemberMappedByAmount, memberId);
         settlementAmountGrowthRate = getGrowthRate(previousMonthSettlementAmount, settlementAmount);
+
+        netIncome = getIncome(settlementAmount);
+        previousMonthnetIncome = getIncome(previousMonthSettlementAmount);
+        netIncomeGrowthRate = getGrowthRate(previousMonthnetIncome, netIncome);
+
+
 
         log.info("data = {} {} {} {} {} {}", totalRevenue, totalPreviousMonthRevenue, netIncome, previousMonthnetIncome, settlementAmount, previousMonthSettlementAmount);
         return DashboardTotalInfoResponseDto.builder()
@@ -83,14 +85,14 @@ public class SummaryDashBoardService {
                 )
                 .netIncome(
                         TotalAndGrowthDto.builder()
-                                .totalAmount((long) netIncome)
-                                .growthRate(netIncomeGrowthRate)
+                                .totalAmount((long) settlementAmount)
+                                .growthRate(settlementAmountGrowthRate)
                                 .build()
                 )
                 .settlementAmount(
                         TotalAndGrowthDto.builder()
-                                .totalAmount((long) settlementAmount)
-                                .growthRate(settlementAmountGrowthRate)
+                                .totalAmount((long) netIncome)
+                                .growthRate(netIncomeGrowthRate)
                                 .build()
                 )
                 .build();
@@ -120,7 +122,7 @@ public class SummaryDashBoardService {
                 .bestTrack(getTotalBestTrack(monthly, member, transactions, previousMonthTransactions))
                 .settlementAmount(
                         ArtistMonthlySettlementInfoDto.builder()
-                                .totalAmount(settlementAmount)
+                                .totalAmount(Math.floor(settlementAmount - (settlementAmount * 33 / 1000)))
                                 .growthRate(settlementAmountGrowthRate)
                                 .build()
                 )
@@ -156,14 +158,17 @@ public class SummaryDashBoardService {
         }
 
         revenueGrowthRate = getGrowthRate(totalPreviousMonthRevenue, totalRevenue);
-
-        netIncome = getIncome(totalRevenue);
-        previousMonthnetIncome = getIncome(totalPreviousMonthRevenue);
-        netIncomeGrowthRate = getGrowthRate(previousMonthnetIncome, netIncome);
+        // 추후 수정
 
         settlementAmount = getAdminAlbumSettlementAmount(trackMemberMappedByAmount, memberId);
         previousMonthSettlementAmount = getAdminAlbumSettlementAmount(previousMonthlyTrackMemberMappedByAmount, memberId);
         settlementAmountGrowthRate = getGrowthRate(previousMonthSettlementAmount, settlementAmount);
+
+        netIncome = getIncome(settlementAmount);
+        previousMonthnetIncome = getIncome(previousMonthSettlementAmount);
+        netIncomeGrowthRate = getGrowthRate(previousMonthnetIncome, netIncome);
+
+
 
         Member member = memberRepository.findById(memberId).orElseThrow(() -> {throw new MemberNotFoundException();});
         if (member.getRole().equals(MemberRole.ARTIST)) {
@@ -204,14 +209,14 @@ public class SummaryDashBoardService {
                                     .build()
                     )
                     .netIncome(TotalAndGrowthDto.builder()
-                            .totalAmount((long) netIncome)
-                            .growthRate(netIncomeGrowthRate)
+                            .totalAmount((long) settlementAmount)
+                            .growthRate(settlementAmountGrowthRate)
                             .build()
                     )
                     .settlementAmount(
                             TotalAndGrowthDto.builder()
-                                    .totalAmount((long) settlementAmount)
-                                    .growthRate(settlementAmountGrowthRate)
+                                    .totalAmount((long) netIncome)
+                                    .growthRate(netIncomeGrowthRate)
                                     .build()
                     )
                     .build();
