@@ -18,6 +18,7 @@ VALUES ('artist3@example.com', 'artist3', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxm
 INSERT INTO member (email, login_id, password, name, en_name, commission_rate, type, role, profile_image, created_at, modified_at, is_removed)
 VALUES ('artist4@example.com', 'artist4', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxmyJE0mKuAnt.KXBq6zYro33S', '이은성', '이은성', 20, 'USER', 'ARTIST', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
+-- example data
 -- -- 5
 -- INSERT INTO member (email, login_id, password, name, en_name, commission_rate, type, role, profile_image, created_at, modified_at, is_removed)
 -- VALUES ('artist5@example.com', 'artist5', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxmyJE0mKuAnt.KXBq6zYro33S', 'SKY', 'SKY', 20, 'USER', 'ARTIST', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
