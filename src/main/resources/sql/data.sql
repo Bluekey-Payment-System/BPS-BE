@@ -18,9 +18,13 @@ VALUES ('artist3@example.com', 'artist3', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxm
 INSERT INTO member (email, login_id, password, name, en_name, commission_rate, type, role, profile_image, created_at, modified_at, is_removed)
 VALUES ('artist4@example.com', 'artist4', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxmyJE0mKuAnt.KXBq6zYro33S', '이은성', '이은성', 20, 'USER', 'ARTIST', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
+-- -- 5
+-- INSERT INTO member (email, login_id, password, name, en_name, commission_rate, type, role, profile_image, created_at, modified_at, is_removed)
+-- VALUES ('artist5@example.com', 'artist5', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxmyJE0mKuAnt.KXBq6zYro33S', 'SKY', 'SKY', 20, 'USER', 'ARTIST', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
 -- 5
 INSERT INTO member (email, login_id, password, name, en_name, commission_rate, type, role, profile_image, created_at, modified_at, is_removed)
-VALUES ('artist5@example.com', 'artist5', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxmyJE0mKuAnt.KXBq6zYro33S', 'SKY', 'SKY', 20, 'USER', 'ARTIST', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES ('artist5@example.com', 'artist5', '$2a$12$b46rJp7uMeFkgWcnkyfOr.A9PGlDxmyJE0mKuAnt.KXBq6zYro33S', '김세훈', '김세훈', 20, 'USER', 'ARTIST', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 6
 INSERT INTO member (email, login_id, password, name, en_name, commission_rate, type, role, profile_image, created_at, modified_at, is_removed)
@@ -165,9 +169,13 @@ VALUES (2, 'Come to me (inst.)', 'Come to me (inst.)', false, CURRENT_TIMESTAMP,
 INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
 VALUES (8, '내 세상은', '내 세상은', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
+-- -- 19
+-- INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
+-- VALUES (8, 'Wait For You', 'Wait For You', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
 -- 19
 INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
-VALUES (8, 'Wait For You', 'Wait For You', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (8, 'love ya', 'love ya', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 20
 INSERT INTO track (album_id, name, en_name, is_original_track, created_at, modified_at, is_removed)
@@ -395,7 +403,7 @@ VALUES (18, 4, '이은성', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 20
 INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
-VALUES (19, 5, 'SKY', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (19, 5, '김세훈', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 21
 INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
