@@ -15,7 +15,8 @@ spring:
     jdbc:
       initialize-schema: ALWAYS
   server:
-    host: http://localhost:8080
+    fe-host: http://localhost:3000
+    be-host: http://localhost:8080
   jpa:
     hibernate:
       ddl-auto: create
@@ -32,7 +33,17 @@ spring:
       schema-locations:
         - classpath:sql/schema-h2.sql
         - classpath:sql/data.sql
-
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username:
+    password:
+    logoImg:
+    mainImg:
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.ssl.enable: true
+      mail.smtp.ssl.trust: smtp.naver.com
 logging:
   level:
     org.hibernate.SQL: debug
