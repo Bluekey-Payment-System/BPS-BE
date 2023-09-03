@@ -23,6 +23,7 @@ public class SlackUtil {
     private final static String SLACK_ERROR_FIELD_TITLE_API_URL = "API URL";
     private final static String SLACK_ERROR_FIELD_TITLE_ERROR_MESSAGE = "ERROR MESSAGE";
     private final static String SLACK_ERROR_FIELD_TITLE_SENTRY_LINK = "SENTRY LINK";
+
     @Value("${slack.webhook.url}")
     private String webhookUrl;
     private final Slack slack = Slack.getInstance();
