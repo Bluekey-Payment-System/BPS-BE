@@ -7,6 +7,7 @@ import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.track.Track;
 import com.github.bluekey.entity.transaction.Transaction;
+import com.github.bluekey.exception.AuthenticationException;
 import com.github.bluekey.exception.BusinessException;
 import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.exception.member.MemberNotFoundException;
@@ -14,6 +15,7 @@ import com.github.bluekey.repository.album.AlbumRepository;
 import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.repository.transaction.TransactionRepository;
 
+import com.github.bluekey.service.album.AlbumService;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ public class LineChartDashBoardService {
     private final TransactionRepository transactionRepository;
     private final MemberRepository memberRepository;
     private final AlbumRepository albumRepository;
+    private final AlbumService albumService;
 
     @Transactional(readOnly = true)
     public AlbumTrackAccountsResponseDto getAlbumLineChartDashboard(String startDate, String endDate
@@ -53,6 +56,8 @@ public class LineChartDashBoardService {
         if (member.isAdmin()) {
             tracks = getAdminAlbumTrackAccounts(startDate, endDate, albumId);
         } else if (member.getRole() == MemberRole.ARTIST) {
+            if (!albumService.isAlbumParticipant(albumId, memberId))
+                throw new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED);
             tracks = getArtistAlbumTrackAccounts(startDate, endDate, albumId, memberId);
         }
         return AlbumTrackAccountsResponseDto.builder()

@@ -110,7 +110,6 @@ public class AlbumController {
             @RequestParam("rank") Integer rank,
             @PathVariable("albumId") Long albumId
     ) {
-
         return ResponseEntity.ok(topTrackDashBoardService.getTopTracks(albumId, monthly, rank, PrincipalConvertUtil.getMemberId()));
     }
 
