@@ -26,8 +26,10 @@ import org.springframework.web.cors.CorsConfiguration;
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SecurityConfig {
 
-	@Value("${spring.server.host}")
-	private String host;
+	@Value("${spring.server.be-host}")
+	private String beHost;
+	@Value("${spring.server.fe-host}")
+	private String feHost;
 	private final JwtProvider jwtProvider;
 
 	@Bean
@@ -43,7 +45,7 @@ public class SecurityConfig {
 				.cors(c -> {
 					c.configurationSource(request -> {
 						CorsConfiguration config = new CorsConfiguration();
-						config.setAllowedOrigins(List.of("http://localhost:3000", host)); //TODO: front 주소로 변경 필요
+						config.setAllowedOrigins(List.of("http://localhost:3000", beHost, feHost));
 						config.setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE"));
 						config.setAllowedHeaders(Arrays.asList("*"));
 						return config;

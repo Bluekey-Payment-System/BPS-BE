@@ -67,13 +67,15 @@ public class SummaryDashBoardService {
         }
         revenueGrowthRate = getGrowthRate(totalPreviousMonthRevenue, totalRevenue);
 
-        netIncome = getIncome(totalRevenue);
-        previousMonthnetIncome = getIncome(totalPreviousMonthRevenue);
-        netIncomeGrowthRate = getGrowthRate(previousMonthnetIncome, netIncome);
-
         settlementAmount = getSettlementAmount(trackMemberMappedByAmount, memberId);
         previousMonthSettlementAmount = getSettlementAmount(previousMonthlyTrackMemberMappedByAmount, memberId);
         settlementAmountGrowthRate = getGrowthRate(previousMonthSettlementAmount, settlementAmount);
+
+        netIncome = getIncome(settlementAmount);
+        previousMonthnetIncome = getIncome(previousMonthSettlementAmount);
+        netIncomeGrowthRate = getGrowthRate(previousMonthnetIncome, netIncome);
+
+
 
         log.info("data = {} {} {} {} {} {}", totalRevenue, totalPreviousMonthRevenue, netIncome, previousMonthnetIncome, settlementAmount, previousMonthSettlementAmount);
         return DashboardTotalInfoResponseDto.builder()
@@ -86,14 +88,14 @@ public class SummaryDashBoardService {
                 )
                 .netIncome(
                         TotalAndGrowthDto.builder()
-                                .totalAmount((long) netIncome)
-                                .growthRate(netIncomeGrowthRate)
+                                .totalAmount((long) settlementAmount)
+                                .growthRate(settlementAmountGrowthRate)
                                 .build()
                 )
                 .settlementAmount(
                         TotalAndGrowthDto.builder()
-                                .totalAmount((long) settlementAmount)
-                                .growthRate(settlementAmountGrowthRate)
+                                .totalAmount((long) netIncome)
+                                .growthRate(netIncomeGrowthRate)
                                 .build()
                 )
                 .build();
@@ -103,6 +105,7 @@ public class SummaryDashBoardService {
         double settlementAmount = 0.0;
         double previousMonthSettlementAmount = 0.0;
         Double settlementAmountGrowthRate = 0.0;
+        Member artist = memberRepository.findById(memberId).orElseThrow(() -> {throw new MemberNotFoundException();});
         List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
         List<Transaction> previousMonthTransactions = transactionRepository.findTransactionsByDuration(getPreviousMonth(monthly));
         Member member = memberRepository.findById(memberId).orElseThrow(() -> {throw new MemberNotFoundException();});
@@ -115,11 +118,14 @@ public class SummaryDashBoardService {
         settlementAmountGrowthRate = getGrowthRate(previousMonthSettlementAmount, settlementAmount);
 
         return ArtistSummaryResponseDto.builder()
+                .memberId(artist.getId())
+                .name(artist.getName())
+                .enName(artist.getEnName())
                 .bestAlbum(getTotalBestAlbum(monthly, member, transactions, previousMonthTransactions))
                 .bestTrack(getTotalBestTrack(monthly, member, transactions, previousMonthTransactions))
                 .settlementAmount(
                         ArtistMonthlySettlementInfoDto.builder()
-                                .totalAmount(settlementAmount)
+                                .totalAmount(Math.floor(settlementAmount - (settlementAmount * 33 / 1000)))
                                 .growthRate(settlementAmountGrowthRate)
                                 .build()
                 )
@@ -155,16 +161,18 @@ public class SummaryDashBoardService {
         }
 
         revenueGrowthRate = getGrowthRate(totalPreviousMonthRevenue, totalRevenue);
-
-        netIncome = getIncome(totalRevenue);
-        previousMonthnetIncome = getIncome(totalPreviousMonthRevenue);
-        netIncomeGrowthRate = getGrowthRate(previousMonthnetIncome, netIncome);
+        // 추후 수정
 
         settlementAmount = getAdminAlbumSettlementAmount(trackMemberMappedByAmount, memberId);
         previousMonthSettlementAmount = getAdminAlbumSettlementAmount(previousMonthlyTrackMemberMappedByAmount, memberId);
         settlementAmountGrowthRate = getGrowthRate(previousMonthSettlementAmount, settlementAmount);
 
-        // TODO: 해당 부분을 위에서 확인하는 것이 더 좋아보임
+        netIncome = getIncome(settlementAmount);
+        previousMonthnetIncome = getIncome(previousMonthSettlementAmount);
+        netIncomeGrowthRate = getGrowthRate(previousMonthnetIncome, netIncome);
+
+
+
         Member member = memberRepository.findById(memberId).orElseThrow(() -> {throw new MemberNotFoundException();});
         if (member.getRole().equals(MemberRole.ARTIST)) {
             if (!albumService.isAlbumParticipant(albumId, memberId))
@@ -206,14 +214,14 @@ public class SummaryDashBoardService {
                                     .build()
                     )
                     .netIncome(TotalAndGrowthDto.builder()
-                            .totalAmount((long) netIncome)
-                            .growthRate(netIncomeGrowthRate)
+                            .totalAmount((long) settlementAmount)
+                            .growthRate(settlementAmountGrowthRate)
                             .build()
                     )
                     .settlementAmount(
                             TotalAndGrowthDto.builder()
-                                    .totalAmount((long) settlementAmount)
-                                    .growthRate(settlementAmountGrowthRate)
+                                    .totalAmount((long) netIncome)
+                                    .growthRate(netIncomeGrowthRate)
                                     .build()
                     )
                     .build();
@@ -271,6 +279,7 @@ public class SummaryDashBoardService {
 
     private Map<TrackMember, Double> getArtistTrackMemberMappedByAmount(Member member, List<Transaction> transactions) {
         Map<TrackMember, Double> trackMemberMappedByAmount = transactions.stream()
+                .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
                 .filter(transaction -> transaction.getTrackMember().getMemberId().equals(member.getId()))
                 .collect(Collectors.groupingBy(
                         Transaction::getTrackMember,

@@ -23,12 +23,17 @@ public class AlbumResponseDto {
 	@Schema(description = "멤버 고유 ID", example = "1")
 	private Long memberId;
 
+	@Schema(description = "앨범 커버 이미지", example = "https://s3.bucket/album/1.jpg")
+	private String albumImage;
+
 	@Builder
-	public AlbumResponseDto(final Long albumId, final String name, final String enName, final Long memberId) {
+	public AlbumResponseDto(final Long albumId, final String name, final String enName,
+			final Long memberId, final String albumImage) {
 		this.albumId = albumId;
 		this.name = name;
 		this.enName = enName;
 		this.memberId = memberId;
+		this.albumImage = albumImage;
 	}
 
 	public static AlbumResponseDto from(Album album) {
@@ -37,6 +42,7 @@ public class AlbumResponseDto {
 				.name(album.getName())
 				.enName(album.getEnName())
 				.memberId(album.getArtistId())
+				.albumImage(album.getProfileImage())
 				.build();
 	}
 }

@@ -1,7 +1,6 @@
 package com.github.bluekey.controller.album;
 
 import com.github.bluekey.dto.album.NewAlbumInfoDto;
-import com.github.bluekey.dto.request.album.AlbumsRegisterRequestDto;
 import com.github.bluekey.dto.response.album.AlbumIdResponseDto;
 import com.github.bluekey.dto.response.album.AlbumMonthlyAccontsReponseDto;
 import com.github.bluekey.dto.response.album.AlbumResponseDto;
@@ -74,12 +73,13 @@ public class AlbumController {
                     )),
     })
     @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
-    @PatchMapping("/{albumId}")
+    @PatchMapping(path = "/{albumId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AlbumResponseDto> albumsUpdate(
-            @RequestBody AlbumsRegisterRequestDto dto,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestPart(value = "data", required = false) NewAlbumInfoDto dto,
             @PathVariable("albumId") Long albumId
     ) {
-        return null;
+        return ResponseEntity.ok(albumService.updateAlbum(file, dto, albumId));
     }
 
     @Operation(summary = "앨범 삭제", description = "앨범 삭제")
@@ -177,7 +177,7 @@ public class AlbumController {
                             schema = @Schema(implementation = AlbumTrackListResponseDto.class)
                     )),
     })
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     @GetMapping("/{albumId}")
     public ResponseEntity<AlbumTrackListResponseDto> getAlbum(
             @PathVariable("albumId") Long albumId

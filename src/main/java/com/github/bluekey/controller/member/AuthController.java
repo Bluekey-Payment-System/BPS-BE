@@ -77,17 +77,17 @@ public class AuthController {
 	@PatchMapping("/member/password")
 	public ResponseEntity<?> passwordChange(@Valid @RequestBody PasswordRequestDto dto) {
 		authService.changePassword(dto, PrincipalConvertUtil.getMemberId());
-		return ResponseEntity.noContent().build();
+		return ResponseEntity.ok().build();
 	}
 
 	@Operation(summary = "member 비밀번호 확인", description = "member 비밀번호 확인")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "204", description = "비밀번호 확인 성공"),
+			@ApiResponse(responseCode = "200", description = "비밀번호 확인 성공"),
 	})
 	@PostMapping("/member/password/confirm")
 	public ResponseEntity<?> passwordCheck(@RequestBody PasswordRequestDto dto) {
 		authService.matchPassword(dto, PrincipalConvertUtil.getMemberId());
-		return ResponseEntity.noContent().build();
+		return ResponseEntity.ok().build();
 	}
 
 	@Operation(summary = "member 퇴출", description = "Super Admin이 member에 대해 탈퇴를 진행")

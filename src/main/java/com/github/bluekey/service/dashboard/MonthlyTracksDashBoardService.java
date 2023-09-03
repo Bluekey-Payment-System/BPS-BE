@@ -199,16 +199,25 @@ public class MonthlyTracksDashBoardService {
             Integer totalCommissionRate = 0;
 
             for (TrackMember trackMember : trackMembers) {
-                Long id = trackMember.getMemberId();
-                Optional<Member> member = memberRepository.findById(id);
                 MemberBaseDto memberBaseDto;
-                if (member.isPresent()) {
-                    memberBaseDto = MemberBaseDto.from(member.get());
+
+                if (trackMember.getMemberId() != null) {
+                    Long id = trackMember.getMemberId();
+                    Optional<Member> member = memberRepository.findById(id);
+                    if (member.isPresent()) {
+                        memberBaseDto = MemberBaseDto.from(member.get());
+                    } else {
+                        memberBaseDto = MemberBaseDto.builder()
+                                .name(trackMember.getName())
+                                .build();
+                    }
                 } else {
                     memberBaseDto = MemberBaseDto.builder()
                             .name(trackMember.getName())
                             .build();
                 }
+
+
                 totalCommissionRate += trackMember.getCommissionRate();
                 artists.add(memberBaseDto);
             }

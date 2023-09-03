@@ -189,7 +189,12 @@ public class MemberService {
 	public AdminArtistProfileListReponseDto getArtistsPagination(Pageable pageable, String monthly, String keyword) {
 		List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
 		List<Transaction> previousMonthTransactions = transactionRepository.findTransactionsByDuration(getPreviousMonth(monthly));
-		List<Member> artists = memberRepository.findMembersByRoleAndIsRemovedFalseAndNameContainingIgnoreCaseOrEnNameContainingIgnoreCase(MemberRole.ARTIST, keyword, keyword);
+		List<Member> artists;
+		if (keyword != null) {
+			artists = memberRepository.findMembersByRoleAndIsRemovedFalseAndNameContainingIgnoreCaseOrEnNameContainingIgnoreCase(MemberRole.ARTIST, keyword, keyword);
+		} else {
+			artists = memberRepository.findMemberByRoleAndIsRemovedFalse(MemberRole.ARTIST);
+		}
 		List<AdminArtistProfileListDto> adminArtistProfiles = new ArrayList<>();
 
 		for (Member artist : artists) {

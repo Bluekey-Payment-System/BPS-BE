@@ -146,8 +146,8 @@ public class BarChartDashboardService {
                         MonthlyTrendDto dto = MonthlyTrendDto
                                 .builder()
                                 .month(convertDate(entry.getKey()).getMonthValue())
-                                .settlement(settlementAmountMappedByDuration.get(entry.getKey()))
-                                .revenue(entry.getValue())
+                                .settlement(Math.floor(settlementAmountMappedByDuration.get(entry.getKey())))
+                                .revenue(Math.floor(entry.getValue()))
                                 .netIncome(0.0)
                                 .build();
                         contents.add(dto);
@@ -187,8 +187,8 @@ public class BarChartDashboardService {
                         MonthlyTrendDto dto = MonthlyTrendDto
                                 .builder()
                                 .month(convertDate(entry.getKey()).getMonthValue())
-                                .netIncome(netIncomeAmountMappedByDuration.get(entry.getKey()))
-                                .revenue(entry.getValue())
+                                .netIncome(Math.floor(netIncomeAmountMappedByDuration.get(entry.getKey())))
+                                .revenue(Math.floor(entry.getValue()))
                                 .settlement(0.0)
                                 .build();
                         contents.add(dto);
@@ -232,7 +232,7 @@ public class BarChartDashboardService {
     }
 
     private Double getSettlement(Double revenue, Integer commissionRate) {
-        return revenue * (commissionRate / 100.0);
+        return revenue * (commissionRate / 100.0) * (1 - 0.033);
     }
 
     private Map<String, Double> getAdminAmountMappedByDuration(List<Transaction> transactions, Long albumId) {

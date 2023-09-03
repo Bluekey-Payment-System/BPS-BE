@@ -15,6 +15,12 @@ import lombok.NoArgsConstructor;
 @Schema(description = "아티스트의 당월 정보")
 public class ArtistSummaryResponseDto {
 
+    @Schema(description = "아티스트 PK", example = "1")
+    private Long memberId;
+    @Schema(description = "아티스트 명", example = "혁기")
+    private String name;
+    @Schema(description = "아티스트 영어명", example = "hucki")
+    private String enName;
     @Schema(description = "당월 정산 정보")
     private ArtistMonthlySettlementInfoDto settlementAmount;
 
@@ -25,7 +31,16 @@ public class ArtistSummaryResponseDto {
     private ArtistMonthlyTrackInfoDto bestTrack;
 
     @Builder
-    public ArtistSummaryResponseDto(final ArtistMonthlySettlementInfoDto settlementAmount, final ArtistMonthlyInfoDto bestAlbum, final ArtistMonthlyTrackInfoDto bestTrack) {
+    public ArtistSummaryResponseDto(
+            final Long memberId,
+            final String name,
+            final String enName,
+            final ArtistMonthlySettlementInfoDto settlementAmount,
+            final ArtistMonthlyInfoDto bestAlbum,
+            final ArtistMonthlyTrackInfoDto bestTrack) {
+        this.memberId = memberId;
+        this.name = name;
+        this.enName = enName;
         this.settlementAmount = settlementAmount;
         this.bestAlbum = bestAlbum;
         this.bestTrack = bestTrack;
