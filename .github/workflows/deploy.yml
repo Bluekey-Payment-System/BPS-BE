@@ -47,6 +47,7 @@ jobs:
         touch ./application.yml
         echo "${{ secrets.APPLICATION_DEV }}" > ./application.yml
 
+    # dev config
     - name: Build with Gradle
       run: ./gradlew clean build -x test --stacktrace
 
