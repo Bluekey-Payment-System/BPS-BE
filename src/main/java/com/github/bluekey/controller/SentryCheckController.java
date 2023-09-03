@@ -14,16 +14,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class SentryCheckController {
     private final SlackUtil slackUtil;
     @GetMapping("/sentry-exception-test")
-    public String healthCheck() throws Exception {
-
+    public String healthCheck() {
 
         try {
-            int value = 0/0;
+            int value = 0 / 0;
             return "health";
         }catch (Exception e) {
-            slackUtil.sendExceptionMessage();
             Sentry.captureException(e);
-            throw new Exception("sentry health check validation.");
+            slackUtil.sendExceptionMessage(e);
         }
+        return "ok";
     }
 }
