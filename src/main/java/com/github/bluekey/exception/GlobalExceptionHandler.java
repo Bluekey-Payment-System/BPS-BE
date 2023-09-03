@@ -1,6 +1,9 @@
 package com.github.bluekey.exception;
 
 import com.github.bluekey.exception.transaction.ExcelUploadException;
+import com.github.bluekey.util.SlackUtil;
+import io.sentry.Sentry;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -15,7 +18,9 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
+    private final SlackUtil slackUtil;
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException ex) {
@@ -73,6 +78,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleExceptionHandler(Exception ex) {
         ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
         log.error(ex.getMessage(), ex);
+        Sentry.captureException(ex);
+        slackUtil.sendExceptionMessage(ex);
         return new ResponseEntity<>(response, response.getStatus());
     }
 }
