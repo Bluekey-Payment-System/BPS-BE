@@ -46,14 +46,10 @@ public class AlbumService {
 
 	@Transactional
 	public AlbumResponseDto createAlbum(MultipartFile file, NewAlbumInfoDto dto) {
-		Member member = null;
 		Album album;
 		if (dto.getMemberId() != null) {
-			member = memberRepository.findMemberByIdAndIsRemovedFalse(dto.getMemberId())
+			Member member = memberRepository.findMemberByIdAndIsRemovedFalse(dto.getMemberId())
 					.orElseThrow(MemberNotFoundException::new);
-		}
-
-		if (dto.getMemberId() != null) {
 			album = Album
 					.ByAlbumWithRepresentativeArtistBuilder()
 					.member(member)
@@ -67,10 +63,9 @@ public class AlbumService {
 					.enName(dto.getEnName())
 					.build();
 		}
-
 		Album saveAlbum = albumRepository.save(album);
-		updateAlbumImage(file, saveAlbum);
-		return AlbumResponseDto.from(album);
+		createAlbumImage(file, saveAlbum);
+		return AlbumResponseDto.from(saveAlbum);
 	}
 
 	@Transactional
@@ -88,6 +83,21 @@ public class AlbumService {
 		tracks.forEach(track -> track.remove());
 
 		return AlbumIdResponseDto.builder().albumId(albumId).build();
+	}
+
+	@Transactional
+	public AlbumResponseDto updateAlbum(MultipartFile file, NewAlbumInfoDto dto, Long albumId) {
+		Album album = albumRepository.findAlbumByIdAndIsRemovedFalse(albumId)
+				.orElseThrow(() -> new BusinessException(ErrorCode.ALBUM_NOT_FOUND));
+
+		if (dto != null) {
+			updateAlbumProperties(album, dto);
+		}
+
+		updateAlbumImage(file, album);
+		albumRepository.save(album);
+
+		return AlbumResponseDto.from(album);
 	}
 
 	@Transactional(readOnly = true)
@@ -227,13 +237,37 @@ public class AlbumService {
 				track.getAlbum() : null;
 	}
 
-	private void updateAlbumImage(MultipartFile file, Album album) {
-		String albumImage = null;
+	private void createAlbumImage(MultipartFile file, Album album) {
 		if (file != null && !file.isEmpty()) {
-			albumImage = imageUploadUtil.uploadImage(file,
+			String albumImagePath = imageUploadUtil.uploadImage(file,
 					imageUploadUtil.getAlbumImageKey(file.getOriginalFilename(), album.getId()));
+			album.updateProfileImage(albumImagePath);
 		}
-		album.updateProfileImage(albumImage);
 		albumRepository.save(album);
+	}
+
+	private void updateAlbumProperties(Album album, NewAlbumInfoDto dto) {
+		if (dto.getMemberId() != null) {
+			memberRepository.findMemberByIdAndIsRemovedFalse(dto.getMemberId())
+					.orElseThrow(MemberNotFoundException::new);
+			album.updateArtistId(dto.getMemberId());
+		}
+		if (dto.getName() != null) {
+			album.updateName(dto.getName());
+		}
+		if (dto.getEnName() != null) {
+			album.updateEnName(dto.getEnName());
+		}
+	}
+
+	private void updateAlbumImage(MultipartFile file, Album album) {
+		if (!file.isEmpty()) {
+			if (album.getProfileImage() != null) {
+				imageUploadUtil.deleteImage(album.getProfileImage());
+			}
+			String albumImagePath = imageUploadUtil.uploadImage(file,
+					imageUploadUtil.getAlbumImageKey(file.getOriginalFilename(), album.getId()));
+			album.updateProfileImage(albumImagePath);
+		}
 	}
 }
