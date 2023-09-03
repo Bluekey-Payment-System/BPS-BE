@@ -32,6 +32,17 @@ spring:
       schema-locations:
         - classpath:sql/schema-h2.sql
         - classpath:sql/data.sql
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username:
+    password:
+    logoImg: https://bluekey-be-image-bucket.s3.ap-northeast-2.amazonaws.com/email/bluekeyLogo.png
+    mainImg: https://bluekey-be-image-bucket.s3.ap-northeast-2.amazonaws.com/email/mainImage.png
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.ssl.enable: true
+      mail.smtp.ssl.trust: smtp.naver.com
 
 logging:
   level:
