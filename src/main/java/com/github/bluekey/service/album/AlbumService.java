@@ -239,9 +239,9 @@ public class AlbumService {
 
 	private void createAlbumImage(MultipartFile file, Album album) {
 		if (file != null && !file.isEmpty()) {
-			String albumImage = imageUploadUtil.uploadImage(file,
+			String albumImagePath = imageUploadUtil.uploadImage(file,
 					imageUploadUtil.getAlbumImageKey(file.getOriginalFilename(), album.getId()));
-			album.updateProfileImage(albumImage);
+			album.updateProfileImage(albumImagePath);
 		}
 		albumRepository.save(album);
 	}
@@ -265,9 +265,9 @@ public class AlbumService {
 			if (album.getProfileImage() != null) {
 				imageUploadUtil.deleteImage(album.getProfileImage());
 			}
-			String albumImage = imageUploadUtil.uploadImage(file,
+			String albumImagePath = imageUploadUtil.uploadImage(file,
 					imageUploadUtil.getAlbumImageKey(file.getOriginalFilename(), album.getId()));
-			album.updateProfileImage(albumImage);
+			album.updateProfileImage(albumImagePath);
 		}
 	}
 }
