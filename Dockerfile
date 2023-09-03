@@ -4,7 +4,7 @@ COPY gradle gradle
 COPY build.gradle .
 COPY settings.gradle .
 
-EXPOSE 8080
+EXPOSE 8080 8081
 
 ARG JAR_FILE=./build/libs/*.jar
 COPY ${JAR_FILE} app.jar
