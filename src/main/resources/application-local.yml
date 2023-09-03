@@ -15,7 +15,8 @@ spring:
     jdbc:
       initialize-schema: ALWAYS
   server:
-    host: http://localhost:8080
+    fe-host: http://localhost:3000
+    be-host: http://localhost:8080
   jpa:
     hibernate:
       ddl-auto: create
@@ -37,13 +38,13 @@ spring:
     port: 465
     username:
     password:
-    logoImg: https://bluekey-be-image-bucket.s3.ap-northeast-2.amazonaws.com/email/bluekeyLogo.png
-    mainImg: https://bluekey-be-image-bucket.s3.ap-northeast-2.amazonaws.com/email/mainImage.png
+    logoImg:
+    mainImg:
     properties:
       mail.smtp.auth: true
       mail.smtp.ssl.enable: true
       mail.smtp.ssl.trust: smtp.naver.com
-
+      
 logging:
   level:
     org.hibernate.SQL: debug
