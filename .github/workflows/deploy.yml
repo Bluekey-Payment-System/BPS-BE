@@ -47,6 +47,7 @@ jobs:
         touch ./application.yml
         echo "${{ secrets.APPLICATION_DEV }}" > ./application.yml
 
+    # dev config
     - name: DEV Docker build
       run: |
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
