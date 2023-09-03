@@ -40,6 +40,7 @@ jobs:
         docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }} .
         docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
 
+    # dev config
     - name: Set dev-application.yml
       run: |
         cd ./src/main/resources
