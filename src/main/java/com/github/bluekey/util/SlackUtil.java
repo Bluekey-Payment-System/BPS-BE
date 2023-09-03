@@ -18,31 +18,35 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class SlackUtil {
-
+    private final static String SENTRY_PERFORMANCE_URL_PREFIX = "https://bluekeymusic.sentry.io/performance/bluekey-dashboard-dev-server:";
+    private final static String SLACK_MESSAGE_TEMPLATE_COLOR_CODE = "ff3399";
+    private final static String SLACK_ERROR_FIELD_TITLE_API_URL = "API URL";
+    private final static String SLACK_ERROR_FIELD_TITLE_ERROR_MESSAGE = "ERROR MESSAGE";
+    private final static String SLACK_ERROR_FIELD_TITLE_SENTRY_LINK = "SENTRY LINK";
     @Value("${slack.webhook.url}")
     private String webhookUrl;
     private final Slack slack = Slack.getInstance();
 
-    public boolean sendExceptionMessage(Exception exception) {
+    public void sendExceptionMessage(Exception exception) {
         SentryTracer information = ((SentryTracer) Sentry.getCurrentHub().getSpan());
         String eventId = information.getEventId().toString();
         String name = information.getName();
         Payload payload = Payload.builder()
                 .attachments(List.of(
                         Attachment.builder()
-                                .color("ff3399") // 색상
+                                .color(SLACK_MESSAGE_TEMPLATE_COLOR_CODE) // color code
                                 .fields(List.of(
                                         Field.builder()
-                                                .title("API URL")
+                                                .title(SLACK_ERROR_FIELD_TITLE_API_URL)
                                                 .value(name)
                                                 .build(),
                                         Field.builder()
-                                                .title("ERROR MESSAGE")
+                                                .title(SLACK_ERROR_FIELD_TITLE_ERROR_MESSAGE)
                                                 .value(exception.getMessage())
                                                 .build(),
                                         Field.builder()
-                                                .title("SENTRY LINK")
-                                                .value("https://bluekeymusic.sentry.io/performance/bluekey-dashboard-dev-server:" + eventId)
+                                                .title(SLACK_ERROR_FIELD_TITLE_SENTRY_LINK)
+                                                .value(SENTRY_PERFORMANCE_URL_PREFIX + eventId)
                                                 .build()
                                 ))
                                 .build()
@@ -51,10 +55,7 @@ public class SlackUtil {
         try {
             slack.send(webhookUrl, payload);
         } catch (IOException e) {
-            log.error("slack 메시지 발송 중 문제가 발생했습니다.", e.toString());
             throw new RuntimeException(e);
         }
-        return true;
     }
-
 }
