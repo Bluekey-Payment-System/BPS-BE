@@ -32,7 +32,7 @@ public enum ErrorCode {
 
     MEMBER_ALREADY_REMOVED(HttpStatus.CONFLICT, "M_002", "이미 삭제된 회원입니다."),
 
-    FILE_SIZE_EXCEEDED(HttpStatus.BAD_REQUEST, "F_001", "파일의 크기가 너무 큽니다."),
+    FILE_SIZE_EXCEEDED(HttpStatus.BAD_REQUEST, "F_001", "파일 크기가 10MB를 초과하였습니다."),
 
     // Transaction 400~
     TRANSACTION_ALREADY_BATCH(HttpStatus.BAD_REQUEST, "TR_001", "{%s} 파일에 대해 이미 배치 작업이 완료된 transaction이 존재합니다."),
