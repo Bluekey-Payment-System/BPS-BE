@@ -92,7 +92,7 @@ public class TransactionService {
         excelFileProcessManager.process();
         List<ExcelRowException> errors = excelFileProcessManager.getErrors();
         if (errors.size() > ERROR_THRESHOLD) {
-            throw new ExcelUploadException(errors);
+            throw new ExcelUploadException(file.getOriginalFilename(), errors);
         }
 
         originalTransactionRepository.findOriginalTransactionByFileNameAndUploadAtAndIsRemovedFalse(fileName, uploadAt).ifPresent((originalTransaction) -> {
