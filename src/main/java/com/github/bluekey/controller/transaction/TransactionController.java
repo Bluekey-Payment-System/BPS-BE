@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,6 +41,7 @@ public class TransactionController {
             )
     })
     @GetMapping
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     public ResponseEntity<ListResponse<OriginalTransactionResponseDto>> getOriginalTransactionHistory(
             @Parameter(description = "엑셀파일이 업로드된 날짜 (format: yyyyMM)") @RequestParam String monthly
             ) {
@@ -57,6 +59,7 @@ public class TransactionController {
             )
     })
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     public ResponseEntity<OriginalTransactionResponseDto> removeOriginalTransactionHistory(
             @Parameter(description = "삭제할 엑셀 파일 pk") @PathVariable Long id
     ) {
@@ -81,6 +84,7 @@ public class TransactionController {
             )
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     public ResponseEntity<OriginalTransactionResponseDto> saveOriginalTransactionHistory(
             @Parameter(schema = @Schema(implementation = OriginalTransactionRequestDto.class), description = "엑셀 파일을 업로드 할 때 함께 필요한 요청 데이터 입니다. - OriginalTransactionRequestDto 스키마 참고")
             @RequestPart("data") @Valid OriginalTransactionRequestDto requestDto,
