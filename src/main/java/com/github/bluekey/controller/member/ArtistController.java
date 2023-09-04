@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
 
 @Tag(name = "Artist", description = "Artist 관련 API")
 @RestController
@@ -110,7 +109,9 @@ public class ArtistController {
             @PathVariable("memberId") Long memberId
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(monthlyTracksDashBoardService.getArtistTracks(monthly, pageable, sortBy, searchType, keyword, memberId));
+        memberService.permissionCheck(memberId, PrincipalConvertUtil.getMemberId());
+        return ResponseEntity.ok(monthlyTracksDashBoardService
+                .getArtistTracks(monthly, pageable, sortBy, searchType, keyword, memberId));
     }
 
     @Operation(summary = "아티스트 기준 당월 TOP N 트랙 매출 LIST", description = "아티스트 기준 당월 TOP N 트랙 매출 LIST")
@@ -123,6 +124,7 @@ public class ArtistController {
             @RequestParam("rank") Integer rank,
             @PathVariable("memberId") Long memberId
     ) {
+        memberService.permissionCheck(memberId, PrincipalConvertUtil.getMemberId());
         return ResponseEntity.ok(topTrackDashBoardService.getArtistTopTracks(monthly, rank, memberId));
     }
 
@@ -136,6 +138,7 @@ public class ArtistController {
             @RequestParam("monthly") String monthly,
             @PathVariable("memberId") Long memberId
     ) {
+        memberService.permissionCheck(memberId, PrincipalConvertUtil.getMemberId());
         return ResponseEntity.ok(summaryDashBoardService.getArtistDashboardInformation(monthly, memberId));
     }
 
@@ -150,6 +153,7 @@ public class ArtistController {
             @RequestParam("endDate") String endDate,
             @PathVariable("memberId") Long memberId
     ) {
+        memberService.permissionCheck(memberId, PrincipalConvertUtil.getMemberId());
         return ok(barChartDashboardService.getBarChartDashboard(startDate, endDate, memberId));
     }
 
@@ -168,8 +172,11 @@ public class ArtistController {
 
     @Operation(summary = "아티스트 LIST 조회", description = "아티스트 LIST 조회")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "아티스트 LIST 조회 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AdminArtistProfileListReponseDto.class))),
+            @ApiResponse(responseCode = "200", description = "아티스트 LIST 조회 완료",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = AdminArtistProfileListReponseDto.class))),
     })
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<AdminArtistProfileListReponseDto> getAdminArtistProfiles(
             @RequestParam("page") Integer page,
@@ -183,8 +190,11 @@ public class ArtistController {
 
     @Operation(summary = "드롭다운 UI에서 사용되는 아티스트 리스트 조회", description = "트랙곡 추가할 시에 드롭다운 UI에서 사용되는 아티스트 리스트 조회")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SimpleArtistAccountListResponseDto.class))),
+            @ApiResponse(responseCode = "200", description = "200",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = SimpleArtistAccountListResponseDto.class))),
     })
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     @GetMapping("/simple")
     public ResponseEntity<SimpleArtistAccountListResponseDto> getSimpleArtists() {
         return ok(memberService.getSimpleArtistAccounts());

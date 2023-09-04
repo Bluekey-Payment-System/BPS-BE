@@ -44,7 +44,10 @@ spring:
       mail.smtp.auth: true
       mail.smtp.ssl.enable: true
       mail.smtp.ssl.trust: smtp.naver.com
-      
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 logging:
   level:
     org.hibernate.SQL: debug

@@ -15,6 +15,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @Slf4j
 @RestControllerAdvice
@@ -80,6 +81,13 @@ public class GlobalExceptionHandler {
         log.error(ex.getMessage(), ex);
         Sentry.captureException(ex);
         slackUtil.sendExceptionMessage(ex);
+        return new ResponseEntity<>(response, response.getStatus());
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> MaxUploadSizeHandler(MaxUploadSizeExceededException ex) {
+        ErrorResponse response = ErrorResponse.of(ErrorCode.FILE_SIZE_EXCEEDED);
+        log.error(ex.getMessage(), ex);
         return new ResponseEntity<>(response, response.getStatus());
     }
 }
