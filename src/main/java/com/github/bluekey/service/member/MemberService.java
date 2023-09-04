@@ -120,6 +120,14 @@ public class MemberService {
 		return AdminProfileViewDto.from(member);
 	}
 
+	public void permissionCheck(Long memberId, Long loginMemberId) {
+		Member member = memberRepository.findById(memberId)
+				.orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+		if (member.getRole() == MemberRole.ARTIST && !memberId.equals(loginMemberId)) {
+			throw new BusinessException(ErrorCode.AUTHENTICATION_FAILED);
+		}
+	}
+
 	public void validateAdminEmail(String email) {
 		memberRepository.findMemberByEmailAndType(email, MemberType.ADMIN)
 				.ifPresent(member -> {throw new BusinessException(ErrorCode.INVALID_EMAIL_VALUE);
