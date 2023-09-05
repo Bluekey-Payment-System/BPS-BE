@@ -8,7 +8,8 @@ import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.transaction.OriginalTransaction;
 import com.github.bluekey.entity.transaction.Transaction;
-import com.github.bluekey.exception.transaction.AlreadyOriginalTransactionExistException;
+import com.github.bluekey.exception.BusinessException;
+import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.exception.transaction.ExcelUploadException;
 import com.github.bluekey.mail.EmailSender;
 import com.github.bluekey.processor.ExcelFileDBMigrationProcessManager;
@@ -44,6 +45,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TransactionService {
     private static final int ERROR_THRESHOLD = 0;
+    private static final String DEV_TARGET_EMAIL = "wnl383@naver.com";
+    private static final String DEV_TARGET_EMAIL_TITLE = "Bluekey music 정산 알림";
+    private static final String DEV_TARGET_EMAIL_NAME = "조세영";
     private final OriginalTransactionRepository originalTransactionRepository;
     private final TransactionRepository transactionRepository;
     private final MemberRepository memberRepository;
@@ -55,6 +59,7 @@ public class TransactionService {
     private final ExcelFileDBMigrationProcessManager excelFileDBMigrationProcessManager;
     private final EmailSender emailSender;
 
+    @Transactional(readOnly = true)
     public ListResponse<OriginalTransactionResponseDto> getOriginalTransactions(String uploadAt) {
         List<OriginalTransaction> originalTransactions = originalTransactionRepository.findAllByUploadAtAndIsRemovedFalse(uploadAt);
         return new ListResponse<>(originalTransactions.size(), originalTransactions.stream().map(OriginalTransactionResponseDto::from).collect(Collectors.toList()));
@@ -71,8 +76,6 @@ public class TransactionService {
         transactionRepository.deleteAllInBatch(transactions);
 
         excelUploadUtil.deleteExcel(excelUploadUtil.getExcelKey(originalTransaction.getFileName(), originalTransaction.getUploadAt()));
-
-
 
         return OriginalTransactionResponseDto.from(originalTransaction);
     }
@@ -96,7 +99,7 @@ public class TransactionService {
         }
 
         originalTransactionRepository.findOriginalTransactionByFileNameAndUploadAtAndIsRemovedFalse(fileName, uploadAt).ifPresent((originalTransaction) -> {
-                    throw new AlreadyOriginalTransactionExistException();
+                    throw new BusinessException(ErrorCode.ORIGINAL_TRANSACTION_ALREADY_EXIST);
                 });
 
         String s3Url = excelUploadUtil.uploadExcel(file, excelUploadUtil.getExcelKey(file.getOriginalFilename(), uploadAt));
@@ -115,10 +118,11 @@ public class TransactionService {
         String month = uploadAt.substring(4, 6);
 
         try {
-            emailSender.sendMail("wnl383@naver.com", "Bluekey music 정산 알림","조세영", year, month);
+            emailSender.sendMail(DEV_TARGET_EMAIL, DEV_TARGET_EMAIL_TITLE, DEV_TARGET_EMAIL_NAME, year, month);
         } catch (MessagingException | IOException e) {
             log.error("메일 전송 실패 : {}", e.getMessage());
         }
+
         // TODO: 추후 메일 전송 로직을 다음 메서드로 변경
 //        sendMailAfterUpload(year, month);
         return OriginalTransactionResponseDto.fromWithWarning(originalTransaction, excelFileProcessManager.getWarnings());
@@ -141,7 +145,7 @@ public class TransactionService {
         try (InputStream inputStream = s3Object.getObjectContent()) {
             return WorkbookFactory.create(inputStream);
         } catch (Exception e) {
-            throw new RuntimeException("Error while reading Excel file from S3", e);
+            throw new BusinessException(ErrorCode.ORIGINAL_TRANSACTION_NOT_READ_FROM_S3);
         }
     }
 
