@@ -148,7 +148,6 @@ public class AdminController {
 	@PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
 	@GetMapping("/authority-check")
 	public ResponseEntity<?> checkAuthority() {
-		Long memberId = PrincipalConvertUtil.getMemberId();
 		return ResponseEntity.ok().build();
 	}
 
