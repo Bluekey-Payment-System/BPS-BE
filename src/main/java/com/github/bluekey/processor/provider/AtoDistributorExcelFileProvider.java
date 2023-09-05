@@ -1,5 +1,7 @@
 package com.github.bluekey.processor.provider;
 
+import com.github.bluekey.exception.BusinessException;
+import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.processor.ExcelRowException;
 
 import com.github.bluekey.processor.validator.DistributorExcelValidator;
@@ -46,7 +48,7 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
         if (atoDistributorCellValidator.hasValidSheetName(workbook, SHEET_NAME, ACTIVE_EXCEL_SHEET_INDEX)) {
             return workbook.getSheetAt(ACTIVE_EXCEL_SHEET_INDEX);
         }
-        throw new RuntimeException("Invalid sheet name");
+        throw new BusinessException(ErrorCode.EXCEL_INVALID_SHEET_NAME);
     }
 
     @Override
