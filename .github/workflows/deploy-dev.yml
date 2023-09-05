@@ -22,7 +22,6 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
 
-      # dev config
       - name: Set dev-application.yml
         run: |
           cd ./src/main/resources
@@ -32,11 +31,9 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # dev config
       - name: Build with Gradle
         run: ./gradlew clean build -x test --stacktrace
 
-      # dev config
       - name: DEV Docker build
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
