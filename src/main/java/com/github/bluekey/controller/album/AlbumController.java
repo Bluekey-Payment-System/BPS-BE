@@ -6,7 +6,7 @@ import com.github.bluekey.dto.response.album.AlbumMonthlyAccontsReponseDto;
 import com.github.bluekey.dto.response.album.AlbumResponseDto;
 import com.github.bluekey.dto.response.album.AlbumSummaryResponseDto;
 import com.github.bluekey.dto.response.album.AlbumTopResponseDto;
-import com.github.bluekey.dto.response.album.AlbumTrackAccountsResponseDto;
+import com.github.bluekey.dto.response.album.AlbumTrackTrendResponseDto;
 import com.github.bluekey.dto.response.album.AlbumTrackListResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistAlbumsListResponseDto;
 import com.github.bluekey.dto.response.common.MonthlyTrendResponseDto;
@@ -118,11 +118,11 @@ public class AlbumController {
             @ApiResponse(responseCode = "200", description = "정보 조회 완료",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = AlbumTrackAccountsResponseDto.class)
+                            schema = @Schema(implementation = AlbumTrackTrendResponseDto.class)
                     ))
     })
     @GetMapping("/{albumId}/dashboard/tracks")
-    public ResponseEntity<AlbumTrackAccountsResponseDto> getAlbumTrackAccounts(
+    public ResponseEntity<AlbumTrackTrendResponseDto> getAlbumTrackAccounts(
             @RequestParam("startDate") String startDate,
             @RequestParam("endDate") String endDate,
             @PathVariable("albumId") Long albumId
