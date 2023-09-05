@@ -23,12 +23,12 @@ import com.github.bluekey.entity.track.TrackMember;
 import com.github.bluekey.entity.transaction.Transaction;
 import com.github.bluekey.exception.BusinessException;
 import com.github.bluekey.exception.ErrorCode;
-import com.github.bluekey.exception.member.MemberNotFoundException;
 import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.repository.transaction.TransactionRepository;
 import com.github.bluekey.service.dashboard.DashboardUtilService;
 import com.github.bluekey.util.ImageUploadUtil;
 
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,149 +49,148 @@ public class MemberService {
 	private final ImageUploadUtil imageUploadUtil;
 	private final DashboardUtilService dashboardUtilService;
 
-	@Transactional
-	public ArtistProfileResponseDto updateArtistProfile(ArtistProfileRequestDto dto, MultipartFile file, Long memberId) {
-		Member member = memberRepository.findById(memberId)
-				.orElseThrow(MemberNotFoundException::new);
-		updateArtistEmail(dto.getEmail(), member);
-		updateProfileImages(file, member);
-		memberRepository.save(member);
-		return ArtistProfileResponseDto.from(member);
-	}
+    @Transactional
+    public ArtistProfileResponseDto updateArtistProfile(ArtistProfileRequestDto dto, MultipartFile file, Long memberId) {
+        Member member = memberRepository.findByIdOrElseThrow(memberId);
+        updateArtistEmail(dto.getEmail(), member);
+        updateProfileImages(file, member);
+        memberRepository.save(member);
+        return ArtistProfileResponseDto.from(member);
+    }
 
-	@Transactional
-	public ArtistAccountDto updateArtistProfileByAdmin(AdminArtistProfileRequestDto dto, Long memberId) {
-		Member member = memberRepository.findById(memberId)
-				.orElseThrow(MemberNotFoundException::new);
-		updateArtistName(dto, member);
-		updateArtistCommissionRate(dto, member);
-		memberRepository.save(member);
-		return ArtistAccountDto.from(member);
-	}
+    @Transactional
+    public ArtistAccountDto updateArtistProfileByAdmin(AdminArtistProfileRequestDto dto, Long memberId) {
+        Member member = memberRepository.findByIdOrElseThrow(memberId);
+        updateArtistName(dto, member);
+        updateArtistCommissionRate(dto, member);
+        memberRepository.save(member);
+        return ArtistAccountDto.from(member);
+    }
 
-	@Transactional
-	public AdminProfileResponseDto updateAdminProfile(AdminProfileUpdateDto dto, MultipartFile file, Long memberId) {
-		Member member = memberRepository.findById(memberId)
-				.orElseThrow(MemberNotFoundException::new);
-		updateAdminEmail(dto.getEmail(), member);
-		updateAdminNickname(dto.getNickname(), member);
-		updateProfileImages(file, member);
-		memberRepository.save(member);
-		return AdminProfileResponseDto.from(member);
-	}
+    @Transactional
+    public AdminProfileResponseDto updateAdminProfile(AdminProfileUpdateDto dto, MultipartFile file, Long memberId) {
+        Member member = memberRepository.findByIdOrElseThrow(memberId);
+        updateAdminEmail(dto.getEmail(), member);
+        updateAdminNickname(dto.getNickname(), member);
+        updateProfileImages(file, member);
+        memberRepository.save(member);
+        return AdminProfileResponseDto.from(member);
+    }
 
-	@Transactional(readOnly = true)
-	public AdminAccountsResponseDto getAdminAccounts(PageRequest pageable) {
-		Page<Member> adminList = memberRepository.findMembersByType(MemberType.ADMIN, pageable);
-		return AdminAccountsResponseDto.builder()
-				.totalItems(adminList.getTotalElements())
-						.contents(adminList.getContent().stream()
-								.map(AdminAccountDto::from).collect(Collectors.toList())).build();
-	}
+    @Transactional(readOnly = true)
+    public AdminAccountsResponseDto getAdminAccounts(PageRequest pageable) {
+        Page<Member> admins = memberRepository.findMembersByType(MemberType.ADMIN, pageable);
+        return AdminAccountsResponseDto.builder()
+                .totalItems(admins.getTotalElements())
+                .contents(admins.getContent().stream().map(AdminAccountDto::from).collect(Collectors.toList()))
+                .build();
+    }
 
-	@Transactional(readOnly = true)
-	public ArtistAccountsResponseDto getArtistAccounts(PageRequest pageable) {
+    @Transactional(readOnly = true)
+    public ArtistAccountsResponseDto getArtistAccounts(PageRequest pageable) {
 
-		Page<Member> artistList = memberRepository.findMembersByRole(MemberRole.ARTIST, pageable);
-		return ArtistAccountsResponseDto.builder()
-				.totalItems(artistList.getTotalElements())
-				.contents(artistList.getContent().stream()
-						.map(ArtistAccountDto::from).collect(Collectors.toList())).build();
-	}
+        Page<Member> artists = memberRepository.findMembersByRole(MemberRole.ARTIST, pageable);
+        return ArtistAccountsResponseDto.builder()
+                .totalItems(artists.getTotalElements())
+                .contents(artists.getContent().stream().map(ArtistAccountDto::from).collect(Collectors.toList()))
+                .build();
+    }
 
-	@Transactional(readOnly = true)
-	public SimpleArtistAccountListResponseDto getSimpleArtistAccounts() {
-		List<Member> artists = memberRepository.findMemberByRoleAndIsRemovedFalse(MemberRole.ARTIST);
-		return SimpleArtistAccountListResponseDto.from(artists);
-	}
+    @Transactional(readOnly = true)
+    public SimpleArtistAccountListResponseDto getSimpleArtistAccounts() {
+        List<Member> artists = memberRepository.findMemberByRoleAndIsRemovedFalse(MemberRole.ARTIST);
+        return SimpleArtistAccountListResponseDto.from(artists);
+    }
 
-	@Transactional(readOnly = true)
-	public ArtistProfileViewDto getArtistProfile(Long memberId) {
-		Member member = memberRepository.findById(memberId)
-				.orElseThrow(MemberNotFoundException::new);
-		return ArtistProfileViewDto.from(member);
-	}
+    @Transactional(readOnly = true)
+    public ArtistProfileViewDto getArtistProfile(Long memberId) {
+        Member member = memberRepository.findByIdOrElseThrow(memberId);
+        return ArtistProfileViewDto.from(member);
+    }
 
-	@Transactional(readOnly = true)
-	public AdminProfileViewDto getAdminProfile(Long memberId) {
-		Member member = memberRepository.findById(memberId)
-				.orElseThrow(MemberNotFoundException::new);
-		return AdminProfileViewDto.from(member);
-	}
+    @Transactional(readOnly = true)
+    public AdminProfileViewDto getAdminProfile(Long memberId) {
+        Member member = memberRepository.findByIdOrElseThrow(memberId);
+        return AdminProfileViewDto.from(member);
+    }
 
-	public void permissionCheck(Long memberId, Long loginMemberId) {
-		Member member = memberRepository.findById(loginMemberId)
-				.orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
-		if (member.getRole() == MemberRole.ARTIST && !memberId.equals(loginMemberId)) {
-			throw new BusinessException(ErrorCode.AUTHENTICATION_FAILED);
-		}
-	}
+    public void permissionCheck(Long memberId, Long loginMemberId) {
+        Member member = memberRepository.findByIdOrElseThrow(loginMemberId);
+        if (member.getRole() == MemberRole.ARTIST && !memberId.equals(loginMemberId)) {
+            throw new BusinessException(ErrorCode.AUTHENTICATION_FAILED);
+        }
+    }
 
-	public void validateAdminEmail(String email) {
-		memberRepository.findMemberByEmailAndType(email, MemberType.ADMIN)
-				.ifPresent(member -> {throw new BusinessException(ErrorCode.INVALID_EMAIL_VALUE);
-				});
-	}
+    public void validateAdminEmail(String email) {
+        memberRepository.findMemberByEmailAndType(email, MemberType.ADMIN)
+                .ifPresent(member -> {
+                    throw new BusinessException(ErrorCode.INVALID_EMAIL_VALUE);
+                });
+    }
 
-	public void validateAdminNickname(String nickname) {
-		// 아티스트의 활동 예명을 닉네임으로 사용할 수 없다.
-		if (memberRepository.findMemberByNameAndType(nickname, MemberType.USER).isPresent() ||
-				memberRepository.findMemberByEnNameAndType(nickname, MemberType.USER).isPresent()) {
-			throw new BusinessException(ErrorCode.DUPLICATE_ARTIST_NAME);
-		}
-	}
+    public void validateAdminNickname(String nickname) {
+        // 아티스트의 활동 예명을 닉네임으로 사용할 수 없다.
+        if (memberRepository.findMemberByNameAndType(nickname, MemberType.USER).isPresent() ||
+                memberRepository.findMemberByEnNameAndType(nickname, MemberType.USER).isPresent()) {
+            throw new BusinessException(ErrorCode.DUPLICATE_ARTIST_NAME);
+        }
+    }
 
-	private void updateArtistName(AdminArtistProfileRequestDto dto, Member member) {
-		if (dto.getName() != null) {
-			member.updateName(dto.getName());
-		}
-		if (dto.getEnName() != null) {
-			member.updateEnName(dto.getEnName());
-		}
-	}
+    private void updateArtistName(AdminArtistProfileRequestDto dto, Member member) {
+        if (dto.getName() != null) {
+            member.updateName(dto.getName());
+        }
+        if (dto.getEnName() != null) {
+            member.updateEnName(dto.getEnName());
+        }
+    }
 
-	private void updateArtistCommissionRate(AdminArtistProfileRequestDto dto, Member member) {
-		if (dto.getCommissionRate() != null) {
-			member.updateCommissionRate(Integer.valueOf(dto.getCommissionRate()));
-		}
-	}
+    private void updateArtistCommissionRate(AdminArtistProfileRequestDto dto, Member member) {
+        if (dto.getCommissionRate() != null) {
+            member.updateCommissionRate(Integer.valueOf(dto.getCommissionRate()));
+        }
+    }
 
-	private void updateProfileImages(MultipartFile file, Member member) {
-		if (file == null || file.getOriginalFilename() == null || file.getOriginalFilename().isEmpty()) {
-			return;
-		}
-		if (member.getProfileImage() != null) {
-			imageUploadUtil.deleteImage(member.getProfileImage());
-		}
-		String profileImage = imageUploadUtil.uploadImage(file,
-				imageUploadUtil.getProfileImageKey(file.getOriginalFilename(), member.getId()));
-		member.updateProfileImage(profileImage);
-	}
+    private void updateProfileImages(MultipartFile file, Member member) {
+        if (hasNotProfileImage(file)) {
+            return;
+        }
+        if (member.getProfileImage() != null) {
+            imageUploadUtil.deleteImage(member.getProfileImage());
+        }
+        String profileImage = imageUploadUtil.uploadImage(file,
+                imageUploadUtil.getProfileImageKey(file.getOriginalFilename(), member.getId()));
+        member.updateProfileImage(profileImage);
+    }
 
-	private void updateArtistEmail(String email, Member member) {
-		if (email == null) {
-			return;
-		}
-		memberRepository.findMemberByEmailAndType(email, MemberType.USER)
-				.ifPresent(m -> {
-					throw new BusinessException(ErrorCode.INVALID_EMAIL_VALUE);
-				});
-		member.updateEmail(email);
-	}
+    private boolean hasNotProfileImage(MultipartFile file) {
+        return file == null || file.getOriginalFilename() == null || file.getOriginalFilename().isEmpty();
+    }
 
-	private void updateAdminEmail(String email, Member member) {
-		if (email != null) {
-			validateAdminEmail(email);
-			member.updateEmail(email);
-		}
-	}
+    private void updateArtistEmail(String email, Member member) {
+        if (email == null) {
+            return;
+        }
+        memberRepository.findMemberByEmailAndType(email, MemberType.USER)
+                .ifPresent(m -> {
+                    throw new BusinessException(ErrorCode.INVALID_EMAIL_VALUE);
+                });
+        member.updateEmail(email);
+    }
 
-	private void updateAdminNickname(String nickname, Member member) {
-		if (nickname != null) {
-			validateAdminNickname(nickname);
-			member.updateName(nickname);
-		}
-	}
+    private void updateAdminEmail(String email, Member member) {
+        if (email != null) {
+            validateAdminEmail(email);
+            member.updateEmail(email);
+        }
+    }
+
+    private void updateAdminNickname(String nickname, Member member) {
+        if (nickname != null) {
+            validateAdminNickname(nickname);
+            member.updateName(nickname);
+        }
+    }
 
 	public AdminArtistProfileListReponseDto getArtistsPagination(Pageable pageable, String monthly, String keyword) {
 		List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
@@ -205,13 +204,13 @@ public class MemberService {
 		}
 		List<AdminArtistProfileListDto> adminArtistProfiles = new ArrayList<>();
 
-		for (Member artist : artists) {
-			ArtistProfileDto artistProfileDto = ArtistProfileDto.builder()
-					.memberId(artist.getId())
-					.name(artist.getName())
-					.enName(artist.getEnName())
-					.profileImage(artist.getProfileImage())
-					.build();
+        for (Member artist : artists) {
+            ArtistProfileDto artistProfileDto = ArtistProfileDto.builder()
+                    .memberId(artist.getId())
+                    .name(artist.getName())
+                    .enName(artist.getEnName())
+                    .profileImage(artist.getProfileImage())
+                    .build();
 
 			Map<Long, Double> amountGroupedByMemberId = dashboardUtilService.getAmountGroupedByMemberId(transactions);
 
@@ -288,10 +287,11 @@ public class MemberService {
 			return true;
 		}
 
-		String convertedKeyword = keyword.toLowerCase();;
-		String artistName = artist.getName().toLowerCase();
-		String artistEnName = artist.getEnName().toLowerCase();
+        String convertedKeyword = keyword.toLowerCase();
+        ;
+        String artistName = artist.getName().toLowerCase();
+        String artistEnName = artist.getEnName().toLowerCase();
 
-		return artistName.contains(convertedKeyword) || artistEnName.contains(convertedKeyword);
-	}
+        return artistName.contains(convertedKeyword) || artistEnName.contains(convertedKeyword);
+    }
 }

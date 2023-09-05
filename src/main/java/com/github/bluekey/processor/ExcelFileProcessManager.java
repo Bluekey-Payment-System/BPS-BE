@@ -97,6 +97,6 @@ public class ExcelFileProcessManager implements ProcessManager{
 //            return new MafiaDistributorExcelFileProvider(file, dbPersistenceValidator, fileName);
 //        }
 
-        throw new IllegalArgumentException("Excel File Provider exception");
+        throw new BusinessException(ErrorCode.ORIGINAL_TRANSACTION_INVALID_EXCEL_FILE_TYPE);
     }
 }
