@@ -15,7 +15,6 @@ import com.github.bluekey.entity.transaction.Transaction;
 import com.github.bluekey.exception.AuthenticationException;
 import com.github.bluekey.exception.BusinessException;
 import com.github.bluekey.exception.ErrorCode;
-import com.github.bluekey.exception.member.MemberNotFoundException;
 import com.github.bluekey.repository.album.AlbumRepository;
 import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.repository.transaction.TransactionRepository;
@@ -25,20 +24,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class SummaryDashBoardService {
-    private static final String MONTH_PREFIX = "01";
+
     private final TransactionRepository transactionRepository;
     private final MemberRepository memberRepository;
     private final AlbumRepository albumRepository;
     private final AlbumService albumService;
+    private final DashboardUtilService dashboardUtilService;
 
     @Transactional(readOnly = true)
     public DashboardTotalInfoResponseDto getAdminDashBoardSummaryInformation(String monthly, Long memberId) {
@@ -48,7 +45,7 @@ public class SummaryDashBoardService {
         Double revenueGrowthRate;
 
         double netIncome;
-        double previousMonthnetIncome;
+        double previousMonthNetIncome;
         Double netIncomeGrowthRate;
 
         double settlementAmount;
@@ -65,36 +62,36 @@ public class SummaryDashBoardService {
         for (Map.Entry<TrackMember, Double> entry : previousMonthlyTrackMemberMappedByAmount.entrySet()) {
             totalPreviousMonthRevenue += entry.getValue();
         }
-        revenueGrowthRate = getGrowthRate(totalPreviousMonthRevenue, totalRevenue);
+        revenueGrowthRate = dashboardUtilService.getGrowthRate(totalPreviousMonthRevenue, totalRevenue);
 
         settlementAmount = getSettlementAmount(trackMemberMappedByAmount, memberId);
         previousMonthSettlementAmount = getSettlementAmount(previousMonthlyTrackMemberMappedByAmount, memberId);
-        settlementAmountGrowthRate = getGrowthRate(previousMonthSettlementAmount, settlementAmount);
+        settlementAmountGrowthRate = dashboardUtilService.getGrowthRate(previousMonthSettlementAmount, settlementAmount);
 
-        netIncome = getIncome(settlementAmount);
-        previousMonthnetIncome = getIncome(previousMonthSettlementAmount);
-        netIncomeGrowthRate = getGrowthRate(previousMonthnetIncome, netIncome);
+        netIncome = settlementAmount;
+        previousMonthNetIncome = previousMonthSettlementAmount;
+        netIncomeGrowthRate = dashboardUtilService.getGrowthRate(previousMonthNetIncome, netIncome);
 
 
 
-        log.info("data = {} {} {} {} {} {}", totalRevenue, totalPreviousMonthRevenue, netIncome, previousMonthnetIncome, settlementAmount, previousMonthSettlementAmount);
+        log.info("data = {} {} {} {} {} {}", totalRevenue, totalPreviousMonthRevenue, netIncome, previousMonthNetIncome, settlementAmount, previousMonthSettlementAmount);
         return DashboardTotalInfoResponseDto.builder()
                 .bestArtist(bestArtist)
                 .revenue(
                         TotalAndGrowthDto.builder()
-                                .totalAmount((long) totalRevenue)
+                                .totalAmount((int) totalRevenue)
                                 .growthRate(revenueGrowthRate)
                                 .build()
                 )
                 .netIncome(
                         TotalAndGrowthDto.builder()
-                                .totalAmount((long) settlementAmount)
+                                .totalAmount((int) settlementAmount)
                                 .growthRate(settlementAmountGrowthRate)
                                 .build()
                 )
                 .settlementAmount(
                         TotalAndGrowthDto.builder()
-                                .totalAmount((long) netIncome)
+                                .totalAmount((int) netIncome)
                                 .growthRate(netIncomeGrowthRate)
                                 .build()
                 )
@@ -105,17 +102,18 @@ public class SummaryDashBoardService {
         double settlementAmount = 0.0;
         double previousMonthSettlementAmount = 0.0;
         Double settlementAmountGrowthRate = 0.0;
-        Member artist = memberRepository.findById(memberId).orElseThrow(() -> {throw new MemberNotFoundException();});
+        Member artist = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
         List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
-        List<Transaction> previousMonthTransactions = transactionRepository.findTransactionsByDuration(getPreviousMonth(monthly));
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> {throw new MemberNotFoundException();});
+        List<Transaction> previousMonthTransactions = transactionRepository.findTransactionsByDuration(
+                dashboardUtilService.getPreviousMonth(monthly));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
         Map<TrackMember, Double> trackMemberMappedByAmount = getArtistTrackMemberMappedByAmount(member, transactions);
         Map<TrackMember, Double> previousMonthlyTrackMemberMappedByAmount = getArtistTrackMemberMappedByAmount(member, previousMonthTransactions);
 
         settlementAmount = getSettlementAmount(trackMemberMappedByAmount, memberId);
         previousMonthSettlementAmount = getSettlementAmount(previousMonthlyTrackMemberMappedByAmount, memberId);
-        settlementAmountGrowthRate = getGrowthRate(previousMonthSettlementAmount, settlementAmount);
+        settlementAmountGrowthRate = dashboardUtilService.getGrowthRate(previousMonthSettlementAmount, settlementAmount);
 
         return ArtistSummaryResponseDto.builder()
                 .memberId(artist.getId())
@@ -142,7 +140,7 @@ public class SummaryDashBoardService {
         Double revenueGrowthRate = 0.0;
 
         double netIncome = 0.0;
-        double previousMonthnetIncome = 0.0;
+        double previousMonthNetIncome = 0.0;
         Double netIncomeGrowthRate = 0.0;
 
         double settlementAmount = 0.0;
@@ -150,7 +148,8 @@ public class SummaryDashBoardService {
         Double settlementAmountGrowthRate = 0.0;
 
         Map<TrackMember, Double> trackMemberMappedByAmount = getAlbumTrackMemberMappedByAmount(monthly, memberId, albumId);
-        Map<TrackMember, Double> previousMonthlyTrackMemberMappedByAmount = getAlbumTrackMemberMappedByAmount(getPreviousMonth(monthly), memberId, albumId);
+        Map<TrackMember, Double> previousMonthlyTrackMemberMappedByAmount = getAlbumTrackMemberMappedByAmount(
+                dashboardUtilService.getPreviousMonth(monthly), memberId, albumId);
 
         for (Map.Entry<TrackMember, Double> entry : trackMemberMappedByAmount.entrySet()) {
             totalRevenue += entry.getValue();
@@ -160,20 +159,20 @@ public class SummaryDashBoardService {
             totalPreviousMonthRevenue += entry.getValue();
         }
 
-        revenueGrowthRate = getGrowthRate(totalPreviousMonthRevenue, totalRevenue);
+        revenueGrowthRate = dashboardUtilService.getGrowthRate(totalPreviousMonthRevenue, totalRevenue);
         // 추후 수정
 
         settlementAmount = getAdminAlbumSettlementAmount(trackMemberMappedByAmount, memberId);
         previousMonthSettlementAmount = getAdminAlbumSettlementAmount(previousMonthlyTrackMemberMappedByAmount, memberId);
-        settlementAmountGrowthRate = getGrowthRate(previousMonthSettlementAmount, settlementAmount);
+        settlementAmountGrowthRate = dashboardUtilService.getGrowthRate(previousMonthSettlementAmount, settlementAmount);
 
-        netIncome = getIncome(settlementAmount);
-        previousMonthnetIncome = getIncome(previousMonthSettlementAmount);
-        netIncomeGrowthRate = getGrowthRate(previousMonthnetIncome, netIncome);
+        netIncome = settlementAmount;
+        previousMonthNetIncome = previousMonthSettlementAmount;
+        netIncomeGrowthRate = dashboardUtilService.getGrowthRate(previousMonthNetIncome, netIncome);
 
 
 
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> {throw new MemberNotFoundException();});
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
         if (member.getRole().equals(MemberRole.ARTIST)) {
             if (!albumService.isAlbumParticipant(albumId, memberId))
                 throw new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED);
@@ -196,7 +195,7 @@ public class SummaryDashBoardService {
                     )
                     .settlementAmount(
                             TotalAndGrowthDto.builder()
-                                    .totalAmount((long) settlementAmount)
+                                    .totalAmount((int) settlementAmount)
                                     .growthRate(settlementAmountGrowthRate)
                                     .build()
                     )
@@ -209,18 +208,18 @@ public class SummaryDashBoardService {
                     .bestTrack(bestTrack)
                     .revenue(
                             TotalAndGrowthDto.builder()
-                                    .totalAmount((long) totalRevenue)
+                                    .totalAmount((int) totalRevenue)
                                     .growthRate(revenueGrowthRate)
                                     .build()
                     )
                     .netIncome(TotalAndGrowthDto.builder()
-                            .totalAmount((long) settlementAmount)
+                            .totalAmount((int) settlementAmount)
                             .growthRate(settlementAmountGrowthRate)
                             .build()
                     )
                     .settlementAmount(
                             TotalAndGrowthDto.builder()
-                                    .totalAmount((long) netIncome)
+                                    .totalAmount((int) netIncome)
                                     .growthRate(netIncomeGrowthRate)
                                     .build()
                     )
@@ -229,23 +228,23 @@ public class SummaryDashBoardService {
 
     }
 
-    private Double getIncome(Double revenue) {
-        return revenue - (revenue * 33 / 1000);
-    }
+//    private Double getIncome(Double revenue) {
+//        return revenue - (revenue * 33 / 1000);
+//    }
 
     private double getAdminAlbumSettlementAmount(Map<TrackMember, Double> trackMappedByAmount, Long memberId) {
         double totalSettlementAmount = 0.0;
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> {
-            throw new MemberNotFoundException();
-        });
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
         for (Map.Entry<TrackMember, Double> entry : trackMappedByAmount.entrySet()) {
             TrackMember trackMember = entry.getKey();
             Double amount = entry.getValue();
             if (member.getRole().equals(MemberRole.ARTIST)) {
-                totalSettlementAmount += (amount * trackMember.getCommissionRate() / 100);
+//                 totalSettlementAmount += (amount * trackMember.getCommissionRate() / 100);
+                totalSettlementAmount += dashboardUtilService.getArtistSettlement(amount, trackMember.getCommissionRate());
             } else {
-                totalSettlementAmount += amount - (amount * trackMember.getCommissionRate() / 100);
+//                totalSettlementAmount += amount - (amount * trackMember.getCommissionRate() / 100);
+                totalSettlementAmount += dashboardUtilService.getCompanyNetIncome(amount, trackMember.getCommissionRate());
             }
         }
         return totalSettlementAmount;
@@ -254,160 +253,71 @@ public class SummaryDashBoardService {
 
     private double getSettlementAmount(Map<TrackMember, Double> trackMemberMappedByAmount, Long memberId) {
         double totalSettlementAmount = 0.0;
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> {
-            throw new MemberNotFoundException();
-        });
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
 
         for (Map.Entry<TrackMember, Double> entry : trackMemberMappedByAmount.entrySet()) {
             TrackMember trackMember = entry.getKey();
             Double amount = entry.getValue();
             if (member.getRole().equals(MemberRole.ARTIST)) {
-                totalSettlementAmount += (amount * trackMember.getCommissionRate() / 100);
+//                 totalSettlementAmount += (amount * trackMember.getCommissionRate() / 100);
+                totalSettlementAmount += dashboardUtilService.getArtistSettlement(amount, trackMember.getCommissionRate());
             } else {
-                totalSettlementAmount += amount - (amount * trackMember.getCommissionRate() / 100);
+//                totalSettlementAmount += amount - (amount * trackMember.getCommissionRate() / 100);
+                totalSettlementAmount += dashboardUtilService.getCompanyNetIncome(amount, trackMember.getCommissionRate());
             }
         }
         return totalSettlementAmount;
     }
 
-    private String getPreviousMonth(String monthly) {
-        LocalDate date = LocalDate.parse(monthly + MONTH_PREFIX, DateTimeFormatter.ofPattern("yyyyMMdd"));
-        LocalDate previousMonth = date.minusMonths(1);
-        return previousMonth.format(DateTimeFormatter.ofPattern("yyyyMM"));
-    }
-
     private Map<TrackMember, Double> getArtistTrackMemberMappedByAmount(Member member, List<Transaction> transactions) {
-        Map<TrackMember, Double> trackMemberMappedByAmount = transactions.stream()
-                .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-                .filter(transaction -> transaction.getTrackMember().getMemberId().equals(member.getId()))
-                .collect(Collectors.groupingBy(
-                        Transaction::getTrackMember,
-                        Collectors.summingDouble(Transaction::getAmount)
-                ));
+        Map<TrackMember, Double> amountGroupedByTrackMember = dashboardUtilService.getAmountGroupedByTrackMemberFilteredByMemberId(transactions, member.getId());
 
-        return trackMemberMappedByAmount.entrySet().stream()
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new
-                ));
+        return dashboardUtilService.getSortedAmountGroupedByTrackMember(amountGroupedByTrackMember);
     }
 
     private Map<TrackMember, Double> getTrackMemberMappedByAmount(String monthly) {
         List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
-        Map<TrackMember, Double> trackMemberMappedByAmount = transactions.stream()
-                .collect(Collectors.groupingBy(
-                        Transaction::getTrackMember,
-                        Collectors.summingDouble(Transaction::getAmount)
-                ));
+        Map<TrackMember, Double> amountGroupedByTrackMember = dashboardUtilService.getAmountGroupedByTrackMember(transactions);
 
-        return trackMemberMappedByAmount.entrySet().stream()
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new
-                ));
+        return dashboardUtilService.getSortedAmountGroupedByTrackMember(amountGroupedByTrackMember);
     }
 
     private Map<TrackMember, Double> getPreviousMonthlyTrackMemberMappedByAmount(String monthly) {
-        List<Transaction> transactions = transactionRepository.findTransactionsByDuration(getPreviousMonth(monthly));
-        Map<TrackMember, Double> trackMemberMappedByAmount = transactions.stream()
-                .collect(Collectors.groupingBy(
-                        Transaction::getTrackMember,
-                        Collectors.summingDouble(Transaction::getAmount)
-                ));
+        List<Transaction> transactions = transactionRepository.findTransactionsByDuration(
+                dashboardUtilService.getPreviousMonth(monthly));
+        Map<TrackMember, Double> amountGroupedByTrackMember = dashboardUtilService.getAmountGroupedByTrackMember(transactions);
 
-        return trackMemberMappedByAmount.entrySet().stream()
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new
-                ));
+        return dashboardUtilService.getSortedAmountGroupedByTrackMember(amountGroupedByTrackMember);
     }
 
     private Map<TrackMember, Double> getAlbumTrackMemberMappedByAmount(String monthly, Long memberId, Long albumId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> {
-            throw new MemberNotFoundException();
-        });
-        Map<TrackMember, Double> trackMappedByAmount = new LinkedHashMap<>();
-        Map<TrackMember, Double> sortedTrackMappedByAmount = new LinkedHashMap<>();
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+        Map<TrackMember, Double> amountGroupByTrackMember = new LinkedHashMap<>();
         List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
 
         if (member.getRole().equals(MemberRole.ARTIST)) {
-            trackMappedByAmount = transactions.stream()
-                    .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-                    .filter(transaction -> transaction.getTrackMember().getMemberId().equals(member.getId()))
-                    .filter(transaction -> transaction.getTrackMember().getTrack().getAlbum().getId().equals(albumId))
-                    .collect(Collectors.groupingBy(
-                            Transaction::getTrackMember,
-                            Collectors.summingDouble(Transaction::getAmount)
-                    ));
+            amountGroupByTrackMember = dashboardUtilService.getAmountGroupedByTrackMemberFilteredByMemberIdAndAlbumId(transactions, memberId, albumId);
         } else {
-            trackMappedByAmount = transactions.stream()
-                    .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-                    .filter(transaction -> transaction.getTrackMember().getTrack().getAlbum().getId().equals(albumId))
-                    .collect(Collectors.groupingBy(
-                            Transaction::getTrackMember,
-                            Collectors.summingDouble(Transaction::getAmount)
-                    ));
+            amountGroupByTrackMember = dashboardUtilService.getAmountGroupedByTrackMemberFilteredByAlbumId(transactions, albumId);
         }
 
-        sortedTrackMappedByAmount = trackMappedByAmount.entrySet().stream()
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new
-                ));
-        return sortedTrackMappedByAmount;
+        return dashboardUtilService.getSortedAmountGroupedByTrackMember(amountGroupByTrackMember);
     }
 
     private ArtistMonthlyInfoDto getTotalBestAlbum(String monthly, Member member, List<Transaction> transactions, List<Transaction> previousMonthlyTransactions) {
 
-        Map<Album, Double> trackMappedByAmount = transactions.stream()
-                .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-                .filter(transaction -> transaction.getTrackMember().getMemberId().equals(member.getId()))
-                .collect(Collectors.groupingBy(
-                        transaction -> transaction.getTrackMember().getTrack().getAlbum(),
-                        Collectors.summingDouble(Transaction::getAmount)
-                ));
+        Map<Album, Double> amountGroupedByAlbum = dashboardUtilService
+                .getAmountGroupedByAlbumMemberFilteredByMemberId(transactions, member.getId());
 
-        Map<Album, Double> trackMappedByAmountPreviousMonthly = previousMonthlyTransactions.stream()
-                .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-                .filter(transaction -> transaction.getTrackMember().getMemberId().equals(member.getId()))
-                .collect(Collectors.groupingBy(
-                        transaction -> transaction.getTrackMember().getTrack().getAlbum(),
-                        Collectors.summingDouble(Transaction::getAmount)
-                ));
+        Map<Album, Double> previousMonthlyAmountGroupedByAlbum = dashboardUtilService
+                .getAmountGroupedByAlbumMemberFilteredByMemberId(previousMonthlyTransactions, member.getId());
 
+        Map<Album, Double> sortedAmountGroupedByAlbum = dashboardUtilService.getSortedAmountGroupedByAlbum(amountGroupedByAlbum);
 
-        Map<Album, Double> sortedTrackMappedByAmount = trackMappedByAmount.entrySet().stream()
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new
-                ));
+        Map<Album, Double> sortedPreviousMonthlyAmountGroupedByAlbum = dashboardUtilService.getSortedAmountGroupedByAlbum(previousMonthlyAmountGroupedByAlbum);
 
-        Map<Album, Double> sortedTrackMappedByAmountPreviousMonthly = trackMappedByAmountPreviousMonthly.entrySet().stream()
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new
-                ));
-
-        Map.Entry<Album, Double> bestTrackInformation = sortedTrackMappedByAmount.entrySet()
+        Map.Entry<Album, Double> bestTrackInformation = sortedAmountGroupedByAlbum.entrySet()
                 .stream()
                 .findFirst()
                 .orElse(null);
@@ -420,8 +330,8 @@ public class SummaryDashBoardService {
                     .enName(bestTrackInformation.getKey().getEnName())
                     .name(bestTrackInformation.getKey().getName())
                     .growthRate(
-                            getGrowthRate(
-                                    sortedTrackMappedByAmountPreviousMonthly.get(bestTrackInformation.getKey()),
+                            dashboardUtilService.getGrowthRate(
+                                    sortedPreviousMonthlyAmountGroupedByAlbum.get(bestTrackInformation.getKey()),
                                     bestTrackInformation.getValue())
                     )
                     .build();
@@ -437,42 +347,15 @@ public class SummaryDashBoardService {
     }
 
     private ArtistMonthlyTrackInfoDto getTotalBestTrack(String monthly, Member member, List<Transaction> transactions, List<Transaction> previousMonthlyTransactions) {
-        Map<Track, Double> trackMappedByAmount = transactions.stream()
-                .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-                .filter(transaction -> transaction.getTrackMember().getMemberId().equals(member.getId()))
-                .collect(Collectors.groupingBy(
-                        transaction -> transaction.getTrackMember().getTrack(),
-                        Collectors.summingDouble(Transaction::getAmount)
-                ));
+        Map<Track, Double> amountGroupedByTrack = dashboardUtilService.getAmountGroupedByTrackFilteredByMemberId(transactions, member.getId());
 
-        Map<Track, Double> trackMappedByAmountPreviousMonthly = previousMonthlyTransactions.stream()
-                .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-                .filter(transaction -> transaction.getTrackMember().getMemberId().equals(member.getId()))
-                .collect(Collectors.groupingBy(
-                        transaction -> transaction.getTrackMember().getTrack(),
-                        Collectors.summingDouble(Transaction::getAmount)
-                ));
+        Map<Track, Double> previousMonthlyAmountGroupedByTrack= dashboardUtilService.getAmountGroupedByTrackFilteredByMemberId(previousMonthlyTransactions, member.getId());
 
+        Map<Track, Double> sortedAmountGroupedByTrack = dashboardUtilService.getSortedAmountGroupedByTrack(amountGroupedByTrack);
 
-        Map<Track, Double> sortedTrackMappedByAmount = trackMappedByAmount.entrySet().stream()
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new
-                ));
+        Map<Track, Double> sortedPreviousMonthlyAmountGroupedByTrack = dashboardUtilService.getSortedAmountGroupedByTrack(previousMonthlyAmountGroupedByTrack);
 
-        Map<Track, Double> sortedTrackMappedByAmountPreviousMonthly = trackMappedByAmountPreviousMonthly.entrySet().stream()
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new
-                ));
-
-        Map.Entry<Track, Double> bestTrackInformation = sortedTrackMappedByAmount.entrySet()
+        Map.Entry<Track, Double> bestTrackInformation = sortedAmountGroupedByTrack.entrySet()
                 .stream()
                 .findFirst()
                 .orElse(null);
@@ -482,8 +365,8 @@ public class SummaryDashBoardService {
                     .enName(bestTrackInformation.getKey().getEnName())
                     .name(bestTrackInformation.getKey().getName())
                     .growthRate(
-                            getGrowthRate(
-                                    sortedTrackMappedByAmountPreviousMonthly.get(bestTrackInformation.getKey()),
+                            dashboardUtilService.getGrowthRate(
+                                    sortedPreviousMonthlyAmountGroupedByTrack.get(bestTrackInformation.getKey()),
                                     bestTrackInformation.getValue())
                     )
                     .build();
@@ -500,104 +383,46 @@ public class SummaryDashBoardService {
 
 
     private BestTrackDto getBestTrack(String monthly, Long memberId, Long albumId) {
-        String previousMonthly = getPreviousMonth(monthly);
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> {
-            throw new MemberNotFoundException();
-        });
-        Map<Track, Double> trackMappedByAmount = new LinkedHashMap<>();
-        Map<Track, Double> trackMappedByAmountPreviousMonthly = new LinkedHashMap<>();
-        Map<Track, Double> sortedTrackMappedByAmount = new LinkedHashMap<>();
-        Map<Track, Double> sortedTrackMappedByAmountPreviousMonthly = new LinkedHashMap<>();
+        String previousMonthly = dashboardUtilService.getPreviousMonth(monthly);
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+        Map<Track, Double> amountGroupedByTrack = new LinkedHashMap<>();
+        Map<Track, Double> previousMonthlyAmountGroupedByTrack = new LinkedHashMap<>();
+        Map<Track, Double> sortedAmountGroupedByTrack = new LinkedHashMap<>();
+        Map<Track, Double> sortedPreviousMonthlyAmountGroupedByTrack = new LinkedHashMap<>();
 
         List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
         List<Transaction> previousMonthlyTransactions = transactionRepository.findTransactionsByDuration(previousMonthly);
 
         if (member.getRole().equals(MemberRole.ARTIST)) {
-            trackMappedByAmount = transactions.stream()
-                    .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-                    .filter(transaction -> transaction.getTrackMember().getMemberId().equals(member.getId()))
-                    .filter(transaction -> transaction.getTrackMember().getTrack().getAlbum().getId().equals(albumId))
-                    .collect(Collectors.groupingBy(
-                            transaction -> transaction.getTrackMember().getTrack(),
-                            Collectors.summingDouble(Transaction::getAmount)
-                    ));
+            amountGroupedByTrack = dashboardUtilService.getAmountGroupedByTrackFilteredByMemberIdAndAlbumId(transactions, memberId, albumId);
 
-            trackMappedByAmountPreviousMonthly = previousMonthlyTransactions.stream()
-                    .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-                    .filter(transaction -> transaction.getTrackMember().getMemberId().equals(member.getId()))
-                    .filter(transaction -> transaction.getTrackMember().getTrack().getAlbum().getId().equals(albumId))
-                    .collect(Collectors.groupingBy(
-                            transaction -> transaction.getTrackMember().getTrack(),
-                            Collectors.summingDouble(Transaction::getAmount)
-                    ));
+            previousMonthlyAmountGroupedByTrack = dashboardUtilService.getAmountGroupedByTrackFilteredByMemberIdAndAlbumId(previousMonthlyTransactions, memberId, albumId);
 
+            sortedAmountGroupedByTrack = dashboardUtilService.getSortedAmountGroupedByTrack(amountGroupedByTrack);
 
-            sortedTrackMappedByAmount = trackMappedByAmount.entrySet().stream()
-                    .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey,
-                            Map.Entry::getValue,
-                            (e1, e2) -> e1,
-                            LinkedHashMap::new
-                    ));
-
-            sortedTrackMappedByAmountPreviousMonthly = trackMappedByAmountPreviousMonthly.entrySet().stream()
-                    .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey,
-                            Map.Entry::getValue,
-                            (e1, e2) -> e1,
-                            LinkedHashMap::new
-                    ));
+            sortedPreviousMonthlyAmountGroupedByTrack = dashboardUtilService.getSortedAmountGroupedByTrack(previousMonthlyAmountGroupedByTrack);
         } else {
-            trackMappedByAmount = transactions.stream()
-                    .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-                    .filter(transaction -> transaction.getTrackMember().getTrack().getAlbum().getId().equals(albumId))
-                    .collect(Collectors.groupingBy(
-                            transaction -> transaction.getTrackMember().getTrack(),
-                            Collectors.summingDouble(Transaction::getAmount)
-                    ));
+            amountGroupedByTrack = dashboardUtilService.getAmountGroupedByTrackFilteredByAlbumId(transactions, albumId);
 
-            trackMappedByAmountPreviousMonthly = previousMonthlyTransactions.stream()
-                    .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-                    .filter(transaction -> transaction.getTrackMember().getTrack().getAlbum().getId().equals(albumId))
-                    .collect(Collectors.groupingBy(
-                            transaction -> transaction.getTrackMember().getTrack(),
-                            Collectors.summingDouble(Transaction::getAmount)
-                    ));
+            previousMonthlyAmountGroupedByTrack = dashboardUtilService.getAmountGroupedByTrackFilteredByAlbumId(previousMonthlyTransactions, albumId);
 
+            sortedAmountGroupedByTrack = dashboardUtilService.getSortedAmountGroupedByTrack(amountGroupedByTrack);
 
-            sortedTrackMappedByAmount = trackMappedByAmount.entrySet().stream()
-                    .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey,
-                            Map.Entry::getValue,
-                            (e1, e2) -> e1,
-                            LinkedHashMap::new
-                    ));
-
-            sortedTrackMappedByAmountPreviousMonthly = trackMappedByAmountPreviousMonthly.entrySet().stream()
-                    .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey,
-                            Map.Entry::getValue,
-                            (e1, e2) -> e1,
-                            LinkedHashMap::new
-                    ));
+            sortedPreviousMonthlyAmountGroupedByTrack = dashboardUtilService.getSortedAmountGroupedByTrack(previousMonthlyAmountGroupedByTrack);
         }
 
-        if (sortedTrackMappedByAmount.isEmpty()) {
+        if (sortedAmountGroupedByTrack.isEmpty()) {
             return null;
         }
 
-        Map.Entry<Track, Double> bestTrackInformation = sortedTrackMappedByAmount.entrySet().iterator().next();
+        Map.Entry<Track, Double> bestTrackInformation = sortedAmountGroupedByTrack.entrySet().iterator().next();
         return BestTrackDto.builder()
                 .trackId(bestTrackInformation.getKey().getId())
                 .enName(bestTrackInformation.getKey().getEnName())
                 .name(bestTrackInformation.getKey().getName())
                 .growthRate(
-                        getGrowthRate(
-                                sortedTrackMappedByAmountPreviousMonthly.get(bestTrackInformation.getKey()),
+                        dashboardUtilService.getGrowthRate(
+                                sortedPreviousMonthlyAmountGroupedByTrack.get(bestTrackInformation.getKey()),
                                 bestTrackInformation.getValue())
                 )
                 .build();
@@ -605,78 +430,35 @@ public class SummaryDashBoardService {
     }
 
     private BestArtistDto getBestArtist(String monthly) {
-        String previousMonthly = getPreviousMonth(monthly);
+        String previousMonthly = dashboardUtilService.getPreviousMonth(monthly);
 
         List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
         List<Transaction> previousMonthlyTransactions = transactionRepository.findTransactionsByDuration(previousMonthly);
 
-        Map<Long, Double> artistMappedByAmount = transactions.stream()
-                .filter((transaction -> transaction.getTrackMember().getMemberId() != null))
-                .collect(Collectors.groupingBy(
-                        transaction -> transaction.getTrackMember().getMemberId(),
-                        Collectors.summingDouble(Transaction::getAmount)
-                ));
+        Map<Long, Double> amountGroupedByMemberId = dashboardUtilService.getAmountGroupedByMemberId(transactions);
 
-        Map<Long, Double> artistMappedByAmountPreviousMonthly = previousMonthlyTransactions.stream()
-                .filter((transaction -> transaction.getTrackMember().getMemberId() != null))
-                .collect(Collectors.groupingBy(
-                        transaction -> transaction.getTrackMember().getMemberId(),
-                        Collectors.summingDouble(Transaction::getAmount)
-                ));
+        Map<Long, Double> previousMonthlyAmountGroupedByMemberId = dashboardUtilService.getAmountGroupedByMemberId(previousMonthlyTransactions);
 
+        Map<Long, Double> sortedAmountGroupedByMemberId = dashboardUtilService.getSortedAmountGroupedByMemberId(amountGroupedByMemberId);
 
-        Map<Long, Double> sortedArtistMappedByAmount = artistMappedByAmount.entrySet().stream()
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new
-                ));
+        Map<Long, Double> sortedPreviousMonthlyAmountGroupedByMemberId = dashboardUtilService.getSortedAmountGroupedByMemberId(previousMonthlyAmountGroupedByMemberId);
 
-        Map<Long, Double> sortedArtistMappedByAmountPreviousMonthly = artistMappedByAmountPreviousMonthly.entrySet().stream()
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new
-                ));
-
-        if (sortedArtistMappedByAmount.isEmpty()) {
+        if (sortedAmountGroupedByMemberId.isEmpty()) {
             return null;
         }
 
-        Map.Entry<Long, Double> bestArtistInformation = sortedArtistMappedByAmount.entrySet().iterator().next();
+        Map.Entry<Long, Double> bestArtistInformation = sortedAmountGroupedByMemberId.entrySet().iterator().next();
 
-        Member bestArtist = memberRepository.findById(bestArtistInformation.getKey()).orElseThrow(() -> {
-            throw new MemberNotFoundException();
-        });
+        Member bestArtist = memberRepository.findById(bestArtistInformation.getKey()).orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
         return BestArtistDto.builder()
                 .memberId(bestArtist.getId())
                 .enName(bestArtist.getEnName())
                 .name(bestArtist.getName())
                 .growthRate(
-                        getGrowthRate(
-                                sortedArtistMappedByAmountPreviousMonthly.get(bestArtistInformation.getKey()),
+                        dashboardUtilService.getGrowthRate(
+                                sortedPreviousMonthlyAmountGroupedByMemberId.get(bestArtistInformation.getKey()),
                                 bestArtistInformation.getValue())
                 )
                 .build();
-    }
-
-    private Double getGrowthRate(Double previousMonthAmount, double amount) {
-        if (previousMonthAmount == null || amount == 0.0) {
-            return null;
-        }
-
-        if (previousMonthAmount == 0.0) {
-            return null;
-        }
-
-        double percentage = (amount - previousMonthAmount) / previousMonthAmount * 100;
-        if (0 < percentage && percentage < 10) {
-            return Math.floor(percentage * 10) / 10;
-        }
-        return Math.floor(percentage);
     }
 }
