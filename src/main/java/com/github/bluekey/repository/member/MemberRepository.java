@@ -3,6 +3,9 @@ import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
 import java.util.List;
 import java.util.Optional;
+
+import com.github.bluekey.exception.BusinessException;
+import com.github.bluekey.exception.ErrorCode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,4 +32,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
 	List<Member> findMemberByRoleAndIsRemovedFalse(MemberRole role);
 	List<Member> findMembersByRoleAndIsRemovedFalseAndNameContainingIgnoreCaseOrEnNameContainingIgnoreCase(MemberRole role, String name, String enName);
+
+	default Member findByIdOrElseThrow(Long id) {
+		return this.findById(id).orElseThrow(() ->
+				new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+	}
 }
