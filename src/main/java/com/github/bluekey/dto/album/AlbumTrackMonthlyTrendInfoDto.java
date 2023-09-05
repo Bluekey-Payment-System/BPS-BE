@@ -14,13 +14,13 @@ public class AlbumTrackMonthlyTrendInfoDto {
     private Integer month;
 
     @Schema(description = "합", example = "2142344")
-    private Double settlement;
+    private Integer settlement;
 
     @Schema(description = "매출액", example = "732143")
-    private Double revenue;
+    private Integer revenue;
 
     @Builder
-    public AlbumTrackMonthlyTrendInfoDto(final Integer month, final Double settlement, final Double revenue) {
+    public AlbumTrackMonthlyTrendInfoDto(final Integer month, final Integer settlement, final Integer revenue) {
         this.month = month;
         this.settlement = settlement;
         this.revenue = revenue;

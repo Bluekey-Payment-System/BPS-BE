@@ -13,15 +13,15 @@ public class MonthlyTrendDto {
 	@Schema(description = "월", example = "1")
 	private Integer month;
 	@Schema(description = "매출", example = "1000000")
-	private double revenue;
+	private Integer revenue;
 	@Schema(description = "순수익", example = "1000000")
-	private Double netIncome;
+	private Integer netIncome;
 	@Schema(description = "정산액", example = "1000000")
-	private Double settlement;
+	private Integer settlement;
 
 	@Builder
-	public MonthlyTrendDto(final Integer month, final double revenue, final Double netIncome,
-			final Double settlement) {
+	public MonthlyTrendDto(final Integer month, final Integer revenue, final Integer netIncome,
+			final Integer settlement) {
 		this.month = month;
 		this.revenue = revenue;
 		this.netIncome = netIncome;
