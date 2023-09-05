@@ -1,4 +1,4 @@
-package com.github.bluekey.jwt;
+package com.github.bluekey.config.security.jwt;
 
 import com.github.bluekey.exception.AuthorizationException;
 import com.github.bluekey.exception.ErrorCode;

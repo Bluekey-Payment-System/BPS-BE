@@ -1,4 +1,4 @@
-package com.github.bluekey.jwt;
+package com.github.bluekey.config.security.jwt;
 
 import java.io.IOException;
 import javax.servlet.FilterChain;

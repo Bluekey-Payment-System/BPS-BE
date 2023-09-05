@@ -1,7 +1,7 @@
 package com.github.bluekey.config.security;
 
-import com.github.bluekey.jwt.JwtAuthenticationFilter;
-import com.github.bluekey.jwt.JwtProvider;
+import com.github.bluekey.config.security.jwt.JwtAuthenticationFilter;
+import com.github.bluekey.config.security.jwt.JwtProvider;
 import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
