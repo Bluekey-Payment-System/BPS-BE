@@ -6,14 +6,20 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
 
-    // Internal server error
+    // Internal Server Error
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S_001", "서버에 오류가 발생했습니다."),
 
-    // Authentication & Authorization error
+    // Authentication & Authorization Error
     AUTHENTICATION_FAILED(HttpStatus.FORBIDDEN, "AU_001", "인증에 실패하였습니다."),
     AUTHORIZATION_FAILED(HttpStatus.UNAUTHORIZED, "AR_002", "권한이 없습니다."),
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "AU_002", "아이디 또는 비밀번호가 일치하지 않습니다."),
 
+    // JWT Error
+    EMPTY_JWT(HttpStatus.UNAUTHORIZED, "AU_003", "JWT가 존재하지 않아 유저 인증에 실패하였습니다."),
+    UNSUPPORTED_JWT(HttpStatus.UNAUTHORIZED, "AU_004", "지원하지 않는 토큰입니다."),
+    INVALID_JWT(HttpStatus.UNAUTHORIZED, "AU_005", "올바르지 않은 토큰입니다."),
+    INVALID_JWT_SIGNATURE(HttpStatus.UNAUTHORIZED, "AU_006", "토큰 생성키가 올바르지 않습니다."),
+    EXPIRED_JWT(HttpStatus.UNAUTHORIZED, "AU_007","만료된 토큰입니다."),
 
     // 400~
     INVALID_INPUT_TYPE(HttpStatus.BAD_REQUEST, "C_001", "입력값의 타입이 유효하지 않습니다."),
