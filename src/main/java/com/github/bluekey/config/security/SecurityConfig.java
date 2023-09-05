@@ -1,4 +1,4 @@
-package com.github.bluekey.config;
+package com.github.bluekey.config.security;
 
 import com.github.bluekey.jwt.JwtAuthenticationFilter;
 import com.github.bluekey.jwt.JwtProvider;
