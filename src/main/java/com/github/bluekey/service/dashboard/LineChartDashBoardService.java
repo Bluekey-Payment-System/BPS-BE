@@ -1,8 +1,8 @@
 package com.github.bluekey.service.dashboard;
 
-import com.github.bluekey.dto.album.AlbumTrackAccountsDto;
+import com.github.bluekey.dto.album.AlbumTrackTrendDto;
 import com.github.bluekey.dto.album.AlbumTrackMonthlyTrendInfoDto;
-import com.github.bluekey.dto.response.album.AlbumTrackAccountsResponseDto;
+import com.github.bluekey.dto.response.album.AlbumTrackTrendResponseDto;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.track.Track;
@@ -10,23 +10,20 @@ import com.github.bluekey.entity.transaction.Transaction;
 import com.github.bluekey.exception.AuthenticationException;
 import com.github.bluekey.exception.BusinessException;
 import com.github.bluekey.exception.ErrorCode;
-import com.github.bluekey.exception.member.MemberNotFoundException;
 import com.github.bluekey.repository.album.AlbumRepository;
 import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.repository.transaction.TransactionRepository;
 
 import com.github.bluekey.service.album.AlbumService;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,44 +32,44 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class LineChartDashBoardService {
 
-    private static final String MONTH_PREFIX = "01";
     private final TransactionRepository transactionRepository;
     private final MemberRepository memberRepository;
     private final AlbumRepository albumRepository;
     private final AlbumService albumService;
+    private final DashboardUtilService dashboardUtilService;
 
     @Transactional(readOnly = true)
-    public AlbumTrackAccountsResponseDto getAlbumLineChartDashboard(String startDate, String endDate
+    public AlbumTrackTrendResponseDto getAlbumLineChartDashboard(String startDate, String endDate
             , Long albumId, Long memberId) {
 
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(MemberNotFoundException::new);
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
         albumRepository.findById(albumId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ALBUM_NOT_FOUND));
 
-        List<AlbumTrackAccountsDto> tracks = new ArrayList<>();
+        List<AlbumTrackTrendDto> tracks = new ArrayList<>();
 
         if (member.isAdmin()) {
-            tracks = getAdminAlbumTrackAccounts(startDate, endDate, albumId);
+            tracks = getAdminAlbumTrackTrend(startDate, endDate, albumId);
         } else if (member.getRole() == MemberRole.ARTIST) {
             if (!albumService.isAlbumParticipant(albumId, memberId))
                 throw new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED);
-            tracks = getArtistAlbumTrackAccounts(startDate, endDate, albumId, memberId);
+            tracks = getArtistAlbumTrackTrend(startDate, endDate, albumId, memberId);
         }
-        return AlbumTrackAccountsResponseDto.builder()
+        return AlbumTrackTrendResponseDto.builder()
                 .tracks(tracks)
                 .build();
     }
 
-    private List<AlbumTrackAccountsDto> getAdminAlbumTrackAccounts(String startDate, String endDate, Long albumId) {
+    private List<AlbumTrackTrendDto> getAdminAlbumTrackTrend(String startDate, String endDate, Long albumId) {
 
         List<Transaction> transactions = transactionRepository.findTransactionsByDurationBetween(startDate, endDate);
 
         List<Track> sortedTracks = getSortedTrack(transactions, albumId, null);
 
         return sortedTracks.stream()
-                .map(track -> AlbumTrackAccountsDto
+                .map(track -> AlbumTrackTrendDto
                         .builder()
                         .trackId(track.getId())
                         .name(track.getName())
@@ -89,12 +86,12 @@ public class LineChartDashBoardService {
                 .filter(transaction -> transaction.getTrackMember().getTrack().getId().equals(trackId))
                 .map(transaction -> AlbumTrackMonthlyTrendInfoDto
                         .builder()
-                        .month(convertDate(transaction.getDuration()).getMonthValue())
-                        .revenue(transaction.getAmount())
-                        .settlement(0.0)
+                        .month(dashboardUtilService.convertDate(transaction.getDuration()).getMonthValue())
+                        .revenue(dashboardUtilService.getRevenue(transaction.getAmount()))
+                        .settlement(0)
                         .build())
                 .collect(Collectors.toList());
-        for (Integer month : extractMonths(startDate, endDate)) {
+        for (Integer month : dashboardUtilService.extractMonths(startDate, endDate)) {
 
             Optional<AlbumTrackMonthlyTrendInfoDto> matchedMonthTrend = trends.stream()
                     .filter(trend -> trend.getMonth().equals(month))
@@ -105,8 +102,8 @@ public class LineChartDashBoardService {
                 AlbumTrackMonthlyTrendInfoDto trend = AlbumTrackMonthlyTrendInfoDto
                         .builder()
                         .month(month)
-                        .revenue(0.0)
-                        .settlement(0.0)
+                        .revenue(0)
+                        .settlement(0)
                         .build();
                 albumTrackMonthlyTrends.add(trend);
             }
@@ -115,14 +112,14 @@ public class LineChartDashBoardService {
         return albumTrackMonthlyTrends;
     }
 
-    private List<AlbumTrackAccountsDto> getArtistAlbumTrackAccounts(String startDate, String endDate, Long albumId, Long memberId) {
+    private List<AlbumTrackTrendDto> getArtistAlbumTrackTrend(String startDate, String endDate, Long albumId, Long memberId) {
 
         List<Transaction> transactions = transactionRepository.findTransactionsByDurationBetween(startDate, endDate);
 
         List<Track> sortedTracks = getSortedTrack(transactions, albumId, memberId);
 
         return sortedTracks.stream()
-                .map(track -> AlbumTrackAccountsDto
+                .map(track -> AlbumTrackTrendDto
                         .builder()
                         .trackId(track.getId())
                         .name(track.getName())
@@ -134,17 +131,18 @@ public class LineChartDashBoardService {
 
     private List<AlbumTrackMonthlyTrendInfoDto> getArtistMonthlyTrend(List<Transaction> transactions, Long trackId, String startDate, String endDate) {
         List<AlbumTrackMonthlyTrendInfoDto> albumTrackMonthlyTrends = new ArrayList<>();
+
         List<AlbumTrackMonthlyTrendInfoDto> trends = transactions
                 .stream()
                 .filter(transaction -> transaction.getTrackMember().getTrack().getId().equals(trackId))
                 .map(transaction -> AlbumTrackMonthlyTrendInfoDto
                         .builder()
-                        .month(convertDate(transaction.getDuration()).getMonthValue())
-                        .revenue(0.0)
-                        .settlement(getSettlement(transaction.getAmount(), transaction.getTrackMember().getCommissionRate()))
+                        .month(dashboardUtilService.convertDate(transaction.getDuration()).getMonthValue())
+                        .revenue(0)
+                        .settlement(dashboardUtilService.getArtistSettlement(transaction.getAmount(), transaction.getTrackMember().getCommissionRate()))
                         .build())
                 .collect(Collectors.toList());
-        for (Integer month : extractMonths(startDate, endDate)) {
+        for (Integer month : dashboardUtilService.extractMonths(startDate, endDate)) {
 
             Optional<AlbumTrackMonthlyTrendInfoDto> matchedMonthTrend = trends.stream()
                     .filter(trend -> trend.getMonth().equals(month))
@@ -155,8 +153,8 @@ public class LineChartDashBoardService {
                 AlbumTrackMonthlyTrendInfoDto trend = AlbumTrackMonthlyTrendInfoDto
                         .builder()
                         .month(month)
-                        .revenue(0.0)
-                        .settlement(0.0)
+                        .revenue(0)
+                        .settlement(0)
                         .build();
                 albumTrackMonthlyTrends.add(trend);
             }
@@ -165,62 +163,27 @@ public class LineChartDashBoardService {
         return albumTrackMonthlyTrends;
     }
 
-    public LocalDate convertDate(String date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        return LocalDate.parse(date + MONTH_PREFIX, formatter);
-    }
-
-    private Double getSettlement(Double revenue, Integer commissionRate) {
-        return revenue * (commissionRate / 100.0);
-    }
 
     private List<Track> getSortedTrack(List<Transaction> transactions, Long albumId, Long memberId) {
-        List<Track> tracks;
-        if (memberId == null) {
-            tracks = getAdminViewTracks(transactions, albumId);
-        } else {
-            tracks = getArtistViewTracks(transactions, albumId, memberId);
+        Stream<Transaction> transactionStream = getFilteredTransactionStream(transactions, albumId);
+        if (memberId != null) {
+            transactionStream = getFilteredMemberTransactionStream(transactionStream, memberId);
         }
-        return tracks.stream()
+
+        return transactionStream.map(transaction -> transaction.getTrackMember().getTrack())
+                .distinct()
                 .sorted(Comparator.comparing(Track::getId))
                 .collect(Collectors.toList());
     }
 
-    private List<Track> getAdminViewTracks(List<Transaction> transactions, Long albumId) {
+    private Stream<Transaction> getFilteredTransactionStream(List<Transaction> transactions, Long albumId) {
         return transactions.stream()
-                .filter(transaction -> transaction.getTrackMember().getTrack().getAlbum().getId().equals(albumId))
-                .map(transaction -> transaction.getTrackMember().getTrack())
-                .distinct()
-                .collect(Collectors.toList());
+                .filter(transaction -> transaction.getTrackMember().getTrack().getAlbum().getId().equals(albumId));
     }
 
-    private List<Track> getArtistViewTracks(List<Transaction> transactions, Long albumId, Long memberId) {
-        return transactions.stream()
-                .filter(transaction -> transaction.getTrackMember().getTrack().getAlbum().getId().equals(albumId))
+    private Stream<Transaction> getFilteredMemberTransactionStream(Stream<Transaction> transactionStream, Long memberId) {
+        return transactionStream
                 .filter(transaction -> transaction.getTrackMember().isArtistTrack())
-                .filter(transaction -> transaction.getTrackMember().getMemberId().equals(memberId))
-                .map(transaction -> transaction.getTrackMember().getTrack())
-                .distinct()
-                .collect(Collectors.toList());
-    }
-
-    private List<Integer> extractMonths(String startDate, String endDate) {
-        List<Integer> months = new ArrayList<>();
-
-        int startYear = Integer.parseInt(startDate.substring(0, 4));
-        int startMonth = Integer.parseInt(startDate.substring(4, 6));
-        int endYear = Integer.parseInt(endDate.substring(0, 4));
-        int endMonth = Integer.parseInt(endDate.substring(4, 6));
-
-        for (int year = startYear; year <= endYear; year++) {
-            int currentStartMonth = (year == startYear) ? startMonth : 1;
-            int currentEndMonth = (year == endYear) ? endMonth : 12;
-
-            for (int month = currentStartMonth; month <= currentEndMonth; month++) {
-                months.add(month);
-            }
-        }
-
-        return months;
+                .filter(transaction -> transaction.getTrackMember().getMemberId().equals(memberId));
     }
 }
