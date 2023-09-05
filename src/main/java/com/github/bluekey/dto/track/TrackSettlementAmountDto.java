@@ -1,7 +1,8 @@
 package com.github.bluekey.dto.track;
 
 import com.github.bluekey.dto.common.MemberBaseDto;
-import com.github.bluekey.dto.album.AlbumBaseDto;
+import com.github.bluekey.dto.common.AlbumBaseDto;
+import com.github.bluekey.dto.common.TrackBaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.AccessLevel;
