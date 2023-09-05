@@ -54,7 +54,7 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
     @Override
     public void process(Sheet sheet) {
         if (atoDistributorCellValidator.hasInValidColumns(sheet.getRow(HEADER_ROW_INDEX), "ATO")) {
-            throw new RuntimeException("Invalid columns definition");
+            throw new BusinessException(ErrorCode.EXCEL_INVALID_COLUMN_DEFINITION);
         }
         for (int i = DATA_ROW_START_INDEX; i<= sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
@@ -81,7 +81,7 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
             return WorkbookFactory.create(file.getInputStream());
         } catch (IOException e) {
             e.printStackTrace();
-            throw new RuntimeException("Error processing excel file");
+            throw new BusinessException(ErrorCode.EXCEL_NOT_CONVERT_TO_WORKBOOK);
         }
     }
 

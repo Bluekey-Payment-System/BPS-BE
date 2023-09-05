@@ -37,7 +37,8 @@ public enum ErrorCode {
 
     // Excel Validation Error
     EXCEL_INVALID_SHEET_NAME(HttpStatus.BAD_REQUEST, "E_001", "엑셀파일의 sheet명이 올바르지 않습니다."),
-
+    EXCEL_INVALID_COLUMN_DEFINITION(HttpStatus.BAD_REQUEST, "E_002", "엑셀파일의 columns 정의가 올바르지 않습니다."),
+    EXCEL_NOT_CONVERT_TO_WORKBOOK(HttpStatus.BAD_REQUEST, "E_003", "엑셀파일을 읽는 과정중에 이슈가 발생하였습니다."),
     // Transaction Bad Request
     TRANSACTION_ALREADY_BATCH(HttpStatus.BAD_REQUEST, "TR_001", "{%s} 파일에 대해 이미 배치 작업이 완료된 transaction이 존재합니다."),
     ORIGINAL_TRANSACTION_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "TR_002", "이미 존재하는 엑셀파일이 존재합니다."),
