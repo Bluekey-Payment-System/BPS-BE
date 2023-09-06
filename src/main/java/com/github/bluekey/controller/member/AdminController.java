@@ -9,7 +9,7 @@ import com.github.bluekey.dto.response.artist.ArtistsRevenueProportionResponseDt
 import com.github.bluekey.dto.response.common.DashboardTotalInfoResponseDto;
 import com.github.bluekey.dto.response.common.MonthlyTrendResponseDto;
 import com.github.bluekey.dto.response.track.TracksSettlementAmountResponseDto;
-import com.github.bluekey.jwt.PrincipalConvertUtil;
+import com.github.bluekey.config.security.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.dashboard.BarChartDashboardService;
 import com.github.bluekey.service.dashboard.MonthlyTracksDashBoardService;
 import com.github.bluekey.service.dashboard.SummaryDashBoardService;
@@ -148,7 +148,6 @@ public class AdminController {
 	@PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
 	@GetMapping("/authority-check")
 	public ResponseEntity<?> checkAuthority() {
-		Long memberId = PrincipalConvertUtil.getMemberId();
 		return ResponseEntity.ok().build();
 	}
 

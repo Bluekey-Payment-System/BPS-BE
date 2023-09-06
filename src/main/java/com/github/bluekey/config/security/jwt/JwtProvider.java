@@ -1,25 +1,20 @@
-package com.github.bluekey.jwt;
+package com.github.bluekey.config.security.jwt;
 
 import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.member.MemberType;
-import com.github.bluekey.exception.AuthenticationException;
-import com.github.bluekey.exception.ErrorCode;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+
+import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
@@ -27,15 +22,16 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class JwtProvider {
-	@Value("${jwt.secret}")
-	private String secret;
-	private Key secretKey;
-	@Value("${jwt.token-validity-in-seconds}")
-	private Long tokenValidMilisecond;
+
 	private static final String AUTHORIZE_TYPE = "Bearer ";
 	private static final String AUTHORIZE_HEADER = "Authorization";
 	private static final int BEARER_TOKEN_PREFIX = 7;
 
+	@Value("${jwt.secret}")
+	private String secret;
+	private Key secretKey;
+	@Value("${jwt.token-validity-in-seconds}")
+	private Long tokenValidMillisecond;
 	private final UserDetailsService userDetailsService;
 
 	@PostConstruct
@@ -50,7 +46,7 @@ public class JwtProvider {
 		claims.put("role", memberRole);
 		return Jwts.builder()
 				.setClaims(claims)
-				.setExpiration(new Date(System.currentTimeMillis() + tokenValidMilisecond * 1000))
+				.setExpiration(new Date(System.currentTimeMillis() + tokenValidMillisecond * 1000))
 				.signWith(secretKey)
 				.compact();
 	}
@@ -64,15 +60,24 @@ public class JwtProvider {
 		return request.getHeader(AUTHORIZE_HEADER);
 	}
 
-	public boolean validateToken(String token) {
+	public JwtValidationType validateToken(String token) {
+
+		if (token == null) {
+			return JwtValidationType.EMPTY_JWT;
+		}
 		try {
-			if (!token.startsWith(AUTHORIZE_TYPE)) {
-				return false;
-			}
-			Claims claims = getClaims(token.substring(BEARER_TOKEN_PREFIX)); // Remove Bearer prefix
-			return !claims.getExpiration().before(new Date()); // 토큰이 만료되면 getClaims -> parseClaimsJws에서 Exception(ExpiredJwtException) 발생
-		} catch (Exception e) {
-			return false;
+			getClaims(token.substring(BEARER_TOKEN_PREFIX));
+			return JwtValidationType.VALID_JWT;
+		} catch (IllegalArgumentException e) {
+			return JwtValidationType.EMPTY_JWT;
+		}catch (MalformedJwtException e) {
+			return JwtValidationType.INVALID_JWT;
+		} catch (ExpiredJwtException e) {
+			return JwtValidationType.EXPIRED_JWT;
+		} catch (UnsupportedJwtException e) {
+			return JwtValidationType.UNSUPPORTED_JWT;
+		} catch (SignatureException e) {
+			return JwtValidationType.INVALID_JWT_SIGNATURE;
 		}
 	}
 

@@ -1,6 +1,8 @@
 package com.github.bluekey.repository.transaction;
 
 import com.github.bluekey.entity.transaction.OriginalTransaction;
+import com.github.bluekey.exception.BusinessException;
+import com.github.bluekey.exception.ErrorCode;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -14,7 +16,7 @@ public interface OriginalTransactionRepository extends JpaRepository<OriginalTra
 
     default OriginalTransaction findByIdOrElseThrow(Long id) {
         return this.findById(id).orElseThrow(() ->
-                new RuntimeException("존재하지 않는 pk 입니다.")
+                new BusinessException(ErrorCode.ORIGINAL_TRANSACTION_NOT_EXIST)
         );
     }
 }

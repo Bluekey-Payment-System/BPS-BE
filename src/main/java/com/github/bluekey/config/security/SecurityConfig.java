@@ -1,7 +1,8 @@
-package com.github.bluekey.config;
+package com.github.bluekey.config.security;
 
-import com.github.bluekey.jwt.JwtAuthenticationFilter;
-import com.github.bluekey.jwt.JwtProvider;
+import com.github.bluekey.config.security.jwt.JWTAuthenticationEntryPoint;
+import com.github.bluekey.config.security.jwt.JwtAuthenticationFilter;
+import com.github.bluekey.config.security.jwt.JwtProvider;
 import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +32,7 @@ public class SecurityConfig {
 	@Value("${spring.server.fe-host}")
 	private String feHost;
 	private final JwtProvider jwtProvider;
+	private final JWTAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -63,9 +65,7 @@ public class SecurityConfig {
 				)
 				.and()
 				.exceptionHandling()
-				.authenticationEntryPoint(
-						(request, response, authException) -> response.sendError(HttpServletResponse.SC_FORBIDDEN)
-				)
+				.authenticationEntryPoint(jwtAuthenticationEntryPoint)
 				.and()
 				.addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
 		return http.build();

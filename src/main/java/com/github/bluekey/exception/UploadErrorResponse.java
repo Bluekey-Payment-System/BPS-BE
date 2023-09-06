@@ -21,23 +21,27 @@ public class UploadErrorResponse {
     private HttpStatus status;
     private String code;
     private String message;
+    private String fileName;
+
     @Schema(description = "엑셀 파일 기준으로 총 에러가 발생한 행의 갯수", example = "10")
     private int totalErrorNums;
     private List<ExcelRowException> errors = new ArrayList<>();
 
     @Builder
-    private UploadErrorResponse(final HttpStatus status, final String code, final String message, List<ExcelRowException> errors) {
+    private UploadErrorResponse(final HttpStatus status, final String code, final String message, final String fileName, List<ExcelRowException> errors) {
         this.status = status;
         this.code = code;
         this.message = message;
+        this.fileName = fileName;
         this.totalErrorNums = errors.size();
         this.errors = errors;
     }
 
-    public static UploadErrorResponse of(ErrorCode errorCode, List<ExcelRowException> errors) {
+    public static UploadErrorResponse of(ErrorCode errorCode, List<ExcelRowException> errors, String fileName) {
         return UploadErrorResponse.builder()
                 .status(errorCode.getStatus())
                 .code(errorCode.getCode())
+                .fileName(fileName)
                 .errors(errors)
                 .build();
     }

@@ -16,7 +16,7 @@ import com.github.bluekey.exception.AuthenticationException;
 import com.github.bluekey.exception.BusinessException;
 import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.exception.member.MemberNotFoundException;
-import com.github.bluekey.jwt.JwtProvider;
+import com.github.bluekey.config.security.jwt.JwtProvider;
 import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.service.member.MemberService;
 import com.github.bluekey.util.ImageUploadUtil;
@@ -32,13 +32,12 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 public class AuthService {
 
+	private static final String S3_PROFILE_IMAGE_PREFIX = "profile/";
 	private final MemberRepository memberRepository;
 	private final MemberService memberService;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtProvider jwtProvider;
 	private final ImageUploadUtil imageUploadUtil;
-
-	private static final String S3_PROFILE_IMAGE_PREFIX = "profile/";
 
 	public LoginTokenResponseDto login(LoginRequestDto dto) {
 		Member member = validateLogin(dto);
@@ -88,16 +87,14 @@ public class AuthService {
 	}
 
 	public void changePassword(PasswordRequestDto dto, Long memberId) {
-		Member member = memberRepository.findById(memberId)
-				.orElseThrow(MemberNotFoundException::new);
+		Member member = memberRepository.findByIdOrElseThrow(memberId);
 		member.updatePassword(getEncodePassword(dto.getPassword()));
 		memberRepository.save(member);
 	}
 
 	@Transactional
 	public Long deleteMember(Long memberId) {
-		Member member = memberRepository.findById(memberId)
-				.orElseThrow(MemberNotFoundException::new);
+		Member member = memberRepository.findByIdOrElseThrow(memberId);
 		member.memberRemoved();
 		// TODO: S3 이미지 삭제 로직
 		memberRepository.save(member);
