@@ -40,6 +40,7 @@ public class TrackController {
         return ok(trackService.insertTrack(albumId, dto));
     }
 
+    // TODO: api url 수정 희망 -> albums/ 뒤에 trackId가 오는 것이 어색한 점.
     @Operation(summary = "트랙정보 변경" , description = "트랙정보 변경")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "트랙정보 변경 성공",

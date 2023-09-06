@@ -6,8 +6,7 @@ import com.github.bluekey.dto.track.TrackCommissionRateDto;
 import com.github.bluekey.entity.album.Album;
 import com.github.bluekey.entity.track.Track;
 import com.github.bluekey.entity.track.TrackMember;
-import com.github.bluekey.exception.BusinessException;
-import com.github.bluekey.exception.ErrorCode;
+
 import com.github.bluekey.repository.album.AlbumRepository;
 import com.github.bluekey.repository.track.TrackMemberRepository;
 import com.github.bluekey.repository.track.TrackRepository;
@@ -28,14 +27,12 @@ public class TrackService {
 
     @Transactional
     public TrackResponseDto insertTrack(Long albumId, TrackRequestDto dto) {
-        Album album = albumRepository.findById(albumId)
-                .orElseThrow(()-> new BusinessException(ErrorCode.INVALID_ALBUM_VALUE));
-
+        Album album = albumRepository.findAlbumByIdAndIsRemovedFalseOrElseThrow(albumId);
         Track track = trackRepository.save(dto.toTrack(album));
 
         List<TrackCommissionRateDto> requestArtists = dto.getArtists();
 
-        for(TrackCommissionRateDto artist : requestArtists) {
+        for (TrackCommissionRateDto artist : requestArtists) {
             if (artist.getMemberId() == null) {
                 TrackMember trackMember = TrackMember.ByContractSingerBuilder()
                         .name(artist.getName())
@@ -58,10 +55,8 @@ public class TrackService {
         return TrackResponseDto.from(track, trackMembers);
     }
 
-
     public TrackResponseDto updateTrack(Long trackId, TrackRequestDto dto) {
-        Track track = trackRepository.findById(trackId)
-                .orElseThrow(()-> new BusinessException(ErrorCode.INVALID_TRACK_VALUE));
+        Track track = trackRepository.findByIdOrElseThrow(trackId);
 
         updateTrack(track, dto);
 
@@ -73,8 +68,7 @@ public class TrackService {
 
 
     public Long deleteTrack(Long trackId) {
-        Track track = trackRepository.findById(trackId)
-                .orElseThrow(()-> new BusinessException(ErrorCode.INVALID_TRACK_VALUE));
+        Track track = trackRepository.findByIdOrElseThrow(trackId);
 
         track.remove();
         trackRepository.save(track);
@@ -92,6 +86,5 @@ public class TrackService {
         }
 
         track.updateIsOriginalTrack(dto.getIsOriginalTrack());
-
     }
 }
