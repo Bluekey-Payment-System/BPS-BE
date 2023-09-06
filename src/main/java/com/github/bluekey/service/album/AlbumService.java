@@ -21,12 +21,14 @@ import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.repository.track.TrackMemberRepository;
 import com.github.bluekey.repository.track.TrackRepository;
 import com.github.bluekey.util.ImageUploadUtil;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,251 +40,249 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class AlbumService {
 
-	private final MemberRepository memberRepository;
-	private final AlbumRepository albumRepository;
-	private final TrackRepository trackRepository;
-	private final ImageUploadUtil imageUploadUtil;
-	private final TrackMemberRepository trackMemberRepository;
+    private final MemberRepository memberRepository;
+    private final AlbumRepository albumRepository;
+    private final TrackRepository trackRepository;
+    private final ImageUploadUtil imageUploadUtil;
+    private final TrackMemberRepository trackMemberRepository;
 
-	@Transactional
-	public AlbumResponseDto createAlbum(MultipartFile file, NewAlbumInfoDto dto) {
-		Album album;
-		if (dto.getMemberId() != null) {
-			Member member = memberRepository.findMemberByIdAndIsRemovedFalse(dto.getMemberId())
-					.orElseThrow(MemberNotFoundException::new);
-			album = Album
-					.ByAlbumWithRepresentativeArtistBuilder()
-					.member(member)
-					.name(dto.getName())
-					.enName(dto.getEnName())
-					.build();
-		} else {
-			album = Album
-					.ByAlbumWithOutRepresentativeArtistBuilder()
-					.name(dto.getName())
-					.enName(dto.getEnName())
-					.build();
-		}
-		Album saveAlbum = albumRepository.save(album);
-		createAlbumImage(file, saveAlbum);
-		return AlbumResponseDto.from(saveAlbum);
-	}
+    @Transactional
+    public AlbumResponseDto createAlbum(MultipartFile file, NewAlbumInfoDto dto) {
+        Album album;
+        if (dto.getMemberId() != null) {
+            Member member = memberRepository.findMemberByIdAndIsRemovedFalseOrElseThrow(dto.getMemberId());
 
-	@Transactional
-	public AlbumIdResponseDto deleteAlbum(Long albumId) {
-		Album album = albumRepository.findAlbumByIdAndIsRemovedFalse(albumId)
-				.orElseThrow(() -> new BusinessException(ErrorCode.ALBUM_NOT_FOUND));
+            album = Album
+                    .ByAlbumWithRepresentativeArtistBuilder()
+                    .member(member)
+                    .name(dto.getName())
+                    .enName(dto.getEnName())
+                    .build();
+        } else {
+            album = Album
+                    .ByAlbumWithOutRepresentativeArtistBuilder()
+                    .name(dto.getName())
+                    .enName(dto.getEnName())
+                    .build();
+        }
+        Album saveAlbum = albumRepository.save(album);
+        createAlbumImage(file, saveAlbum);
+        return AlbumResponseDto.from(saveAlbum);
+    }
 
-		album.remove();
-		imageUploadUtil.deleteImage(album.getProfileImage());
-		album.updateProfileImage(null);
+    @Transactional
+    public AlbumIdResponseDto deleteAlbum(Long albumId) {
+        Album album = albumRepository.findAlbumByIdAndIsRemovedFalse(albumId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ALBUM_NOT_FOUND));
 
-		albumRepository.save(album);
+        album.remove();
+        imageUploadUtil.deleteImage(album.getProfileImage());
+        album.updateProfileImage(null);
 
-		List<Track> tracks = trackRepository.findAllByAlbumId(albumId);
-		tracks.forEach(track -> track.remove());
+        albumRepository.save(album);
 
-		return AlbumIdResponseDto.builder().albumId(albumId).build();
-	}
+        List<Track> tracks = trackRepository.findAllByAlbumId(albumId);
+        tracks.forEach(track -> track.remove());
 
-	@Transactional
-	public AlbumResponseDto updateAlbum(MultipartFile file, NewAlbumInfoDto dto, Long albumId) {
-		Album album = albumRepository.findAlbumByIdAndIsRemovedFalse(albumId)
-				.orElseThrow(() -> new BusinessException(ErrorCode.ALBUM_NOT_FOUND));
+        return AlbumIdResponseDto.builder().albumId(albumId).build();
+    }
 
-		if (dto != null) {
-			updateAlbumProperties(album, dto);
-		}
+    @Transactional
+    public AlbumResponseDto updateAlbum(MultipartFile file, NewAlbumInfoDto dto, Long albumId) {
+        Album album = albumRepository.findAlbumByIdAndIsRemovedFalse(albumId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ALBUM_NOT_FOUND));
 
-		updateAlbumImage(file, album);
-		albumRepository.save(album);
+        if (dto != null) {
+            updateAlbumProperties(album, dto);
+        }
 
-		return AlbumResponseDto.from(album);
-	}
+        updateAlbumImage(file, album);
+        albumRepository.save(album);
 
-	@Transactional(readOnly = true)
-	public AlbumTrackListResponseDto getAlbumTrackList(Long albumId) {
-		Album album = albumRepository.findAlbumByIdAndIsRemovedFalse(albumId)
-				.orElseThrow(() -> new BusinessException(ErrorCode.ALBUM_NOT_FOUND));
+        return AlbumResponseDto.from(album);
+    }
 
-		ArtistInfoDto artist = null;
-		if (album.getArtistId() != null) {
-			Member member = memberRepository.findMemberByIdAndIsRemovedFalse(album.getArtistId())
-					.orElseThrow(MemberNotFoundException::new);
-			artist = ArtistInfoDto.from(member);
-		}
+    @Transactional(readOnly = true)
+    public AlbumTrackListResponseDto getAlbumTrackList(Long albumId) {
+        Album album = albumRepository.findAlbumByIdAndIsRemovedFalse(albumId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ALBUM_NOT_FOUND));
 
-		List<Track> tracks = trackRepository.findAllByAlbumIdAndIsRemovedFalse(albumId);
+        ArtistInfoDto artist = null;
+        if (album.getArtistId() != null) {
+            Member member = memberRepository.findMemberByIdAndIsRemovedFalseOrElseThrow(album.getArtistId());
+            artist = ArtistInfoDto.from(member);
+        }
 
-		List<TrackInfoListDto> trackInfoList = tracks
-				.stream()
-				.map(track -> {
-					List<TrackArtistsDto> memberList = track.getTrackMembers()
-							.stream()
-							.map(member -> {
-								if (member.getMemberId() != null) {
-									Member memberInfo = memberRepository
-											.findMemberByIdAndIsRemovedFalse(member.getMemberId())
-											.orElseThrow(MemberNotFoundException::new);
-									return TrackArtistsDto.from(memberInfo, member);
-								} else {
-									return TrackArtistsDto.from(member);
-								}
-							})
-							.collect(Collectors.toList());
-					return TrackInfoListDto.from(track, memberList);
-				})
-				.collect(Collectors.toList());
+        List<Track> tracks = trackRepository.findAllByAlbumIdAndIsRemovedFalse(albumId);
 
-		return AlbumTrackListResponseDto
-				.builder()
-				.albumId(album.getId())
-				.albumImage(album.getProfileImage())
-				.name(album.getName())
-				.enName(album.getEnName())
-				.tracks(trackInfoList)
-				.artist(artist)
-				.build();
-	}
+        List<TrackInfoListDto> trackInfoList = tracks
+                .stream()
+                .map(track -> {
+                    List<TrackArtistsDto> memberList = track.getTrackMembers()
+                            .stream()
+                            .map(member -> {
+                                if (member.getMemberId() != null) {
+                                    Member memberInfo = memberRepository
+                                            .findMemberByIdAndIsRemovedFalseOrElseThrow(member.getMemberId());
 
-	@Transactional(readOnly = true)
-	public ArtistAlbumsListResponseDto getAlbums(Pageable pageable, Long memberId, String keyword) {
-		Member member = memberRepository.findMemberByIdAndIsRemovedFalse(memberId)
-				.orElseThrow(MemberNotFoundException::new);
+                                    return TrackArtistsDto.from(memberInfo, member);
+                                } else {
+                                    return TrackArtistsDto.from(member);
+                                }
+                            })
+                            .collect(Collectors.toList());
+                    return TrackInfoListDto.from(track, memberList);
+                })
+                .collect(Collectors.toList());
 
-		Long totalItems = null;
-		List<AlbumInfoDto> contents = new ArrayList<>();
+        return AlbumTrackListResponseDto
+                .builder()
+                .albumId(album.getId())
+                .albumImage(album.getProfileImage())
+                .name(album.getName())
+                .enName(album.getEnName())
+                .tracks(trackInfoList)
+                .artist(artist)
+                .build();
+    }
 
-		if (member.isAdmin()) {
-			Page<Album> albums = albumRepository.findAllByIsRemovedFalseAndSearchByKeyword(pageable, keyword);
+    @Transactional(readOnly = true)
+    public ArtistAlbumsListResponseDto getAlbums(Pageable pageable, Long memberId, String keyword) {
+        Member member = memberRepository.findMemberByIdAndIsRemovedFalseOrElseThrow(memberId);
 
-			totalItems = albums.getTotalElements();
-			contents = albums.getContent().stream().map(AlbumInfoDto::from).collect(Collectors.toList());
+        Long totalItems = null;
+        List<AlbumInfoDto> contents = new ArrayList<>();
 
-		} else if (member.isUser()) {
-			List<TrackMember> trackMembers = trackMemberRepository.findAllByMemberIdAndIsRemovedFalse(memberId);
+        if (member.isAdmin()) {
+            Page<Album> albums = albumRepository.findAllByIsRemovedFalseAndSearchByKeyword(pageable, keyword);
 
-			Set<Album> filteredAlbums = filterAlbumsByKeyword(trackMembers, keyword);
+            totalItems = albums.getTotalElements();
+            contents = albums.getContent().stream().map(AlbumInfoDto::from).collect(Collectors.toList());
 
-			totalItems = (long) filteredAlbums.size();
+        } else if (member.isUser()) {
+            List<TrackMember> trackMembers = trackMemberRepository.findAllByMemberIdAndIsRemovedFalse(memberId);
 
-			List<Album> albumList = filteredAlbums.stream().sorted(Comparator.comparing(Album::getCreatedAt).reversed()).collect(Collectors.toList());
-			albumList = paginateAlbums(albumList, pageable);
-			contents = albumList.stream().map(AlbumInfoDto::from).collect(Collectors.toList());
-		}
-		return ArtistAlbumsListResponseDto
-				.builder()
-				.totalItems(totalItems)
-				.contents(contents)
-				.build();
-	}
+            Set<Album> filteredAlbums = filterAlbumsByKeyword(trackMembers, keyword);
 
-	@Transactional(readOnly = true)
-	public ArtistAlbumsListResponseDto getAlbums(Pageable pageable, Long memberId) {
-		Member member = memberRepository.findMemberByIdAndIsRemovedFalse(memberId)
-				.orElseThrow(MemberNotFoundException::new);
-		Long totalItems = null;
-		List<AlbumInfoDto> contents = new ArrayList<>();
-		if (member.isAdmin()) {
+            totalItems = (long) filteredAlbums.size();
 
-			Page<Album> albums = albumRepository.findAllByIsRemovedFalseOrderByCreatedAtDesc(pageable);
+            List<Album> albums = filteredAlbums.stream().sorted(Comparator.comparing(Album::getCreatedAt).reversed()).collect(Collectors.toList());
+            albums = paginateAlbums(albums, pageable);
+            contents = albums.stream().map(AlbumInfoDto::from).collect(Collectors.toList());
+        }
+        return ArtistAlbumsListResponseDto
+                .builder()
+                .totalItems(totalItems)
+                .contents(contents)
+                .build();
+    }
 
-			totalItems = albums.getTotalElements();
-			contents = albums.getContent().stream().map(AlbumInfoDto::from).collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    public ArtistAlbumsListResponseDto getAlbums(Pageable pageable, Long memberId) {
+        Member member = memberRepository.findMemberByIdAndIsRemovedFalseOrElseThrow(memberId);
+        Long totalItems = null;
+        List<AlbumInfoDto> contents = new ArrayList<>();
 
-		} else if (member.isUser()) {
+        if (member.isAdmin()) {
 
-			List<TrackMember> trackMember = trackMemberRepository.findAllByMemberIdAndIsRemovedFalse(memberId);
+            Page<Album> albums = albumRepository.findAllByIsRemovedFalseOrderByCreatedAtDesc(pageable);
 
-			Set<Album> albums = trackMember.stream().map(TrackMember::getTrack).map(Track::getAlbum)
-					.collect(Collectors.toSet());
+            totalItems = albums.getTotalElements();
+            contents = albums.getContent().stream().map(AlbumInfoDto::from).collect(Collectors.toList());
 
-			totalItems = (long) albums.size();
+        } else if (member.isUser()) {
 
-			List<Album> albumList = albums.stream().sorted(Comparator.comparing(Album::getCreatedAt).reversed()).collect(Collectors.toList());
-			albumList = paginateAlbums(albumList, pageable);
-			contents = albumList.stream().map(AlbumInfoDto::from).collect(Collectors.toList());
+            List<TrackMember> trackMember = trackMemberRepository.findAllByMemberIdAndIsRemovedFalse(memberId);
 
-		}
-		return ArtistAlbumsListResponseDto
-				.builder()
-				.totalItems(totalItems)
-				.contents(contents)
-				.build();
-	}
+            Set<Album> albums = trackMember.stream().map(TrackMember::getTrack).map(Track::getAlbum)
+                    .collect(Collectors.toSet());
 
-	@Transactional(readOnly = true)
-	public boolean isAlbumParticipant(Long memberId, Long AlbumId) {
-		Album album = albumRepository.findAlbumByIdAndIsRemovedFalse(AlbumId)
-				.orElseThrow(() -> new BusinessException(ErrorCode.ALBUM_NOT_FOUND));
+            totalItems = (long) albums.size();
 
-		Long count = album.getTracks()
-				.stream()
-				.filter(track ->
-						track.getTrackMembers()
-								.stream()
-								.filter(TrackMember::isArtistTrack)
-								.anyMatch(trackMember -> trackMember.getMemberId().equals(memberId))).count();
-		return count > 0;
-	}
+            List<Album> sortedAlbums = albums.stream().sorted(Comparator.comparing(Album::getCreatedAt).reversed()).collect(Collectors.toList());
+            sortedAlbums = paginateAlbums(sortedAlbums, pageable);
+            contents = sortedAlbums.stream().map(AlbumInfoDto::from).collect(Collectors.toList());
 
-	private List<Album> paginateAlbums(List<Album> albums, Pageable pageable) {
-		int end = (int) Math.min(pageable.getOffset() + pageable.getPageSize(), albums.size());
-		if (albums.size() <= pageable.getOffset()) {
-			return new ArrayList<>();
-		} else {
-			return albums.subList((int) pageable.getOffset(), end);
-		}
-	}
+        }
+        return ArtistAlbumsListResponseDto
+                .builder()
+                .totalItems(totalItems)
+                .contents(contents)
+                .build();
+    }
 
-	private Set<Album> filterAlbumsByKeyword(List<TrackMember> trackMembers, String keyword) {
-		return trackMembers.stream()
-				.map(TrackMember::getTrack)
-				.map(track -> getAlbumIfNameContainsKeyword(track, keyword))
-				.filter(Objects::nonNull)
-				.collect(Collectors.toSet());
-	}
+    @Transactional(readOnly = true)
+    public boolean isAlbumParticipant(Long memberId, Long AlbumId) {
+        Album album = albumRepository.findAlbumByIdAndIsRemovedFalse(AlbumId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ALBUM_NOT_FOUND));
 
-	private Album getAlbumIfNameContainsKeyword(Track track, String keyword) {
-		String albumName = track.getAlbum().getName();
-		String albumEnName = track.getAlbum().getEnName();
+        long count = album.getTracks()
+                .stream()
+                .filter(track ->
+                        track.getTrackMembers()
+                                .stream()
+                                .filter(TrackMember::isArtistTrack)
+                                .anyMatch(trackMember -> trackMember.getMemberId().equals(memberId))).count();
+        return count > 0;
+    }
 
-		return (albumName != null && albumName.contains(keyword)) ||
-				(albumEnName != null && albumEnName.contains(keyword)) ?
-				track.getAlbum() : null;
-	}
+    private List<Album> paginateAlbums(List<Album> albums, Pageable pageable) {
+        int end = (int) Math.min(pageable.getOffset() + pageable.getPageSize(), albums.size());
+        if (albums.size() <= pageable.getOffset()) {
+            return new ArrayList<>();
+        } else {
+            return albums.subList((int) pageable.getOffset(), end);
+        }
+    }
 
-	private void createAlbumImage(MultipartFile file, Album album) {
-		if (file != null && !file.isEmpty()) {
-			String albumImagePath = imageUploadUtil.uploadImage(file,
-					imageUploadUtil.getAlbumImageKey(file.getOriginalFilename(), album.getId()));
-			album.updateProfileImage(albumImagePath);
-		}
-		albumRepository.save(album);
-	}
+    private Set<Album> filterAlbumsByKeyword(List<TrackMember> trackMembers, String keyword) {
+        return trackMembers.stream()
+                .map(TrackMember::getTrack)
+                .map(track -> getAlbumIfNameContainsKeyword(track, keyword))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+    }
 
-	private void updateAlbumProperties(Album album, NewAlbumInfoDto dto) {
-		if (dto.getMemberId() != null) {
-			memberRepository.findMemberByIdAndIsRemovedFalse(dto.getMemberId())
-					.orElseThrow(MemberNotFoundException::new);
-			album.updateArtistId(dto.getMemberId());
-		}
-		if (dto.getName() != null) {
-			album.updateName(dto.getName());
-		}
-		if (dto.getEnName() != null) {
-			album.updateEnName(dto.getEnName());
-		}
-	}
+    private Album getAlbumIfNameContainsKeyword(Track track, String keyword) {
+        String albumName = track.getAlbum().getName();
+        String albumEnName = track.getAlbum().getEnName();
 
-	private void updateAlbumImage(MultipartFile file, Album album) {
-		if (!file.isEmpty()) {
-			if (album.getProfileImage() != null) {
-				imageUploadUtil.deleteImage(album.getProfileImage());
-			}
-			String albumImagePath = imageUploadUtil.uploadImage(file,
-					imageUploadUtil.getAlbumImageKey(file.getOriginalFilename(), album.getId()));
-			album.updateProfileImage(albumImagePath);
-		}
-	}
+        return (albumName != null && albumName.contains(keyword)) ||
+                (albumEnName != null && albumEnName.contains(keyword)) ?
+                track.getAlbum() : null;
+    }
+
+    private void createAlbumImage(MultipartFile file, Album album) {
+        if (file != null && !file.isEmpty()) {
+            String albumImagePath = imageUploadUtil.uploadImage(file,
+                    imageUploadUtil.getAlbumImageKey(file.getOriginalFilename(), album.getId()));
+            album.updateProfileImage(albumImagePath);
+        }
+        albumRepository.save(album);
+    }
+
+    private void updateAlbumProperties(Album album, NewAlbumInfoDto dto) {
+        if (dto.getMemberId() != null) {
+            memberRepository.findMemberByIdAndIsRemovedFalse(dto.getMemberId())
+                    .orElseThrow(MemberNotFoundException::new);
+            album.updateArtistId(dto.getMemberId());
+        }
+        if (dto.getName() != null) {
+            album.updateName(dto.getName());
+        }
+        if (dto.getEnName() != null) {
+            album.updateEnName(dto.getEnName());
+        }
+    }
+
+    private void updateAlbumImage(MultipartFile file, Album album) {
+        if (!file.isEmpty()) {
+            if (album.getProfileImage() != null) {
+                imageUploadUtil.deleteImage(album.getProfileImage());
+            }
+            String albumImagePath = imageUploadUtil.uploadImage(file,
+                    imageUploadUtil.getAlbumImageKey(file.getOriginalFilename(), album.getId()));
+            album.updateProfileImage(albumImagePath);
+        }
+    }
 }
