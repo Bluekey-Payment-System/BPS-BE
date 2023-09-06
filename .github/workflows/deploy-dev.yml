@@ -61,3 +61,14 @@ jobs:
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_DEV_REPO }}
             sudo docker-compose up -d
             sudo docker image prune -f
+
+      - name: Notification to Slack
+        uses: 8398a7/action-slack@v3
+        with:
+          mention: here
+          if_mention: always
+          status: ${{ job.status }}
+          fields: workflow,job,commit,message,ref,author,took,repo
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: always()
