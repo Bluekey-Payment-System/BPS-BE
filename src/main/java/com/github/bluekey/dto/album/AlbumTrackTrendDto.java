@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Schema(description = "앨범의 트랙 월별 정산 LIST")
-public class AlbumTrackAccountsDto {
+public class AlbumTrackTrendDto {
     @Schema(description = "트랙ID", example = "1")
     private Long trackId;
 
@@ -25,7 +25,7 @@ public class AlbumTrackAccountsDto {
     private List<AlbumTrackMonthlyTrendInfoDto> monthlyTrend;
 
     @Builder
-    public AlbumTrackAccountsDto(final Long trackId, final String name, final String enName, final List<AlbumTrackMonthlyTrendInfoDto> monthlyTrend) {
+    public AlbumTrackTrendDto(final Long trackId, final String name, final String enName, final List<AlbumTrackMonthlyTrendInfoDto> monthlyTrend) {
         this.trackId = trackId;
         this.name = name;
         this.enName = enName;

@@ -1,14 +1,11 @@
 package com.github.bluekey.service.dashboard;
 
-import com.github.bluekey.dto.album.AlbumBaseDto;
-import com.github.bluekey.dto.artist.ArtistMonthlyAlbumDto;
-import com.github.bluekey.dto.artist.ArtistMonthlyArtistsDto;
-import com.github.bluekey.dto.artist.ArtistMonthlyTrackDto;
+import com.github.bluekey.dto.common.AlbumBaseDto;
 import com.github.bluekey.dto.artist.ArtistMonthlyTrackListDto;
 import com.github.bluekey.dto.common.MemberBaseDto;
 import com.github.bluekey.dto.response.artist.ArtistMonthlyTrackListResponseDto;
 import com.github.bluekey.dto.response.track.TracksSettlementAmountResponseDto;
-import com.github.bluekey.dto.track.TrackBaseDto;
+import com.github.bluekey.dto.common.TrackBaseDto;
 import com.github.bluekey.dto.track.TrackSettlementAmountDto;
 import com.github.bluekey.entity.album.Album;
 import com.github.bluekey.entity.member.Member;
@@ -16,7 +13,6 @@ import com.github.bluekey.entity.track.Track;
 import com.github.bluekey.entity.track.TrackMember;
 import com.github.bluekey.entity.transaction.Transaction;
 import com.github.bluekey.repository.member.MemberRepository;
-import com.github.bluekey.repository.track.TrackMemberRepository;
 import com.github.bluekey.repository.transaction.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,9 +27,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MonthlyTracksDashBoardService {
 
-    private final TrackMemberRepository trackMemberRepository;
     private final TransactionRepository transactionRepository;
     private final MemberRepository memberRepository;
+    private final DashboardUtilService dashboardUtilService;
 
     public ArtistMonthlyTrackListResponseDto getArtistTracks(String monthly, Pageable pageable, String sortBy, String searchType, String keyword, Long memberId) {
         List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
@@ -67,53 +63,38 @@ public class MonthlyTracksDashBoardService {
                         Collectors.summingDouble(Transaction::getAmount)
                 ));
 
-        Map<Track, Double> sortedTrackMappedByAmount = trackMappedByAmount.entrySet().stream()
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new
-                ));
+        Map<Track, Double> sortedTrackMappedByAmount = dashboardUtilService.getSortedAmountGroupedByTrack(trackMappedByAmount);
 
         for (Map.Entry<Track, Double> entry : sortedTrackMappedByAmount.entrySet()) {
             Track track = entry.getKey();
             Album album = track.getAlbum();
             List<TrackMember> trackMembers = track.getTrackMembers();
-            List<ArtistMonthlyArtistsDto> artists = new ArrayList<>();
+            List<MemberBaseDto> artists = new ArrayList<>();
             Double amount = entry.getValue();
 
-            ArtistMonthlyTrackDto trackBaseDto = ArtistMonthlyTrackDto.builder()
-                    .trackId(track.getId())
-                    .name(track.getName())
-                    .enName(track.getEnName())
-                    .build();
-            ArtistMonthlyAlbumDto albumBaseDto = ArtistMonthlyAlbumDto.builder()
-                    .albumId(album.getId())
-                    .name(album.getName())
-                    .enName(album.getEnName())
-                    .build();
+            TrackBaseDto trackBaseDto = TrackBaseDto.from(track);
+            AlbumBaseDto albumBaseDto = AlbumBaseDto.from(album);
             Integer totalCommissionRate = 0;
             for (TrackMember trackMember : trackMembers) {
                 Long id = trackMember.getMemberId();
                 Optional<Member> member = memberRepository.findById(id);
-                ArtistMonthlyArtistsDto artistMonthlyArtistsDto;
+                MemberBaseDto artistMonthlyArtistsDto;
                 if (member.isPresent()) {
-                    artistMonthlyArtistsDto = ArtistMonthlyArtistsDto.from(member.get());
+                    artistMonthlyArtistsDto = MemberBaseDto.from(member.get());
                     if (trackMember.getMemberId().equals(memberId)) {
                         totalCommissionRate = trackMember.getCommissionRate();
                     }
                 } else {
-                    artistMonthlyArtistsDto = ArtistMonthlyArtistsDto.builder()
+                    artistMonthlyArtistsDto = MemberBaseDto.builder()
                             .name(trackMember.getName())
                             .build();
                 }
 
                 artists.add(artistMonthlyArtistsDto);
             }
-            int revenue = getCalculateAmount(amount);
-            int netIncome = getCalculateAmount(amount - (amount * 33 / 1000));
-            int settlementAmount = getCalculateAmount(netIncome * totalCommissionRate) / 100;
+            int revenue = dashboardUtilService.getRevenue(amount);
+            int netIncome = dashboardUtilService.getCompanyNetIncome(amount, totalCommissionRate);
+            int settlementAmount = dashboardUtilService.getArtistSettlement(amount, totalCommissionRate);
             int commissionRate = totalCommissionRate;
 
             ArtistMonthlyTrackListDto artistMonthlyTrackListDto = ArtistMonthlyTrackListDto.builder()
@@ -133,7 +114,7 @@ public class MonthlyTracksDashBoardService {
 
         return ArtistMonthlyTrackListResponseDto.builder()
                 .totalItems(contents.size())
-                .contents(getPage(contents, pageable.getPageNumber(), pageable.getPageSize()))
+                .contents(DashboardUtilService.getPage(contents, pageable.getPageNumber(), pageable.getPageSize()))
                 .build();
     }
 
@@ -155,12 +136,14 @@ public class MonthlyTracksDashBoardService {
                     String trackEnName = track.getEnName().toLowerCase();
 
                     if (searchType.equals("trackName")) {
-                        return trackName.contains(convertedKeyword) || trackEnName.contains(convertedKeyword);
+                        return trackName.contains(convertedKeyword) || trackEnName.contains(
+                                convertedKeyword);
                     } else if (searchType.equals("albumName")) {
                         Album album = track.getAlbum();
                         String albumName = album.getName().toLowerCase();
                         String albumEnName = album.getEnName().toLowerCase();
-                        return albumName.contains(convertedKeyword) || albumEnName.contains(convertedKeyword);
+                        return albumName.contains(convertedKeyword) || albumEnName.contains(
+                                convertedKeyword);
                     }
                     return false;
                 })
@@ -169,14 +152,8 @@ public class MonthlyTracksDashBoardService {
                         Collectors.summingDouble(Transaction::getAmount)
                 ));
 
-        Map<Track, Double> sortedTrackMappedByAmount = trackMappedByAmount.entrySet().stream()
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new
-                ));
+        Map<Track, Double> sortedTrackMappedByAmount = dashboardUtilService
+                .getSortedAmountGroupedByTrack(trackMappedByAmount);
 
         for (Map.Entry<Track, Double> entry : sortedTrackMappedByAmount.entrySet()) {
             Track track = entry.getKey();
@@ -185,16 +162,8 @@ public class MonthlyTracksDashBoardService {
             List<MemberBaseDto> artists = new ArrayList<>();
             Double amount = entry.getValue();
 
-            TrackBaseDto trackBaseDto = TrackBaseDto.builder()
-                    .trackId(track.getId())
-                    .name(track.getName())
-                    .enName(track.getEnName())
-                    .build();
-            AlbumBaseDto albumBaseDto = AlbumBaseDto.builder()
-                    .albumId(album.getId())
-                    .name(album.getName())
-                    .enName(album.getEnName())
-                    .build();
+            TrackBaseDto trackBaseDto = TrackBaseDto.from(track);
+            AlbumBaseDto albumBaseDto = AlbumBaseDto.from(album);
 
             Integer totalCommissionRate = 0;
 
@@ -216,14 +185,15 @@ public class MonthlyTracksDashBoardService {
                             .name(trackMember.getName())
                             .build();
                 }
-
-
+                // TODO: 참여 아티스트가 2명 이상일 경우 이상한 값이 나오므로 조치 필요.
                 totalCommissionRate += trackMember.getCommissionRate();
                 artists.add(memberBaseDto);
             }
-            int revenue = getCalculateAmount(amount);
-            int netIncome = getCalculateAmount(amount - (amount * 33 / 1000));
-            int settlementAmount = getCalculateAmount(netIncome * ((100 - totalCommissionRate))) / 100;
+            int revenue = dashboardUtilService.getRevenue(amount);
+            int netIncome = dashboardUtilService.getCompanyNetIncome(amount, totalCommissionRate);
+            // MEMO: 원래 식이 어떤 settlement인지 잘 모르겠어서 임시로 주석 처리
+//            int settlementAmount = getCalculateAmount(netIncome * ((100 - totalCommissionRate))) / 100;
+            int settlementAmount = dashboardUtilService.getArtistSettlement(amount, totalCommissionRate);
             int commissionRate = 100 - totalCommissionRate;
 
             TrackSettlementAmountDto trackSettlementAmountDto = TrackSettlementAmountDto.builder()
@@ -243,25 +213,7 @@ public class MonthlyTracksDashBoardService {
 
         return TracksSettlementAmountResponseDto.builder()
                 .totalItems(contents.size())
-                .contents(getPage(contents, pageable.getPageNumber(), pageable.getPageSize()))
+                .contents(DashboardUtilService.getPage(contents, pageable.getPageNumber(), pageable.getPageSize()))
                 .build();
-    }
-
-    private int getCalculateAmount(double revenue) {
-        return (int) Math.ceil(revenue);
-    }
-
-    public static <T> List<T> getPage(List<T> sourceList, int page, int pageSize) {
-        if (pageSize <= 0) {
-            throw new IllegalArgumentException("invalid page size: " + pageSize);
-        }
-
-        int fromIndex = (page) * pageSize;
-        if (sourceList == null || sourceList.size() <= fromIndex) {
-            return Collections.emptyList();
-        }
-
-        // toIndex exclusive
-        return sourceList.subList(fromIndex, Math.min(fromIndex + pageSize, sourceList.size()));
     }
 }

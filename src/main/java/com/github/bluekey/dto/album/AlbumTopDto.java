@@ -1,6 +1,6 @@
 package com.github.bluekey.dto.album;
 
-import com.github.bluekey.dto.track.TrackBaseDto;
+import com.github.bluekey.dto.common.TrackBaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;

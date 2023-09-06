@@ -1,5 +1,6 @@
-package com.github.bluekey.dto.track;
+package com.github.bluekey.dto.common;
 
+import com.github.bluekey.entity.track.Track;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -23,5 +24,13 @@ public class TrackBaseDto {
 		this.trackId = trackId;
 		this.name = name;
 		this.enName = enName;
+	}
+
+	public static TrackBaseDto from(Track track) {
+		return TrackBaseDto.builder()
+				.trackId(track.getId())
+				.name(track.getName())
+				.enName(track.getEnName())
+				.build();
 	}
 }

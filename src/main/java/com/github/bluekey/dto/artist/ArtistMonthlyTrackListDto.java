@@ -1,5 +1,8 @@
 package com.github.bluekey.dto.artist;
 
+import com.github.bluekey.dto.common.AlbumBaseDto;
+import com.github.bluekey.dto.common.MemberBaseDto;
+import com.github.bluekey.dto.common.TrackBaseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -14,13 +17,13 @@ import lombok.NoArgsConstructor;
 public class ArtistMonthlyTrackListDto {
 
     @Schema(description = "트랙 정보")
-    private ArtistMonthlyTrackDto track;
+    private TrackBaseDto track;
 
     @Schema(description = "앨범 정보")
-    private ArtistMonthlyAlbumDto album;
+    private AlbumBaseDto album;
 
     @Schema(description = "아티스트 정보 리스트")
-    private List<ArtistMonthlyArtistsDto> artists;
+    private List<MemberBaseDto> artists;
 
     @Schema(description = "매출액", example = "123314")
     private Integer revenue;
@@ -35,8 +38,8 @@ public class ArtistMonthlyTrackListDto {
     private Integer commissionRate;
 
     @Builder
-    public ArtistMonthlyTrackListDto(final ArtistMonthlyTrackDto track, final ArtistMonthlyAlbumDto album,
-            final List<ArtistMonthlyArtistsDto> artists, final Integer revenue, final Integer netIncome,
+    public ArtistMonthlyTrackListDto(final TrackBaseDto track, final AlbumBaseDto album,
+            final List<MemberBaseDto> artists, final Integer revenue, final Integer netIncome,
             final Integer settlementAmount, final Integer commissionRate) {
         this.track = track;
         this.album = album;

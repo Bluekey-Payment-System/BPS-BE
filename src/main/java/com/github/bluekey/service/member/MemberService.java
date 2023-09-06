@@ -23,13 +23,11 @@ import com.github.bluekey.entity.track.TrackMember;
 import com.github.bluekey.entity.transaction.Transaction;
 import com.github.bluekey.exception.BusinessException;
 import com.github.bluekey.exception.ErrorCode;
-import com.github.bluekey.exception.member.MemberNotFoundException;
 import com.github.bluekey.repository.member.MemberRepository;
-import com.github.bluekey.repository.track.TrackMemberRepository;
 import com.github.bluekey.repository.transaction.TransactionRepository;
+import com.github.bluekey.service.dashboard.DashboardUtilService;
 import com.github.bluekey.util.ImageUploadUtil;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -46,9 +44,10 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class MemberService {
 
-    private final MemberRepository memberRepository;
-    private final TransactionRepository transactionRepository;
-    private final ImageUploadUtil imageUploadUtil;
+	private final MemberRepository memberRepository;
+	private final TransactionRepository transactionRepository;
+	private final ImageUploadUtil imageUploadUtil;
+	private final DashboardUtilService dashboardUtilService;
 
     @Transactional
     public ArtistProfileResponseDto updateArtistProfile(ArtistProfileRequestDto dto, MultipartFile file, Long memberId) {
@@ -116,7 +115,7 @@ public class MemberService {
     }
 
     public void permissionCheck(Long memberId, Long loginMemberId) {
-        Member member = memberRepository.findByIdOrElseThrow(memberId);
+        Member member = memberRepository.findByIdOrElseThrow(loginMemberId);
         if (member.getRole() == MemberRole.ARTIST && !memberId.equals(loginMemberId)) {
             throw new BusinessException(ErrorCode.AUTHENTICATION_FAILED);
         }
@@ -193,16 +192,17 @@ public class MemberService {
         }
     }
 
-    public AdminArtistProfileListReponseDto getArtistsPagination(Pageable pageable, String monthly, String keyword) {
-        List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
-        List<Transaction> previousMonthTransactions = transactionRepository.findTransactionsByDuration(getPreviousMonth(monthly));
-        List<Member> artists;
-        if (keyword != null) {
-            artists = memberRepository.findMembersByRoleAndIsRemovedFalseAndNameContainingIgnoreCaseOrEnNameContainingIgnoreCase(MemberRole.ARTIST, keyword, keyword);
-        } else {
-            artists = memberRepository.findMemberByRoleAndIsRemovedFalse(MemberRole.ARTIST);
-        }
-        List<AdminArtistProfileListDto> adminArtistProfiles = new ArrayList<>();
+	public AdminArtistProfileListReponseDto getArtistsPagination(Pageable pageable, String monthly, String keyword) {
+		List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
+		List<Transaction> previousMonthTransactions = transactionRepository.findTransactionsByDuration(
+				dashboardUtilService.getPreviousMonth(monthly));
+		List<Member> artists;
+		if (keyword != null) {
+			artists = memberRepository.findMembersByRoleAndIsRemovedFalseAndNameContainingIgnoreCaseOrEnNameContainingIgnoreCase(MemberRole.ARTIST, keyword, keyword);
+		} else {
+			artists = memberRepository.findMemberByRoleAndIsRemovedFalse(MemberRole.ARTIST);
+		}
+		List<AdminArtistProfileListDto> adminArtistProfiles = new ArrayList<>();
 
         for (Member artist : artists) {
             ArtistProfileDto artistProfileDto = ArtistProfileDto.builder()
@@ -212,162 +212,80 @@ public class MemberService {
                     .profileImage(artist.getProfileImage())
                     .build();
 
-            Map<Long, Double> artistMappedByAmount = transactions.stream()
-                    .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-//					.filter(transaction -> filterSearchKeyword(keyword, artist))
-                    .collect(Collectors.groupingBy(
-                            transaction -> transaction.getTrackMember().getMemberId(),
-                            Collectors.summingDouble(Transaction::getAmount)
-                    ));
+			Map<Long, Double> amountGroupedByMemberId = dashboardUtilService.getAmountGroupedByMemberId(transactions);
 
-            Map<Long, Double> sortedArtistMappedByAmount = artistMappedByAmount.entrySet().stream()
-                    .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey,
-                            Map.Entry::getValue,
-                            (e1, e2) -> e1,
-                            LinkedHashMap::new
-                    ));
+			Map<Long, Double> sortedAmountGroupedByMemberId = dashboardUtilService.getSortedAmountGroupedByMemberId(amountGroupedByMemberId);
 
-            Map<Long, Double> artistPreviousMonthMappedByAmount = previousMonthTransactions.stream()
-                    .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-//					.filter(transaction -> filterSearchKeyword(keyword, artist))
-                    .collect(Collectors.groupingBy(
-                            transaction -> transaction.getTrackMember().getMemberId(),
-                            Collectors.summingDouble(Transaction::getAmount)
-                    ));
+			Map<Long, Double> artistPreviousMonthMappedByAmount = dashboardUtilService.getAmountGroupedByMemberId(previousMonthTransactions);
 
-            Map<Long, Double> sortedPreviousMonthArtistMappedByAmount = artistPreviousMonthMappedByAmount.entrySet().stream()
-                    .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey,
-                            Map.Entry::getValue,
-                            (e1, e2) -> e1,
-                            LinkedHashMap::new
-                    ));
+			Map<Long, Double> sortedPreviousMonthAmountGroupedByMemberId = dashboardUtilService
+					.getSortedAmountGroupedByMemberId(artistPreviousMonthMappedByAmount);
 
-            Map<TrackMember, Double> trackMemberMappedByAmount = transactions.stream()
-                    .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-//					.filter(transaction -> filterSearchKeyword(keyword, artist))
-                    .collect(Collectors.groupingBy(
-                            Transaction::getTrackMember,
-                            Collectors.summingDouble(Transaction::getAmount)
-                    ));
+			Map<TrackMember, Double> amountGroupedByTrackMember = dashboardUtilService
+					.getAmountGroupedByTrackMemberFilteredByMemberIdNotNull(transactions);
 
-            Map<TrackMember, Double> sortedTrackMemberMappedByAmount = trackMemberMappedByAmount.entrySet().stream()
-                    .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey,
-                            Map.Entry::getValue,
-                            (e1, e2) -> e1,
-                            LinkedHashMap::new
-                    ));
+			Map<TrackMember, Double> sortedAmountGroupedByTrackMember = dashboardUtilService
+					.getSortedAmountGroupedByTrackMember(amountGroupedByTrackMember);
 
-            Map<Track, Double> trackMappedByAmount = transactions.stream()
-                    .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-//					.filter(transaction -> filterSearchKeyword(keyword, artist))
-                    .collect(Collectors.groupingBy(
-                            transaction -> transaction.getTrackMember().getTrack(),
-                            Collectors.summingDouble(Transaction::getAmount)
-                    ));
+			Map<Track, Double> amountGroupedByTrack = dashboardUtilService
+					.getAmountGroupedByTrackFilteredByMemberIdNotNull(transactions);
 
-            Map<Track, Double> sortedTrackMappedByAmount = trackMappedByAmount.entrySet().stream()
-                    .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey,
-                            Map.Entry::getValue,
-                            (e1, e2) -> e1,
-                            LinkedHashMap::new
-                    ));
+			Map<Track, Double> sortedAmountGroupedByTrack = dashboardUtilService.getSortedAmountGroupedByTrack(amountGroupedByTrack);
 
-            double netIncome = 0.0;
-            double representativeTrackAmount = 0.0;
-            String representativeTrackName = "";
+			double netIncome = 0.0;
+			double representativeTrackAmount = 0.0;
+			String representativeTrackName = "";
 
-            for (Map.Entry<TrackMember, Double> entry : sortedTrackMemberMappedByAmount.entrySet()) {
-                TrackMember trackMember = entry.getKey();
-                Double amount = entry.getValue();
-                if (trackMember.getMemberId().equals(artist.getId())) {
-                    int commissionRate = trackMember.getCommissionRate();
-                    netIncome += amount * commissionRate / 100;
+			for (Map.Entry<TrackMember, Double> entry : sortedAmountGroupedByTrackMember.entrySet()) {
+				TrackMember trackMember = entry.getKey();
+				Double amount = entry.getValue();
+				if (trackMember.getMemberId().equals(artist.getId())) {
+					int commissionRate = trackMember.getCommissionRate();
+					netIncome += amount * commissionRate / 100;
 
-                    Double trackAmount = sortedTrackMappedByAmount.get(trackMember.getTrack());
-                    if (representativeTrackAmount < trackAmount) {
-                        representativeTrackName = trackMember.getTrack().getName();
-                        representativeTrackAmount = trackAmount;
-                    }
-                }
-            }
+					Double trackAmount = sortedAmountGroupedByTrack.get(trackMember.getTrack());
+					if (representativeTrackAmount < trackAmount) {
+						representativeTrackName = trackMember.getTrack().getName();
+						representativeTrackAmount = trackAmount;
+					}
+				}
+			}
 
 
-            Double amount;
-            amount = sortedArtistMappedByAmount.get(artist.getId());
-            if (amount == null) {
-                amount = 0.0;
-            }
-            Double previousMonthAmount = 0.0;
-            previousMonthAmount = sortedPreviousMonthArtistMappedByAmount.get(artist.getId());
-            if (previousMonthAmount == null) {
-                previousMonthAmount = 0.0;
-            }
+			Double amount;
+			amount = sortedAmountGroupedByMemberId.get(artist.getId());
+			if (amount == null) {
+				amount = 0.0;
+			}
+			Double previousMonthAmount = 0.0;
+			previousMonthAmount = sortedPreviousMonthAmountGroupedByMemberId.get(artist.getId());
+			if (previousMonthAmount == null) {
+				previousMonthAmount = 0.0;
+			}
 
-            AdminArtistProfileListDto artistProfileListDto = AdminArtistProfileListDto.builder()
-                    .artist(artistProfileDto)
-                    .revenue((int) Math.floor(amount))
-                    .netIncome((int) Math.floor(netIncome))
-                    .settlementAmount((int) Math.floor(netIncome - (netIncome * 33) / 1000))
-                    .representativeTrack(representativeTrackName)
-                    .monthlyIncreaseRate(getGrowthRate(previousMonthAmount, amount))
-                    .build();
+			AdminArtistProfileListDto artistProfileListDto = AdminArtistProfileListDto.builder()
+					.artist(artistProfileDto)
+					.revenue((int) Math.floor(amount))
+					.netIncome((int) Math.floor(netIncome))
+					.settlementAmount((int) Math.floor(netIncome - (netIncome * 33) / 1000))
+					.representativeTrack(representativeTrackName)
+					.monthlyIncreaseRate(
+							dashboardUtilService.getGrowthRate(previousMonthAmount, amount))
+					.build();
 
-            adminArtistProfiles.add(artistProfileListDto);
-        }
-        return AdminArtistProfileListReponseDto.builder()
-                .totalItems(adminArtistProfiles.size())
-                .contents(getPage(adminArtistProfiles, pageable.getPageNumber(), pageable.getPageSize()))
-                .build();
-    }
+			adminArtistProfiles.add(artistProfileListDto);
+		}
+		return AdminArtistProfileListReponseDto.builder()
+				.totalItems(adminArtistProfiles.size())
+				.contents(DashboardUtilService.getPage(adminArtistProfiles, pageable.getPageNumber(), pageable.getPageSize()))
+				.build();
+	}
 
-    private Double getGrowthRate(Double previousMonthAmount, double amount) {
-        if (previousMonthAmount == null || amount == 0.0) {
-            return null;
-        }
-
-        if (previousMonthAmount == 0.0) {
-            return null;
-        }
-
-        double percentage = (amount - previousMonthAmount) / previousMonthAmount * 100;
-        if (0 < percentage && percentage < 10) {
-            return Math.floor(percentage * 10) / 10;
-        }
-        return Math.floor(percentage);
-    }
-
-    private String getPreviousMonth(String monthly) {
-        LocalDate date = LocalDate.parse(monthly + "01", DateTimeFormatter.ofPattern("yyyyMMdd"));
-        LocalDate previousMonth = date.minusMonths(1);
-        return previousMonth.format(DateTimeFormatter.ofPattern("yyyyMM"));
-    }
-
-    public static <T> List<T> getPage(List<T> sourceList, int page, int pageSize) {
-        if (pageSize <= 0) {
-            throw new BusinessException(ErrorCode.PAGINATION_INVALID_INDEX);
-        }
-
-        int fromIndex = (page) * pageSize;
-        if (sourceList == null || sourceList.size() <= fromIndex) {
-            return Collections.emptyList();
-        }
-
-        return sourceList.subList(fromIndex, Math.min(fromIndex + pageSize, sourceList.size()));
-    }
-
-    @Deprecated
-    private Boolean filterSearchKeyword(String keyword, Member artist) {
-        if (keyword == null) {
-            return true;
-        }
+	@Deprecated
+	private Boolean filterSearchKeyword(String keyword, Member artist) {
+		if (keyword == null) {
+			return true;
+		}
 
         String convertedKeyword = keyword.toLowerCase();
         ;
