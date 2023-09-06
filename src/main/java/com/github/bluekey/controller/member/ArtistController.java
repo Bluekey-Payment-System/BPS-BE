@@ -10,7 +10,7 @@ import com.github.bluekey.dto.request.artist.ArtistRequestDto;
 import com.github.bluekey.dto.response.admin.AdminArtistProfileListReponseDto;
 import com.github.bluekey.dto.response.artist.*;
 import com.github.bluekey.dto.response.common.MonthlyTrendResponseDto;
-import com.github.bluekey.jwt.PrincipalConvertUtil;
+import com.github.bluekey.config.security.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.auth.AuthService;
 import com.github.bluekey.service.dashboard.BarChartDashboardService;
 import com.github.bluekey.service.dashboard.MonthlyTracksDashBoardService;

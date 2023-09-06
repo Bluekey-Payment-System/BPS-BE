@@ -8,7 +8,7 @@ import com.github.bluekey.dto.response.auth.AdminLoginTokenResponseDto;
 import com.github.bluekey.dto.response.auth.LoginTokenResponseDto;
 import com.github.bluekey.dto.response.auth.MemberIdResponseDto;
 import com.github.bluekey.dto.response.auth.SignupResponseDto;
-import com.github.bluekey.jwt.PrincipalConvertUtil;
+import com.github.bluekey.config.security.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.auth.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

@@ -70,7 +70,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ExcelUploadException.class)
     public ResponseEntity<UploadErrorResponse> handleExcelUploadException(ExcelUploadException ex) {
-        UploadErrorResponse response = UploadErrorResponse.of(ex.getErrorCode(), ex.getErrors());
+        UploadErrorResponse response = UploadErrorResponse.of(ex.getErrorCode(), ex.getErrors(), ex.getFileName());
         return new ResponseEntity<>(response, response.getStatus());
 
     }

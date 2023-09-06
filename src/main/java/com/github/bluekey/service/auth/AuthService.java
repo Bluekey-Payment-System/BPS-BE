@@ -16,7 +16,7 @@ import com.github.bluekey.exception.AuthenticationException;
 import com.github.bluekey.exception.BusinessException;
 import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.exception.member.MemberNotFoundException;
-import com.github.bluekey.jwt.JwtProvider;
+import com.github.bluekey.config.security.jwt.JwtProvider;
 import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.service.member.MemberService;
 import com.github.bluekey.util.ImageUploadUtil;
