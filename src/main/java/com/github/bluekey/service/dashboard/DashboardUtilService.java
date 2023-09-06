@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class DashboardUtilService {
 	private static final String MONTH_PREFIX = "01";
+	private static final String DATE_FORMAT = "yyyyMMdd";
+	private static final String DATE_FORMAT_WITHOUT_DAY = "yyyyMM";
+	private static final double TAX = 0.033;
 
 	/* ------------- Calculate ------------- */
 	public Integer getCompanyNetIncome(Double revenue, Integer artistCommissionRate) {
@@ -25,7 +28,7 @@ public class DashboardUtilService {
 	}
 
 	public Integer getArtistSettlement(Double revenue, Integer artistCommissionRate) {
-		return (int) Math.floor(revenue * (artistCommissionRate / 100.0) * (1 - 0.033));
+		return (int) Math.floor(revenue * (artistCommissionRate / 100.0) * (1 - TAX));
 	}
 
 	public Double getGrowthRate(Double previousMonthAmount, double amount) {
@@ -58,14 +61,14 @@ public class DashboardUtilService {
 
 	/* ------------- Date ------------- */
 	public LocalDate convertDate(String date) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
 		return LocalDate.parse(date + MONTH_PREFIX, formatter);
 	}
 
 	public String getPreviousMonth(String monthly) {
-		LocalDate date = LocalDate.parse(monthly + MONTH_PREFIX, DateTimeFormatter.ofPattern("yyyyMMdd"));
+		LocalDate date = LocalDate.parse(monthly + MONTH_PREFIX, DateTimeFormatter.ofPattern(DATE_FORMAT));
 		LocalDate previousMonth = date.minusMonths(1);
-		return previousMonth.format(DateTimeFormatter.ofPattern("yyyyMM"));
+		return previousMonth.format(DateTimeFormatter.ofPattern(DATE_FORMAT_WITHOUT_DAY));
 	}
 
 	public List<Integer> extractMonths(String startDate, String endDate) {
@@ -89,18 +92,18 @@ public class DashboardUtilService {
 	}
 	/* ------------- Pagination ------------- */
 
-	public static <T> List<T> getPage(List<T> sourceList, int page, int pageSize) {
+	public static <T> List<T> getPage(List<T> sources, int page, int pageSize) {
 		if (pageSize <= 0) {
 			throw new IllegalArgumentException("invalid page size: " + pageSize);
 		}
 
 		int fromIndex = (page) * pageSize;
-		if (sourceList == null || sourceList.size() <= fromIndex) {
+		if (sources == null || sources.size() <= fromIndex) {
 			return Collections.emptyList();
 		}
 
 		// toIndex exclusive
-		return sourceList.subList(fromIndex, Math.min(fromIndex + pageSize, sourceList.size()));
+		return sources.subList(fromIndex, Math.min(fromIndex + pageSize, sources.size()));
 	}
 
 	/* ------------- Grouping ------------- */
