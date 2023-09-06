@@ -61,17 +61,21 @@ public class JwtProvider {
 	}
 
 	public JwtValidationType validateToken(String token) {
+
+		if (token == null) {
+			return JwtValidationType.EMPTY_JWT;
+		}
 		try {
 			getClaims(token.substring(BEARER_TOKEN_PREFIX));
 			return JwtValidationType.VALID_JWT;
-		} catch (MalformedJwtException e) {
+		} catch (IllegalArgumentException e) {
+			return JwtValidationType.EMPTY_JWT;
+		}catch (MalformedJwtException e) {
 			return JwtValidationType.INVALID_JWT;
 		} catch (ExpiredJwtException e) {
 			return JwtValidationType.EXPIRED_JWT;
 		} catch (UnsupportedJwtException e) {
 			return JwtValidationType.UNSUPPORTED_JWT;
-		} catch (IllegalArgumentException e) {
-			return JwtValidationType.EMPTY_JWT;
 		} catch (SignatureException e) {
 			return JwtValidationType.INVALID_JWT_SIGNATURE;
 		}
