@@ -2,6 +2,7 @@ package com.github.bluekey.controller.member;
 
 import com.github.bluekey.dto.admin.AdminProfileUpdateDto;
 import com.github.bluekey.dto.admin.AdminProfileViewDto;
+import com.github.bluekey.dto.filter.MonthlyTrackFilter;
 import com.github.bluekey.dto.response.admin.AdminAccountsResponseDto;
 import com.github.bluekey.dto.response.admin.AdminProfileResponseDto;
 import com.github.bluekey.dto.response.artist.ArtistAccountsResponseDto;
@@ -71,11 +72,32 @@ public class AdminController {
 			@Parameter(description = "정보를 얻고 싶은 월 (format: yyyy-MM)") @RequestParam("monthly") String monthly,
 			@RequestParam("page") Integer page,
 			@RequestParam("size") Integer size,
+			@Parameter(description = "정렬 기준: revenue, netIncome, settlement, commissionRate") @RequestParam(value = "sortBy", required = false) String sortBy,
 			@Parameter(description = "검색 타입 곡명 or 앨범명") @RequestParam("searchType") String searchType,
-			@Parameter(description = "검색할 키워드") @RequestParam(value = "keyword", required = false) String keyword
+			@Parameter(description = "검색할 키워드") @RequestParam(value = "keyword", required = false) String keyword,
+			@Parameter(description = "검색할 아티스트 PK") @RequestParam(value="memberId", required = false) Long memberId,
+			@Parameter(description = "매출액 시작 조건") @RequestParam(value="revenueFrom", required = false) Integer revenueFrom,
+			@Parameter(description = "매출액 엔드 조건") @RequestParam(value="revenueTo", required = false) Integer revenueTo,
+			@Parameter(description = "회사 이익 시작 조건") @RequestParam(value="netIncomeFrom", required = false) Integer netIncomeFrom,
+			@Parameter(description = "회사 이익 엔드 조건") @RequestParam(value="netIncomeTo", required = false) Integer netIncomeTo,
+			@Parameter(description = "정산액 시작 조건") @RequestParam(value="settlementFrom", required = false) Integer settlementFrom,
+			@Parameter(description = "정산액 엔드 조건") @RequestParam(value = "settlementTo", required = false) Integer settlementTo,
+			@Parameter(description = "요율 시작 조건") @RequestParam(value="commissionRateFrom", required = false) Integer commissionRateFrom,
+			@Parameter(description = "요율 엔드 조건") @RequestParam(value="commissionRateTo", required = false) Integer commissionRateTo
 	) {
 		Pageable pageable = PageRequest.of(page, size);
-		return ResponseEntity.ok(monthlyTracksDashBoardService.getAdminTracks(monthly, pageable, searchType, keyword));
+		MonthlyTrackFilter monthlyTrackFilter = MonthlyTrackFilter.builder()
+				.memberId(memberId)
+				.revenueFrom(revenueFrom)
+				.revenueTo(revenueTo)
+				.netIncomeFrom(netIncomeFrom)
+				.netIncomeTo(netIncomeTo)
+				.settlementFrom(settlementFrom)
+				.settlementTo(settlementTo)
+				.commissionRateFrom(commissionRateFrom)
+				.commissionRateTo(commissionRateTo)
+				.build();
+		return ResponseEntity.ok(monthlyTracksDashBoardService.getAdminTracks(monthly, pageable, sortBy, searchType, keyword, monthlyTrackFilter));
 	}
 
 	@Operation(summary = "대시보드에 보여질 정보", description = "대시보드에 보여질 정보")
