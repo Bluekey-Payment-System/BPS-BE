@@ -84,6 +84,7 @@ public class MemberService {
 			imageUploadUtil.deleteImage(member.getProfileImage());
 			member.updateProfileImage(null);
 		}
+		memberRepository.save(member);
 	}
 
     @Transactional(readOnly = true)
