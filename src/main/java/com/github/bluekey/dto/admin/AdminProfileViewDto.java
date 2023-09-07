@@ -1,6 +1,8 @@
 package com.github.bluekey.dto.admin;
 
 import com.github.bluekey.entity.member.Member;
+import com.github.bluekey.entity.member.MemberRole;
+import com.github.bluekey.entity.member.MemberType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -19,16 +21,22 @@ public class AdminProfileViewDto {
 	private String loginId;
 	@Schema(description = "이메일", example = "bluekey@gmail.com")
 	private String email;
+	@Schema(description = "멤버 타입", example = "ADMIN")
+	private MemberType type;
+	@Schema(description = "멤버 권한", example = "SUPER_ADMIN")
+	private MemberRole role;
 	@Schema(description = "프로필 이미지", example = "https://bluekey.com/profile/1")
 	private String profileImage;
 
 	@Builder
 	public AdminProfileViewDto(final Long memberId, final String nickname, final String loginId,
-			final String email, final String profileImage) {
+			final String email, final MemberType type, final MemberRole role, final String profileImage) {
 		this.memberId = memberId;
 		this.nickname = nickname;
 		this.loginId = loginId;
 		this.email = email;
+		this.type = type;
+		this.role = role;
 		this.profileImage = profileImage;
 	}
 
@@ -38,6 +46,8 @@ public class AdminProfileViewDto {
 			.nickname(member.getName())
 			.loginId(member.getLoginId())
 			.email(member.getEmail().getValue())
+			.type(member.getType())
+			.role(member.getRole())
 			.profileImage(member.getProfileImage())
 			.build();
 	}

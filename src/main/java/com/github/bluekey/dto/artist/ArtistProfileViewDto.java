@@ -1,6 +1,8 @@
 package com.github.bluekey.dto.artist;
 
 import com.github.bluekey.entity.member.Member;
+import com.github.bluekey.entity.member.MemberRole;
+import com.github.bluekey.entity.member.MemberType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,17 +22,24 @@ public class ArtistProfileViewDto {
 	private String loginId;
 	@Schema(description = "이메일", example = "bluekey@gmail.com")
 	private String email;
+	@Schema(description = "멤버 타입", example = "USER")
+	private MemberType type;
+	@Schema(description = "멤버 권한", example = "ARTIST")
+	private MemberRole role;
 	@Schema(description = "프로필 이미지", example = "artist.jpg")
 	private String profileImage;
 
 	@Builder
 	private ArtistProfileViewDto(final Long memberId, final String name, final String enName,
-			final String loginId, final String email, final String profileImage) {
+			final String loginId, final MemberType type, final MemberRole role, final String email,
+			final String profileImage) {
 		this.memberId = memberId;
 		this.name = name;
 		this.enName = enName;
 		this.loginId = loginId;
 		this.email = email;
+		this.type = type;
+		this.role = role;
 		this.profileImage = profileImage;
 	}
 
@@ -41,6 +50,8 @@ public class ArtistProfileViewDto {
 				.enName(member.getEnName())
 				.loginId(member.getLoginId())
 				.email(member.getEmail().getValue())
+				.type(member.getType())
+				.role(member.getRole())
 				.profileImage(member.getProfileImage())
 				.build();
 	}
