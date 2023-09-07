@@ -3,6 +3,7 @@ package com.github.bluekey.service.dashboard;
 import com.github.bluekey.dto.common.AlbumBaseDto;
 import com.github.bluekey.dto.artist.ArtistMonthlyTrackListDto;
 import com.github.bluekey.dto.common.MemberBaseDto;
+import com.github.bluekey.dto.filter.MonthlyTrackFilter;
 import com.github.bluekey.dto.response.artist.ArtistMonthlyTrackListResponseDto;
 import com.github.bluekey.dto.response.track.TracksSettlementAmountResponseDto;
 import com.github.bluekey.dto.common.TrackBaseDto;
@@ -119,7 +120,7 @@ public class MonthlyTracksDashBoardService {
     }
 
 
-    public TracksSettlementAmountResponseDto getAdminTracks(String monthly, Pageable pageable, String searchType, String keyword) {
+    public TracksSettlementAmountResponseDto getAdminTracks(String monthly, Pageable pageable, String searchType, String keyword, MonthlyTrackFilter monthlyTrackFilter) {
 
         List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
         List<TrackSettlementAmountDto> contents = new ArrayList<>();
@@ -205,8 +206,9 @@ public class MonthlyTracksDashBoardService {
                     .netIncome(netIncome)
                     .commissionRate(commissionRate)
                     .build();
-
-            contents.add(trackSettlementAmountDto);
+            if (hasValidConditionInFilter(trackSettlementAmountDto, monthlyTrackFilter)) {
+                contents.add(trackSettlementAmountDto);
+            }
         }
 
         log.info("trackMappedByAmount = {}", sortedTrackMappedByAmount);
@@ -215,5 +217,65 @@ public class MonthlyTracksDashBoardService {
                 .totalItems(contents.size())
                 .contents(DashboardUtilService.getPage(contents, pageable.getPageNumber(), pageable.getPageSize()))
                 .build();
+    }
+
+    private boolean hasValidConditionInFilter(TrackSettlementAmountDto trackSettlementAmountDto, MonthlyTrackFilter monthlyTrackFilter) {
+        if (monthlyTrackFilter.getMemberId() != null) {
+            List<MemberBaseDto> artists = trackSettlementAmountDto.getArtists();
+            boolean hasArtistInCondition = false;
+            for (MemberBaseDto artist : artists) {
+                if (artist.getMemberId() != null) {
+                    if (artist.getMemberId().equals(monthlyTrackFilter.getMemberId())) {
+                        hasArtistInCondition = true;
+                    }
+                }
+            }
+
+            if (!hasArtistInCondition) {
+                return false;
+            }
+        }
+
+        if (monthlyTrackFilter.getCommissionRateFrom() > trackSettlementAmountDto.getCommissionRate() ||
+                trackSettlementAmountDto.getCommissionRate() > monthlyTrackFilter.getCommissionRateTo()
+        ) {
+            return false;
+        }
+        if(monthlyTrackFilter.getRevenueFrom() != null) {
+            if(monthlyTrackFilter.getRevenueFrom() > trackSettlementAmountDto.getRevenue()) {
+                return false;
+            }
+        }
+        if (monthlyTrackFilter.getRevenueTo() != null) {
+            if (trackSettlementAmountDto.getRevenue() > monthlyTrackFilter.getRevenueTo()) {
+                return false;
+            }
+        }
+
+        if(monthlyTrackFilter.getNetIncomeFrom() != null) {
+            if(monthlyTrackFilter.getNetIncomeFrom() > trackSettlementAmountDto.getNetIncome()) {
+                return false;
+            }
+        }
+
+        if (monthlyTrackFilter.getNetIncomeTo() != null) {
+            if (trackSettlementAmountDto.getNetIncome() > monthlyTrackFilter.getNetIncomeTo()) {
+                return false;
+            }
+        }
+
+        if (monthlyTrackFilter.getSettlementFrom() != null) {
+            if (monthlyTrackFilter.getSettlementFrom() > trackSettlementAmountDto.getSettlementAmount()) {
+                return false;
+            }
+        }
+
+        if(monthlyTrackFilter.getSettlementTo() != null) {
+            if (trackSettlementAmountDto.getSettlementAmount() > monthlyTrackFilter.getSettlementTo()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
