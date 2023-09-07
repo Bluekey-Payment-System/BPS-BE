@@ -32,7 +32,7 @@ public class MonthlyTracksDashBoardService {
     private final MemberRepository memberRepository;
     private final DashboardUtilService dashboardUtilService;
 
-    public ArtistMonthlyTrackListResponseDto getArtistTracks(String monthly, Pageable pageable, String sortBy, String searchType, String keyword, Long memberId) {
+    public ArtistMonthlyTrackListResponseDto getArtistTracks(String monthly, Pageable pageable, String sortBy, String searchType, String keyword, Long memberId, MonthlyTrackFilter monthlyTrackFilter) {
         List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
         List<ArtistMonthlyTrackListDto> contents = new ArrayList<>();
 
@@ -107,8 +107,9 @@ public class MonthlyTracksDashBoardService {
                     .netIncome(netIncome)
                     .commissionRate(commissionRate)
                     .build();
-
-            contents.add(artistMonthlyTrackListDto);
+            if (hasArtistValidConditionInFilter(artistMonthlyTrackListDto, monthlyTrackFilter)) {
+                contents.add(artistMonthlyTrackListDto);
+            }
         }
 
         log.info("trackMappedByAmount = {}", sortedTrackMappedByAmount);
@@ -206,7 +207,7 @@ public class MonthlyTracksDashBoardService {
                     .netIncome(netIncome)
                     .commissionRate(commissionRate)
                     .build();
-            if (hasValidConditionInFilter(trackSettlementAmountDto, monthlyTrackFilter)) {
+            if (hasAdminValidConditionInFilter(trackSettlementAmountDto, monthlyTrackFilter)) {
                 contents.add(trackSettlementAmountDto);
             }
         }
@@ -219,7 +220,7 @@ public class MonthlyTracksDashBoardService {
                 .build();
     }
 
-    private boolean hasValidConditionInFilter(TrackSettlementAmountDto trackSettlementAmountDto, MonthlyTrackFilter monthlyTrackFilter) {
+    private boolean hasAdminValidConditionInFilter(TrackSettlementAmountDto trackSettlementAmountDto, MonthlyTrackFilter monthlyTrackFilter) {
         if (monthlyTrackFilter.getMemberId() != null) {
             List<MemberBaseDto> artists = trackSettlementAmountDto.getArtists();
             boolean hasArtistInCondition = false;
@@ -275,7 +276,65 @@ public class MonthlyTracksDashBoardService {
                 return false;
             }
         }
+        return true;
+    }
 
+    private boolean hasArtistValidConditionInFilter(ArtistMonthlyTrackListDto artistMonthlyTrackListDto, MonthlyTrackFilter monthlyTrackFilter) {
+        if (monthlyTrackFilter.getMemberId() != null) {
+            List<MemberBaseDto> artists = artistMonthlyTrackListDto.getArtists();
+            boolean hasArtistInCondition = false;
+            for (MemberBaseDto artist : artists) {
+                if (artist.getMemberId() != null) {
+                    if (artist.getMemberId().equals(monthlyTrackFilter.getMemberId())) {
+                        hasArtistInCondition = true;
+                    }
+                }
+            }
+
+            if (!hasArtistInCondition) {
+                return false;
+            }
+        }
+
+        if (monthlyTrackFilter.getCommissionRateFrom() > artistMonthlyTrackListDto.getCommissionRate() ||
+                artistMonthlyTrackListDto.getCommissionRate() > monthlyTrackFilter.getCommissionRateTo()
+        ) {
+            return false;
+        }
+        if(monthlyTrackFilter.getRevenueFrom() != null) {
+            if(monthlyTrackFilter.getRevenueFrom() > artistMonthlyTrackListDto.getRevenue()) {
+                return false;
+            }
+        }
+        if (monthlyTrackFilter.getRevenueTo() != null) {
+            if (artistMonthlyTrackListDto.getRevenue() > monthlyTrackFilter.getRevenueTo()) {
+                return false;
+            }
+        }
+
+        if(monthlyTrackFilter.getNetIncomeFrom() != null) {
+            if(monthlyTrackFilter.getNetIncomeFrom() > artistMonthlyTrackListDto.getNetIncome()) {
+                return false;
+            }
+        }
+
+        if (monthlyTrackFilter.getNetIncomeTo() != null) {
+            if (artistMonthlyTrackListDto.getNetIncome() > monthlyTrackFilter.getNetIncomeTo()) {
+                return false;
+            }
+        }
+
+        if (monthlyTrackFilter.getSettlementFrom() != null) {
+            if (monthlyTrackFilter.getSettlementFrom() > artistMonthlyTrackListDto.getSettlementAmount()) {
+                return false;
+            }
+        }
+
+        if(monthlyTrackFilter.getSettlementTo() != null) {
+            if (artistMonthlyTrackListDto.getSettlementAmount() > monthlyTrackFilter.getSettlementTo()) {
+                return false;
+            }
+        }
         return true;
     }
 }

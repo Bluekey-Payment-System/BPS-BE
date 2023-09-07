@@ -4,6 +4,7 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import com.github.bluekey.dto.artist.ArtistAccountDto;
 import com.github.bluekey.dto.artist.ArtistProfileViewDto;
+import com.github.bluekey.dto.filter.MonthlyTrackFilter;
 import com.github.bluekey.dto.request.admin.AdminArtistProfileRequestDto;
 import com.github.bluekey.dto.request.artist.ArtistProfileRequestDto;
 import com.github.bluekey.dto.request.artist.ArtistRequestDto;
@@ -106,12 +107,33 @@ public class ArtistController {
             @RequestParam(value = "sortBy", required = false) String sortBy,
             @RequestParam("searchType") String searchType,
             @RequestParam(value = "keyword", required = false) String keyword,
-            @PathVariable("memberId") Long memberId
+            @PathVariable("memberId") Long memberId,
+            @Parameter(description = "검색할 아티스트 PK") @RequestParam(value="memberId", required = false) Long filteringMemberId,
+            @Parameter(description = "매출액 시작 조건") @RequestParam(value="revenueFrom", required = false) Integer revenueFrom,
+            @Parameter(description = "매출액 엔드 조건") @RequestParam(value="revenueTo", required = false) Integer revenueTo,
+            @Parameter(description = "회사 이익 시작 조건") @RequestParam(value="netIncomeFrom", required = false) Integer netIncomeFrom,
+            @Parameter(description = "회사 이익 엔드 조건") @RequestParam(value="netIncomeTo", required = false) Integer netIncomeTo,
+            @Parameter(description = "정산액 시작 조건") @RequestParam(value="settlementFrom", required = false) Integer settlementFrom,
+            @Parameter(description = "정산액 엔드 조건") @RequestParam(value = "settlementTo", required = false) Integer settlementTo,
+            @Parameter(description = "요율 시작 조건") @RequestParam(value="commissionRateFrom", required = false) Integer commissionRateFrom,
+            @Parameter(description = "요율 엔드 조건") @RequestParam(value="commissionRateTo", required = false) Integer commissionRateTo
+
     ) {
         Pageable pageable = PageRequest.of(page, size);
+        MonthlyTrackFilter monthlyTrackFilter = MonthlyTrackFilter.builder()
+                .memberId(filteringMemberId)
+                .revenueFrom(revenueFrom)
+                .revenueTo(revenueTo)
+                .netIncomeFrom(netIncomeFrom)
+                .netIncomeTo(netIncomeTo)
+                .settlementFrom(settlementFrom)
+                .settlementTo(settlementTo)
+                .commissionRateFrom(commissionRateFrom)
+                .commissionRateTo(commissionRateTo)
+                .build();
         memberService.permissionCheck(memberId, PrincipalConvertUtil.getMemberId());
         return ResponseEntity.ok(monthlyTracksDashBoardService
-                .getArtistTracks(monthly, pageable, sortBy, searchType, keyword, memberId));
+                .getArtistTracks(monthly, pageable, sortBy, searchType, keyword, memberId, monthlyTrackFilter));
     }
 
     @Operation(summary = "아티스트 기준 당월 TOP N 트랙 매출 LIST", description = "아티스트 기준 당월 TOP N 트랙 매출 LIST")
