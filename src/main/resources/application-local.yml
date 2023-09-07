@@ -15,7 +15,7 @@ spring:
     jdbc:
       initialize-schema: ALWAYS
   server:
-    fe-host: http://localhost:3000
+    fe-host:
     be-host: http://localhost:8080
   jpa:
     hibernate:
