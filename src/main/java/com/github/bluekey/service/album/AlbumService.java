@@ -102,6 +102,15 @@ public class AlbumService {
         return AlbumResponseDto.from(album);
     }
 
+    public void deleteAlbumImage(Long albumId) {
+        Album album = albumRepository.findAlbumByIdAndIsRemovedFalseOrElseThrow(albumId);
+        if (album.getProfileImage() != null) {
+            imageUploadUtil.deleteImage(album.getProfileImage());
+            album.updateProfileImage(null);
+        }
+        albumRepository.save(album);
+    }
+
     @Transactional(readOnly = true)
     public AlbumTrackListResponseDto getAlbumTrackList(Long albumId) {
         Album album = albumRepository.findAlbumByIdAndIsRemovedFalse(albumId)
