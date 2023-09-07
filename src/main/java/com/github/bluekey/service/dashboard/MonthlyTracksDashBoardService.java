@@ -35,6 +35,7 @@ public class MonthlyTracksDashBoardService {
     public ArtistMonthlyTrackListResponseDto getArtistTracks(String monthly, Pageable pageable, String sortBy, String searchType, String keyword, Long memberId, MonthlyTrackFilter monthlyTrackFilter) {
         List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
         List<ArtistMonthlyTrackListDto> contents = new ArrayList<>();
+        Comparator<ArtistMonthlyTrackListDto> comparator = getArtistSortComparator(sortBy);
 
         Map<Track, Double> trackMappedByAmount = transactions.stream()
                 .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
@@ -113,7 +114,7 @@ public class MonthlyTracksDashBoardService {
         }
 
         log.info("trackMappedByAmount = {}", sortedTrackMappedByAmount);
-
+        contents.sort(comparator);
         return ArtistMonthlyTrackListResponseDto.builder()
                 .totalItems(contents.size())
                 .contents(DashboardUtilService.getPage(contents, pageable.getPageNumber(), pageable.getPageSize()))
@@ -121,10 +122,11 @@ public class MonthlyTracksDashBoardService {
     }
 
 
-    public TracksSettlementAmountResponseDto getAdminTracks(String monthly, Pageable pageable, String searchType, String keyword, MonthlyTrackFilter monthlyTrackFilter) {
+    public TracksSettlementAmountResponseDto getAdminTracks(String monthly, Pageable pageable, String sortBy, String searchType, String keyword, MonthlyTrackFilter monthlyTrackFilter) {
 
         List<Transaction> transactions = transactionRepository.findTransactionsByDuration(monthly);
         List<TrackSettlementAmountDto> contents = new ArrayList<>();
+        Comparator<TrackSettlementAmountDto> comparator = getAdminSortComparator(sortBy);
 
         Map<Track, Double> trackMappedByAmount = transactions.stream()
                 .filter(transaction -> {
@@ -211,7 +213,7 @@ public class MonthlyTracksDashBoardService {
                 contents.add(trackSettlementAmountDto);
             }
         }
-
+        contents.sort(comparator);
         log.info("trackMappedByAmount = {}", sortedTrackMappedByAmount);
 
         return TracksSettlementAmountResponseDto.builder()
@@ -336,5 +338,39 @@ public class MonthlyTracksDashBoardService {
             }
         }
         return true;
+    }
+
+    private Comparator<ArtistMonthlyTrackListDto> getArtistSortComparator(String sortBy) {
+        if (sortBy != null) {
+            switch (sortBy) {
+                case "revenue":
+                    return Comparator.comparing(ArtistMonthlyTrackListDto::getRevenue).reversed();
+                case "netIncome":
+                    return Comparator.comparing(ArtistMonthlyTrackListDto::getNetIncome).reversed();
+                case "settlement":
+                    return Comparator.comparing(ArtistMonthlyTrackListDto::getSettlementAmount).reversed();
+                case "commissionRate":
+                    return Comparator.comparing(ArtistMonthlyTrackListDto::getCommissionRate).reversed();
+            }
+        }
+
+        return Comparator.comparing(ArtistMonthlyTrackListDto::getRevenue).reversed();
+    }
+
+    private Comparator<TrackSettlementAmountDto> getAdminSortComparator(String sortBy) {
+        if (sortBy != null) {
+            switch (sortBy) {
+                case "revenue":
+                    return Comparator.comparing(TrackSettlementAmountDto::getRevenue).reversed();
+                case "netIncome":
+                    return Comparator.comparing(TrackSettlementAmountDto::getNetIncome).reversed();
+                case "settlement":
+                    return Comparator.comparing(TrackSettlementAmountDto::getSettlementAmount).reversed();
+                case "commissionRate":
+                    return Comparator.comparing(TrackSettlementAmountDto::getCommissionRate).reversed();
+            }
+        }
+
+        return Comparator.comparing(TrackSettlementAmountDto::getRevenue).reversed();
     }
 }

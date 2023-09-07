@@ -72,6 +72,7 @@ public class AdminController {
 			@Parameter(description = "정보를 얻고 싶은 월 (format: yyyy-MM)") @RequestParam("monthly") String monthly,
 			@RequestParam("page") Integer page,
 			@RequestParam("size") Integer size,
+			@Parameter(description = "정렬 기준: revenue, netIncome, settlement, commissionRate") @RequestParam(value = "sortBy", required = false) String sortBy,
 			@Parameter(description = "검색 타입 곡명 or 앨범명") @RequestParam("searchType") String searchType,
 			@Parameter(description = "검색할 키워드") @RequestParam(value = "keyword", required = false) String keyword,
 			@Parameter(description = "검색할 아티스트 PK") @RequestParam(value="memberId", required = false) Long memberId,
@@ -96,7 +97,7 @@ public class AdminController {
 				.commissionRateFrom(commissionRateFrom)
 				.commissionRateTo(commissionRateTo)
 				.build();
-		return ResponseEntity.ok(monthlyTracksDashBoardService.getAdminTracks(monthly, pageable, searchType, keyword, monthlyTrackFilter));
+		return ResponseEntity.ok(monthlyTracksDashBoardService.getAdminTracks(monthly, pageable, sortBy, searchType, keyword, monthlyTrackFilter));
 	}
 
 	@Operation(summary = "대시보드에 보여질 정보", description = "대시보드에 보여질 정보")

@@ -104,7 +104,7 @@ public class ArtistController {
             @RequestParam("monthly") String monthly,
             @RequestParam("page") Integer page,
             @RequestParam("size") Integer size,
-            @RequestParam(value = "sortBy", required = false) String sortBy,
+            @Parameter(description = "정렬 기준: revenue, netIncome, settlement, commissionRate") @RequestParam(value = "sortBy", required = false) String sortBy,
             @RequestParam("searchType") String searchType,
             @RequestParam(value = "keyword", required = false) String keyword,
             @PathVariable("memberId") Long memberId,
