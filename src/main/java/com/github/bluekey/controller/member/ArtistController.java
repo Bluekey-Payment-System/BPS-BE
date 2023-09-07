@@ -210,4 +210,14 @@ public class ArtistController {
     public ResponseEntity<ArtistProfileViewDto> getArtistProfile() {
         return ok(memberService.getArtistProfile(PrincipalConvertUtil.getMemberId()));
     }
+
+    @Operation(summary = "아티스트 프로필 이미지 삭제", description = "아티스트 프로필 이미지 삭제")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "아티스트 프로필 이미지 삭제 완료")
+    })
+    @PreAuthorize("hasRole('ARTIST')")
+    @DeleteMapping("/profile/image")
+    public void deleteArtistProfileImage() {
+        memberService.deleteArtistProfileImage(PrincipalConvertUtil.getMemberId());
+    }
 }
