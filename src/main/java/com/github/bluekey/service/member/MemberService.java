@@ -77,6 +77,15 @@ public class MemberService {
         return AdminProfileResponseDto.from(member);
     }
 
+	@Transactional
+	public void deleteArtistProfileImage(Long memberId) {
+		Member member = memberRepository.findByIdOrElseThrow(memberId);
+		if (member.getProfileImage() != null) {
+			imageUploadUtil.deleteImage(member.getProfileImage());
+			member.updateProfileImage(null);
+		}
+	}
+
     @Transactional(readOnly = true)
     public AdminAccountsResponseDto getAdminAccounts(PageRequest pageable) {
         Page<Member> admins = memberRepository.findMembersByType(MemberType.ADMIN, pageable);
