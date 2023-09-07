@@ -206,4 +206,21 @@ public class AlbumController {
             return ResponseEntity.ok(albumService.getAlbums(pageable, PrincipalConvertUtil.getMemberId(), keyword));
         }
     }
+
+    @Operation(summary = "앨범 이미지 삭제", description = "앨범 이미지 삭제")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "앨범 이미지 삭제 완료",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = AlbumIdResponseDto.class)
+                    ))
+    })
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    @DeleteMapping("/{albumId}/image")
+    public ResponseEntity<AlbumIdResponseDto> deleteAlbumImage(
+            @PathVariable("albumId") Long albumId
+    ) {
+        albumService.deleteAlbumImage(albumId);
+        return ResponseEntity.ok(AlbumIdResponseDto.builder().albumId(albumId).build());
+    }
 }
