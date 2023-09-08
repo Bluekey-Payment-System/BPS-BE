@@ -92,10 +92,10 @@ public class ExcelFileProcessManager implements ProcessManager{
             this.distributorType = ExcelDistributorType.THREE_POINT_ONE_FOUR;
             return new ThreePointOneFourDistributorExcelFileProvider(file, dbPersistenceValidator);
         }
-//        if(type.getCls().equals(MafiaDistributorExcelFileProvider.class)) {
-//            this.distributorType = ExcelDistributorType.MAFIA;
-//            return new MafiaDistributorExcelFileProvider(file, dbPersistenceValidator, fileName);
-//        }
+        if(type.getCls().equals(MafiaDistributorExcelFileProvider.class)) {
+            this.distributorType = ExcelDistributorType.MAFIA;
+            return new MafiaDistributorExcelFileProvider(file, dbPersistenceValidator, fileName);
+        }
 
         throw new BusinessException(ErrorCode.ORIGINAL_TRANSACTION_INVALID_EXCEL_FILE_TYPE);
     }

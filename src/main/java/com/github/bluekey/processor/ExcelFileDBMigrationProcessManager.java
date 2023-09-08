@@ -56,11 +56,11 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
                 Sheet sheet = distributorWorkbook.getSheetAt(THREE_POINT_ONE_FOUR_ACTIVE_EXCEL_SHEET_INDEX);
                 threePointOneFourWorkbookProcess(sheet, workbook.getValue());
             }
-//            if (distributorType.equals(ExcelDistributorType.MAFIA)) {
-//                Sheet sheet = distributorWorkbook.getSheetAt(MAFIA_ACTIVE_EXCEL_SHEET_INDEX);
-//                mafiaWorkbookProcess(sheet, workbook.getValue());
-//
-//            }
+            if (distributorType.equals(ExcelDistributorType.MAFIA)) {
+                Sheet sheet = distributorWorkbook.getSheetAt(MAFIA_ACTIVE_EXCEL_SHEET_INDEX);
+                mafiaWorkbookProcess(sheet, workbook.getValue());
+
+            }
         }
 
     }

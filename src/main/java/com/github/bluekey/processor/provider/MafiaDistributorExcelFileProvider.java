@@ -5,11 +5,16 @@ import com.github.bluekey.processor.validator.DBPersistenceValidator;
 import com.github.bluekey.processor.validator.DistributorExcelValidator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.github.bluekey.processor.type.AtoExcelColumnType.ALBUM_NAME;
@@ -17,22 +22,25 @@ import static com.github.bluekey.processor.type.AtoExcelColumnType.TRACK_NAME;
 import static com.github.bluekey.processor.type.ExcelRowExceptionType.*;
 import static com.github.bluekey.processor.type.MafiaExcelColumnType.*;
 
+@Slf4j
 @Getter
 @RequiredArgsConstructor
 public class MafiaDistributorExcelFileProvider implements ExcelFileProvider {
 
     private static final int ACTIVE_EXCEL_SHEET_INDEX = 0;
     private static final String SHEET_NAME = "Sheet1";
-    private static final int MIN_COLUMN_INDEX = 0;
-    private static final int MAX_COLUMN_INDEX = 10;
-    private static final int HEADER_ROW_INDEX = 3;
-    private static final int DATA_ROW_START_INDEX = 5;
+    private static final int MIN_COLUMN_INDEX = 4;
+    private static final int MAX_COLUMN_INDEX = 15;
+    private static final int HEADER_ROW_INDEX = 2;
+    private static final int DATA_ROW_START_INDEX = 3;
     private final List<ExcelRowException> errorRows = new ArrayList<>();
     private final List<ExcelRowException> warningRows = new ArrayList<>();
     private final DistributorExcelValidator distributorCellValidator;
 
     private Workbook workbook;
-    private String fileName;
+    private String artistName;
+    private String uploadAt;
+    private int activeColumnIndex;
     private final DBPersistenceValidator dbPersistenceValidator;
 
     public MafiaDistributorExcelFileProvider(
@@ -43,7 +51,8 @@ public class MafiaDistributorExcelFileProvider implements ExcelFileProvider {
         this.workbook = setWorkBook(file);
         this.distributorCellValidator = new DistributorExcelValidator();
         this.dbPersistenceValidator = dbPersistenceValidator;
-        this.fileName = validateArtistName(fileName);
+        this.artistName = validateArtistName(fileName);
+        this.uploadAt = getUploadAt(fileName);
     }
 
     @Override
@@ -89,6 +98,21 @@ public class MafiaDistributorExcelFileProvider implements ExcelFileProvider {
         return artistName;
     }
 
+    private String getUploadAt(String fileName) {
+        return fileName.split("_")[1];
+    }
+
+    private boolean isActiveUploadAt(Double uploadAtInExcel) {
+        Date date = DateUtil.getJavaDate(uploadAtInExcel);
+        LocalDate localDateInExcel = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate localDate = LocalDate.parse(uploadAt+"01", DateTimeFormatter.ofPattern("yyyyMMdd"));
+        log.info("uploadAt = {} {} {}", localDate, localDateInExcel, localDate.equals(localDateInExcel));
+        if(localDate.equals(localDateInExcel)) {
+            return true;
+        }
+        return false;
+    }
+
     private void processCell(Row row) {
         for (Cell cell : row) {
             validateCell(cell, row);
@@ -97,10 +121,10 @@ public class MafiaDistributorExcelFileProvider implements ExcelFileProvider {
 
     private void validateCell(Cell cell, Row row) {
         if (ALBUM_NAME.getIndex() == cell.getColumnIndex()) {
-            validateAlbumNameCell(cell, row);
+//            validateAlbumNameCell(cell, row);
         }
         if (TRACK_NAME.getIndex() == cell.getColumnIndex()) {
-            validateTrackNameCell(cell, row);
+//            validateTrackNameCell(cell, row);
         }
     }
 
