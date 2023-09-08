@@ -10,6 +10,7 @@ import com.github.bluekey.dto.request.auth.PasswordRequestDto;
 import com.github.bluekey.dto.request.auth.SignupRequestDto;
 import com.github.bluekey.dto.response.auth.AdminLoginTokenResponseDto;
 import com.github.bluekey.dto.response.auth.LoginTokenResponseDto;
+import com.github.bluekey.dto.response.auth.NewPasswordResponseDto;
 import com.github.bluekey.dto.response.auth.SignupResponseDto;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.exception.AuthenticationException;
@@ -22,6 +23,7 @@ import com.github.bluekey.service.member.MemberService;
 import com.github.bluekey.util.ImageUploadUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class AuthService {
 
 	private static final String S3_PROFILE_IMAGE_PREFIX = "profile/";
+	private static final int NEW_PASSWORD_LENGTH = 10;
 	private final MemberRepository memberRepository;
 	private final MemberService memberService;
 	private final PasswordEncoder passwordEncoder;
@@ -103,6 +106,17 @@ public class AuthService {
 
 	public String getEncodePassword(String password) {
 		return passwordEncoder.encode(password);
+	}
+
+	@Transactional
+	public NewPasswordResponseDto issuePassword(Long memberId) {
+		Member member = memberRepository.findByIdOrElseThrow(memberId);
+		String newPassword = RandomStringUtils.randomAlphanumeric(NEW_PASSWORD_LENGTH);
+		member.updatePassword(getEncodePassword(newPassword));
+		memberRepository.save(member);
+		return NewPasswordResponseDto.builder()
+				.newPassword(newPassword)
+				.build();
 	}
 
 	private void encodeMemberPassword(Member member) {

@@ -1,12 +1,15 @@
 package com.github.bluekey.controller.member;
 
 
+import static org.springframework.http.ResponseEntity.ok;
+
 import com.github.bluekey.dto.request.auth.PasswordRequestDto;
 import com.github.bluekey.dto.request.auth.LoginRequestDto;
 import com.github.bluekey.dto.request.auth.SignupRequestDto;
 import com.github.bluekey.dto.response.auth.AdminLoginTokenResponseDto;
 import com.github.bluekey.dto.response.auth.LoginTokenResponseDto;
 import com.github.bluekey.dto.response.auth.MemberIdResponseDto;
+import com.github.bluekey.dto.response.auth.NewPasswordResponseDto;
 import com.github.bluekey.dto.response.auth.SignupResponseDto;
 import com.github.bluekey.config.security.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.auth.AuthService;
@@ -20,6 +23,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,7 +49,7 @@ public class AuthController {
 	})
 	@PostMapping("/admin/login")
 	public ResponseEntity<AdminLoginTokenResponseDto> adminLogin(@RequestBody LoginRequestDto dto) {
-		return ResponseEntity.ok(authService.adminLogin(dto));
+		return ok(authService.adminLogin(dto));
 	}
 
 	@Operation(summary = "admin 회원가입", description = "admin 회원가입")
@@ -56,7 +60,7 @@ public class AuthController {
 	})
 	@PostMapping("/admin/signup")
 	public ResponseEntity<SignupResponseDto> adminSignup(@Valid @RequestBody SignupRequestDto dto) {
-		return ResponseEntity.ok(authService.createAdmin(dto));
+		return ok(authService.createAdmin(dto));
 	}
 
 	@Operation(summary = "member 로그인", description = "member 로그인")
@@ -67,7 +71,7 @@ public class AuthController {
 	})
 	@PostMapping("/member/login")
 	public ResponseEntity<LoginTokenResponseDto> memberLogin(@RequestBody LoginRequestDto dto) {
-		return ResponseEntity.ok(authService.login(dto));
+		return ok(authService.login(dto));
 	}
 
 	@Operation(summary = "member 비밀번호 변경", description = "member 비밀번호 변경")
@@ -77,7 +81,7 @@ public class AuthController {
 	@PatchMapping("/member/password")
 	public ResponseEntity<?> passwordChange(@Valid @RequestBody PasswordRequestDto dto) {
 		authService.changePassword(dto, PrincipalConvertUtil.getMemberId());
-		return ResponseEntity.ok().build();
+		return ok().build();
 	}
 
 	@Operation(summary = "member 비밀번호 확인", description = "member 비밀번호 확인")
@@ -87,7 +91,21 @@ public class AuthController {
 	@PostMapping("/member/password/confirm")
 	public ResponseEntity<?> passwordCheck(@RequestBody PasswordRequestDto dto) {
 		authService.matchPassword(dto, PrincipalConvertUtil.getMemberId());
-		return ResponseEntity.ok().build();
+		return ok().build();
+	}
+
+	@Operation(summary = "member 비밀번호 재발급", description = "member 비밀번호 재발급")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "비밀번호 재발급 성공",
+					content = @Content(mediaType = "application/json",
+							schema = @Schema(implementation = NewPasswordResponseDto.class))),
+	})
+	@PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+	@PatchMapping("/members/{memberId}/password")
+	public ResponseEntity<NewPasswordResponseDto> passwordIssue(
+			@PathVariable("memberId") Long memberId
+	) {
+		return ok(authService.issuePassword(memberId));
 	}
 
 	@Operation(summary = "member 퇴출", description = "Super Admin이 member에 대해 탈퇴를 진행")
@@ -97,6 +115,6 @@ public class AuthController {
 	@DeleteMapping("/members/{memberId}/withdrawal")
 	public ResponseEntity<MemberIdResponseDto> withdrawal(@PathVariable("memberId") Long memberId) {
 		Long removedMemberId = authService.deleteMember(memberId);
-		return ResponseEntity.ok(MemberIdResponseDto.builder().memberId(removedMemberId).build());
+		return ok(MemberIdResponseDto.builder().memberId(removedMemberId).build());
 	}
 }
