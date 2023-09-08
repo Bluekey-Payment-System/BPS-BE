@@ -12,10 +12,12 @@ import com.github.bluekey.repository.track.TrackRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
+@Component
 @RequiredArgsConstructor
 public class DBPersistenceValidator {
     private final MemberRepository memberRepository;

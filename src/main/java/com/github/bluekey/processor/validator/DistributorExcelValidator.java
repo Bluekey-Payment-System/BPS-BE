@@ -62,7 +62,7 @@ public class DistributorExcelValidator implements ExcelValidator {
         return sheet.getSheetName().equals(sheetName);
     }
 
-    public boolean hasCellZeroValue(AtoExcelColumnType columnType, Cell cell) {
+    public boolean hasCellZeroValue(Cell cell) {
         CellType cellType = cell.getCellType();
 
         if(cellType.equals(CellType.NUMERIC)) {

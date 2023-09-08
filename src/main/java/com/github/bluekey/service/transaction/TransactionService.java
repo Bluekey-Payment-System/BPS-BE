@@ -15,17 +15,17 @@ import com.github.bluekey.mail.EmailSender;
 import com.github.bluekey.processor.ExcelFileDBMigrationProcessManager;
 import com.github.bluekey.processor.ExcelFileProcessManager;
 import com.github.bluekey.processor.ExcelRowException;
-import com.github.bluekey.repository.album.AlbumRepository;
 import com.github.bluekey.repository.member.MemberRepository;
-import com.github.bluekey.repository.track.TrackMemberRepository;
-import com.github.bluekey.repository.track.TrackRepository;
+
 import com.github.bluekey.repository.transaction.OriginalTransactionRepository;
 import com.github.bluekey.repository.transaction.TransactionRepository;
 import com.github.bluekey.s3.manager.AwsS3Manager;
 import com.github.bluekey.s3.manager.S3PrefixType;
 import com.github.bluekey.util.ExcelUploadUtil;
+
 import java.io.IOException;
 import javax.mail.MessagingException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -51,13 +51,11 @@ public class TransactionService {
     private final OriginalTransactionRepository originalTransactionRepository;
     private final TransactionRepository transactionRepository;
     private final MemberRepository memberRepository;
-    private final AlbumRepository albumRepository;
-    private final TrackRepository trackRepository;
-    private final TrackMemberRepository trackMemberRepository;
     private final AwsS3Manager awsS3Manager;
     private final ExcelUploadUtil excelUploadUtil;
     private final ExcelFileDBMigrationProcessManager excelFileDBMigrationProcessManager;
     private final EmailSender emailSender;
+    private final ExcelFileProcessManager excelFileProcessManager;
 
     @Transactional(readOnly = true)
     public ListResponse<OriginalTransactionResponseDto> getOriginalTransactions(String uploadAt) {
@@ -85,13 +83,7 @@ public class TransactionService {
         String uploadAt = requestDto.getUploadMonth();
         String fileName = file.getOriginalFilename();
 
-        ExcelFileProcessManager excelFileProcessManager = new ExcelFileProcessManager(
-                file,
-                memberRepository,
-                albumRepository,
-                trackRepository,
-                trackMemberRepository
-        );
+        excelFileProcessManager.setExcelFileBasicInformation(file);
         excelFileProcessManager.process();
         List<ExcelRowException> errors = excelFileProcessManager.getErrors();
         if (errors.size() > ERROR_THRESHOLD) {
@@ -99,8 +91,8 @@ public class TransactionService {
         }
 
         originalTransactionRepository.findOriginalTransactionByFileNameAndUploadAtAndIsRemovedFalse(fileName, uploadAt).ifPresent((originalTransaction) -> {
-                    throw new BusinessException(ErrorCode.ORIGINAL_TRANSACTION_ALREADY_EXIST);
-                });
+            throw new BusinessException(ErrorCode.ORIGINAL_TRANSACTION_ALREADY_EXIST);
+        });
 
         String s3Url = excelUploadUtil.uploadExcel(file, excelUploadUtil.getExcelKey(file.getOriginalFilename(), uploadAt));
 
@@ -131,7 +123,7 @@ public class TransactionService {
     public void ExcelFilesToDBMigration() {
         Map<Workbook, OriginalTransaction> workbooks = new HashMap<>();
         List<OriginalTransaction> originalTransactions = originalTransactionRepository.findAllByIsCompletedFalseAndIsRemovedFalse();
-        for (OriginalTransaction originalTransaction: originalTransactions) {
+        for (OriginalTransaction originalTransaction : originalTransactions) {
             String s3Key = awsS3Manager.getS3Key(originalTransaction.getFileUrl(), S3PrefixType.EXCEL);
             S3Object s3Object = excelUploadUtil.getExcel(s3Key);
             Workbook workbook = getWorkBook(s3Object);
