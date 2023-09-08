@@ -152,7 +152,7 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
     }
 
     private boolean isAlbumExceptionAllowCase(Cell cell, Row row) {
-        if (atoDistributorCellValidator.hasCellZeroValue(ALBUM_NAME, cell)) {
+        if (atoDistributorCellValidator.hasCellZeroValue(cell)) {
             Cell cellArtist = row.getCell(ARTIST_NAME.getIndex());
             Cell cellTrack = row.getCell(TRACK_NAME.getIndex());
             Cell cellServiceName = row.getCell(SERVICE_NAME.getIndex());
