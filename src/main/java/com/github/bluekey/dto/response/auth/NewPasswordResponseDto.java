@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Schema(description = "아티스트의 임시 비밀번호 발급 응답")
 public class NewPasswordResponseDto {
 	@Schema(description = "새로운 비밀번호", example = "qwerty123")
 	private String newPassword;
