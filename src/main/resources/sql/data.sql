@@ -506,45 +506,49 @@ VALUES (43, 7, '송민섭', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 45
 INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
-VALUES (44, 7, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (43, 1, '혁기', 20, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 46
 INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
-VALUES (45, 7, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (44, 7, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 47
 INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
-VALUES (46, 7, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (45, 7, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 48
 INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
-VALUES (47, 7, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (46, 7, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 49
 INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
-VALUES (48, 7, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (47, 7, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 50
 INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
-VALUES (49, 7, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (48, 7, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 51
 INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
-VALUES (50, 7, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (49, 7, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 52
 INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
-VALUES (51, 7, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (50, 7, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 53
 INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
-VALUES (52, 7, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (51, 7, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 54
 INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
-VALUES (53, 7, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+VALUES (52, 7, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
 -- 55
+INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
+VALUES (53, 7, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
+
+-- 56
 INSERT INTO track_member (track_id, member_id, name, commission_rate, created_at, modified_at, is_removed)
 VALUES (54, 7, '블루키', 30, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
