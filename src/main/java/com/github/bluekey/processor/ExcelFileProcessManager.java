@@ -9,11 +9,9 @@ import com.github.bluekey.processor.provider.MafiaDistributorExcelFileProvider;
 import com.github.bluekey.processor.provider.ThreePointOneFourDistributorExcelFileProvider;
 import com.github.bluekey.processor.type.MusicDistributorType;
 import com.github.bluekey.processor.validator.DBPersistenceValidator;
-import com.github.bluekey.repository.album.AlbumRepository;
-import com.github.bluekey.repository.member.MemberRepository;
-import com.github.bluekey.repository.track.TrackMemberRepository;
-import com.github.bluekey.repository.track.TrackRepository;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -21,35 +19,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Getter
-public class ExcelFileProcessManager implements ProcessManager{
+@RequiredArgsConstructor
+@Component
+public class ExcelFileProcessManager implements ProcessManager {
     private static final String FILE_SEPARATOR = "\\.";
-    private final MultipartFile file;
-    private final ExcelFileProvider excelFileProvider;
+    private final DBPersistenceValidator dbPersistenceValidator;
+
+    private MultipartFile file;
+    private ExcelFileProvider excelFileProvider;
     private String filetype;
     private String fileName;
     private ExcelDistributorType distributorType;
-    private final MemberRepository memberRepository;
-    private final AlbumRepository albumRepository;
-    private final TrackRepository trackRepository;
-    private final TrackMemberRepository trackMemberRepository;
-    private final DBPersistenceValidator dbPersistenceValidator;
-
-    public ExcelFileProcessManager(
-            MultipartFile file,
-            MemberRepository memberRepository,
-            AlbumRepository albumRepository,
-            TrackRepository trackRepository,
-            TrackMemberRepository trackMemberRepository
-    ) {
-        setExcelFileBasicInformation(file);
-        this.file = file;
-        this.memberRepository = memberRepository;
-        this.albumRepository = albumRepository;
-        this.trackRepository = trackRepository;
-        this.trackMemberRepository = trackMemberRepository;
-        this.dbPersistenceValidator = new DBPersistenceValidator(memberRepository, albumRepository, trackRepository, trackMemberRepository);
-        this.excelFileProvider = setProvider();
-    }
 
     @Override
     public void process() {
@@ -60,16 +40,20 @@ public class ExcelFileProcessManager implements ProcessManager{
         return excelFileProvider.getErrors();
     }
 
-    public List<ExcelRowException> getWarnings() {return excelFileProvider.getWarnings();}
+    public List<ExcelRowException> getWarnings() {
+        return excelFileProvider.getWarnings();
+    }
 
     public ExcelDistributorType getDistributorType() {
         return this.distributorType;
     }
 
-    private void setExcelFileBasicInformation(MultipartFile file) {
+    public void setExcelFileBasicInformation(MultipartFile file) {
         String[] originalFileNameInformation = file.getOriginalFilename().split(FILE_SEPARATOR);
         this.fileName = originalFileNameInformation[0];
         this.filetype = originalFileNameInformation[1];
+        this.file = file;
+        this.excelFileProvider = setProvider();
     }
 
     private ExcelFileProvider setProvider() {
@@ -92,7 +76,7 @@ public class ExcelFileProcessManager implements ProcessManager{
             this.distributorType = ExcelDistributorType.THREE_POINT_ONE_FOUR;
             return new ThreePointOneFourDistributorExcelFileProvider(file, dbPersistenceValidator);
         }
-        if(type.getCls().equals(MafiaDistributorExcelFileProvider.class)) {
+        if (type.getCls().equals(MafiaDistributorExcelFileProvider.class)) {
             this.distributorType = ExcelDistributorType.MAFIA;
             return new MafiaDistributorExcelFileProvider(file, dbPersistenceValidator, fileName);
         }
