@@ -38,6 +38,8 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
     private static final int MAFIA_DATA_ROW_START_INDEX = 3;
     private static final int MAFIA_DATA_HEADER_INDEX = 2;
     private static final int MAFIA_DATA_COLUMN_INDEX = 3;
+    private static final String MAFIA_DATA_OVERSEAS = "해외";
+    private static final String MAFIA_DATA_DOMESTIC = "국내";
 
     private final MemberRepository memberRepository;
     private final TrackMemberRepository trackMemberRepository;
@@ -102,40 +104,75 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
         Cell amountIndexCell = row.getCell(MAFIA_DATA_COLUMN_INDEX);
         Cell amountCell = row.getCell(transactionAt);
 
-        if (amountIndexCell.getStringCellValue().equals("국내") || amountIndexCell.getStringCellValue().equals("해외")) {
+        if (amountIndexCell.getStringCellValue().equals(MAFIA_DATA_DOMESTIC) || amountIndexCell.getStringCellValue().equals(MAFIA_DATA_OVERSEAS)) {
             if (trackCell.getStringCellValue().isBlank()) {
                 log.info("albumCell = {}", albumCell.getStringCellValue());
                 log.info("trackCell = {}", trackCell.getStringCellValue());
                 log.info("amountCell = {}", amountCell.getNumericCellValue());
-                mafiaMigrate(albumNameInMafia, trackNameInMafia, amountCell.getNumericCellValue(), originalTransaction);
+                migrate(new ArrayList<>(), albumNameInMafia, trackNameInMafia, amountCell.getNumericCellValue(), originalTransaction);
             }
         }
     }
 
-    private void mafiaMigrate(String albumName, String trackName, Double amount, OriginalTransaction originalTransaction) {
+    private void migrate(List<String> artistExtractedNames, String albumName, String trackName, Double amount, OriginalTransaction originalTransaction) {
         Optional<Album> album = albumRepository.findAlbumByNameIgnoreCaseOrEnNameIgnoreCase(albumName, albumName);
+
+        // 앨범이 존재할 경우
         if (album.isPresent()) {
             Album findAlbum = album.get();
             Optional<Track> track = trackRepository.findTrackByNameIgnoreCaseOrEnNameIgnoreCaseAndAlbum(trackName, trackName, findAlbum);
             if (track.isPresent()) {
                 Track findTrack = track.get();
-                List<TrackMember> trackMembers = findTrack.getTrackMembers();
-                for (TrackMember trackMember : trackMembers) {
-                    int commissionRate = trackMember.getCommissionRate();
 
-                    Optional<Transaction> transaction = transactionRepository.findTransactionByOriginalTransactionAndDurationAndTrackMember(
-                            originalTransaction,
-                            originalTransaction.getUploadAt(),
-                            trackMember
-                    );
-                    if (transaction.isPresent()) {
-                        Transaction existedTransaction = transaction.get();
-                        existedTransaction.updateAmount(amount * commissionRate / 100);
-                        transactionRepository.save(existedTransaction);
-                    } else {
-                        transactionRepository.save(createNewTransaction(amount * commissionRate / 100, originalTransaction, trackMember));
+                Optional<Transaction> transaction = transactionRepository.findTransactionsByOriginalTransactionAndDurationAndTrack(
+                        originalTransaction,
+                        originalTransaction.getUploadAt(),
+                        findTrack
+                );
+
+                if (transaction.isPresent()) {
+                    Transaction existedTransaction = transaction.get();
+                    existedTransaction.updateAmount(amount);
+                    transactionRepository.save(existedTransaction);
+                    if (trackName.equals("그대 안아줄게요")) {
+                        log.info("amount1 = {}", amount);
                     }
+                } else {
+                    if (trackName.equals("그대 안아줄게요")) {
+                        log.info("amount1 = {}", amount);
+                    }
+                    transactionRepository.save(createNewTransaction(amount, originalTransaction, findTrack));
+                }
+            }
+        }
 
+        // 앨범이 존재하지 않는 경우 경우 -> 유튜브인 경우 album이 0으로 들어올 경우
+        if (album.isEmpty()) {
+            Optional<Track> track = trackRepository.findTrackByNameIgnoreCaseOrEnNameIgnoreCase(trackName, trackName);
+            if (track.isPresent()) {
+                Track findTrack = track.get();
+                for (TrackMember trackMember : findTrack.getTrackMembers()) {
+                    if (artistExtractedNames.contains(trackMember.getName())) {
+                        Optional<Transaction> transaction = transactionRepository.findTransactionsByOriginalTransactionAndDurationAndTrack(
+                                originalTransaction,
+                                originalTransaction.getUploadAt(),
+                                findTrack
+                        );
+
+                        if (transaction.isPresent()) {
+                            Transaction existedTransaction = transaction.get();
+                            existedTransaction.updateAmount(amount);
+                            transactionRepository.save(existedTransaction);
+                            if (trackName.equals("그대 안아줄게요")) {
+                                log.info("amount1 = {}", amount);
+                            }
+                        } else {
+                            if (trackName.equals("그대 안아줄게요")) {
+                                log.info("amount1 = {}", amount);
+                            }
+                            transactionRepository.save(createNewTransaction(amount, originalTransaction, findTrack));
+                        }
+                    }
                 }
             }
         }
@@ -166,16 +203,18 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
         DataFormatter dataFormatter = new DataFormatter();
 
         Cell artistCell = row.getCell(ThreePointOneFourExcelColumnType.ARTIST_NAME.getIndex());
+        Cell albumCell = row.getCell(ThreePointOneFourExcelColumnType.ALBUM_NAME.getIndex());
         Cell trackCell = row.getCell(ThreePointOneFourExcelColumnType.TRACK_NAME.getIndex());
         Cell amountCell = row.getCell(ThreePointOneFourExcelColumnType.AMOUNT.getIndex());
 
         String artistName = dataFormatter.formatCellValue(artistCell);
         String trackName = dataFormatter.formatCellValue(trackCell);
+        String albumName = dataFormatter.formatCellValue(albumCell);
         Double amount = amountCell.getNumericCellValue();
 
         List<String> artistExtractedNames = NameExtractor.getExtractedNames(artistName);
 
-        migrate(artistExtractedNames, trackName, amount, originalTransaction);
+        migrate(artistExtractedNames, albumName, trackName, amount, originalTransaction);
     }
 
     private void atoWorkbookProcess(Sheet sheet, OriginalTransaction originalTransaction) {
@@ -189,19 +228,22 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
         DataFormatter dataFormatter = new DataFormatter();
 
         Cell artistCell = row.getCell(AtoExcelColumnType.ARTIST_NAME.getIndex());
+        Cell albumCell = row.getCell(AtoExcelColumnType.ALBUM_NAME.getIndex());
         Cell trackCell = row.getCell(AtoExcelColumnType.TRACK_NAME.getIndex());
         Cell amountCell = row.getCell(AtoExcelColumnType.AMOUNT.getIndex());
 
         String artistName = dataFormatter.formatCellValue(artistCell);
+        String albumName = dataFormatter.formatCellValue(albumCell);
         String trackName = dataFormatter.formatCellValue(trackCell);
         Double amount = amountCell.getNumericCellValue();
 
         List<String> artistExtractedNames = NameExtractor.getExtractedNames(artistName);
 
-        migrate(artistExtractedNames, trackName, amount, originalTransaction);
+        migrate(artistExtractedNames, albumName, trackName, amount, originalTransaction);
     }
 
-    private void migrate(List<String> artistExtractedNames, String trackName, Double amount, OriginalTransaction originalTransaction) {
+    @Deprecated
+    private void deprecatedMigrate(List<String> artistExtractedNames, String trackName, Double amount, OriginalTransaction originalTransaction) {
         for (String artistExtractedName : artistExtractedNames) {
             Optional<Track> trackFindByEnName = trackRepository.findTrackByEnNameIgnoreCase(trackName);
             if (trackFindByEnName.isPresent()) {
@@ -213,13 +255,13 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
                             originalTransaction.getUploadAt(),
                             trackMemberByEnName
                     );
-                    if (transaction.isPresent()) {
-                        Transaction existedTransaction = transaction.get();
-                        existedTransaction.updateAmount(amount);
-                        transactionRepository.save(existedTransaction);
-                    } else {
-                        transactionRepository.save(createNewTransaction(amount, originalTransaction, trackMemberByEnName));
-                    }
+//                    if (transaction.isPresent()) {
+//                        Transaction existedTransaction = transaction.get();
+//                        existedTransaction.updateAmount(amount);
+//                        transactionRepository.save(existedTransaction);
+//                    } else {
+//                        transactionRepository.save(createNewTransaction(amount, originalTransaction, trackMemberByEnName));
+//                    }
                 }
             }
             Optional<Track> trackFindByName = trackRepository.findTrackByNameIgnoreCase(trackName);
@@ -233,23 +275,23 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
                             originalTransaction.getUploadAt(),
                             trackMemberByName
                     );
-                    if (transaction.isPresent()) {
-                        Transaction existedTransaction = transaction.get();
-                        existedTransaction.updateAmount(amount);
-                        transactionRepository.save(existedTransaction);
-                    } else {
-                        transactionRepository.save(createNewTransaction(amount, originalTransaction, trackMemberByName));
-                    }
+//                    if (transaction.isPresent()) {
+//                        Transaction existedTransaction = transaction.get();
+//                        existedTransaction.updateAmount(amount);
+//                        transactionRepository.save(existedTransaction);
+//                    } else {
+//                        transactionRepository.save(createNewTransaction(amount, originalTransaction, trackMemberByName));
+//                    }
                 }
             }
         }
     }
 
-    private Transaction createNewTransaction(Double amount, OriginalTransaction originalTransaction, TrackMember trackMember) {
+    private Transaction createNewTransaction(Double amount, OriginalTransaction originalTransaction, Track track) {
         return Transaction.builder()
                 .amount(amount)
                 .duration(originalTransaction.getUploadAt())
-                .trackMember(trackMember)
+                .track(track)
                 .originalTransaction(originalTransaction)
                 .build();
     }
