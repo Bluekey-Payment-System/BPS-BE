@@ -126,4 +126,35 @@ public class DBPersistenceValidator {
         }
         return true;
     }
+
+    public boolean hasNotExistedTrackInMafia(Cell cell, String albumName) {
+        String trackName = cell.getStringCellValue();
+
+        Optional<Album> albumFindByEnName = albumRepository.findAlbumByEnNameIgnoreCase(albumName);
+        if (albumFindByEnName.isPresent()) {
+            Optional<Track> trackFindByEnName = trackRepository.findTrackByEnNameIgnoreCaseAndAlbum(trackName, albumFindByEnName.get());
+            if(trackFindByEnName.isPresent()) {
+                return false;
+            }
+
+            Optional<Track> trackFindByName = trackRepository.findTrackByNameIgnoreCaseAndAlbum(trackName, albumFindByEnName.get());
+            if(trackFindByName.isPresent()) {
+                return false;
+            }
+        }
+
+        Optional<Album> albumFindByName = albumRepository.findAlbumByNameIgnoreCase(albumName);
+        if (albumFindByName.isPresent()) {
+            Optional<Track> trackFindByEnName = trackRepository.findTrackByEnNameIgnoreCaseAndAlbum(trackName, albumFindByEnName.get());
+            if(trackFindByEnName.isPresent()) {
+                return false;
+            }
+
+            Optional<Track> trackFindByName = trackRepository.findTrackByNameIgnoreCaseAndAlbum(trackName, albumFindByEnName.get());
+            if(trackFindByName.isPresent()) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
