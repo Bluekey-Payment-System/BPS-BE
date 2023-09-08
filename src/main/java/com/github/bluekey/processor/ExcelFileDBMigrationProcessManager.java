@@ -1,5 +1,6 @@
 package com.github.bluekey.processor;
 
+import com.github.bluekey.entity.album.Album;
 import com.github.bluekey.entity.track.Track;
 import com.github.bluekey.entity.track.TrackMember;
 import com.github.bluekey.entity.transaction.ExcelDistributorType;
@@ -8,6 +9,7 @@ import com.github.bluekey.entity.transaction.Transaction;
 import com.github.bluekey.processor.type.AtoExcelColumnType;
 import com.github.bluekey.processor.type.MafiaExcelColumnType;
 import com.github.bluekey.processor.type.ThreePointOneFourExcelColumnType;
+import com.github.bluekey.repository.album.AlbumRepository;
 import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.repository.track.TrackMemberRepository;
 import com.github.bluekey.repository.track.TrackRepository;
@@ -35,11 +37,15 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
     private static final int THREE_POINT_ONE_FOUR_DATA_ROW_START_INDEX = 4;
     private static final int MAFIA_DATA_ROW_START_INDEX = 3;
     private static final int MAFIA_DATA_HEADER_INDEX = 2;
+    private static final int MAFIA_DATA_COLUMN_INDEX = 3;
 
     private final MemberRepository memberRepository;
     private final TrackMemberRepository trackMemberRepository;
+    private final AlbumRepository albumRepository;
     private final TrackRepository trackRepository;
     private final TransactionRepository transactionRepository;
+    private String albumNameInMafia;
+    private String trackNameInMafia;
 
     private Map<Workbook, OriginalTransaction> workbooks = new HashMap<>();
 
@@ -84,18 +90,56 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
 
     private void migrateMafiaExcelDataToDB(Row row, OriginalTransaction originalTransaction, int transactionAt) {
 
-        DataFormatter dataFormatter = new DataFormatter();
-
         Cell albumCell = row.getCell(MafiaExcelColumnType.ALBUM_NAME.getIndex());
+        if (!albumCell.getStringCellValue().isBlank()) {
+            this.albumNameInMafia = albumCell.getStringCellValue();
+        }
         Cell trackCell = row.getCell(MafiaExcelColumnType.TRACK_NAME.getIndex());
+        if (!trackCell.getStringCellValue().isBlank()) {
+            this.trackNameInMafia = trackCell.getStringCellValue();
+        }
+
+        Cell amountIndexCell = row.getCell(MAFIA_DATA_COLUMN_INDEX);
         Cell amountCell = row.getCell(transactionAt);
 
-        log.info("albumCell = {}", albumCell.getStringCellValue());
-        log.info("trackCell = {}", trackCell.getStringCellValue());
-        log.info("amountCell = {}", amountCell.getNumericCellValue());
-
+        if (amountIndexCell.getStringCellValue().equals("국내") || amountIndexCell.getStringCellValue().equals("해외")) {
+            if (trackCell.getStringCellValue().isBlank()) {
+                log.info("albumCell = {}", albumCell.getStringCellValue());
+                log.info("trackCell = {}", trackCell.getStringCellValue());
+                log.info("amountCell = {}", amountCell.getNumericCellValue());
+                mafiaMigrate(albumNameInMafia, trackNameInMafia, amountCell.getNumericCellValue(), originalTransaction);
+            }
+        }
     }
 
+    private void mafiaMigrate(String albumName, String trackName, Double amount, OriginalTransaction originalTransaction) {
+        Optional<Album> album = albumRepository.findAlbumByNameIgnoreCaseOrEnNameIgnoreCase(albumName, albumName);
+        if (album.isPresent()) {
+            Album findAlbum = album.get();
+            Optional<Track> track = trackRepository.findTrackByNameIgnoreCaseOrEnNameIgnoreCaseAndAlbum(trackName, trackName, findAlbum);
+            if (track.isPresent()) {
+                Track findTrack = track.get();
+                List<TrackMember> trackMembers = findTrack.getTrackMembers();
+                for (TrackMember trackMember : trackMembers) {
+                    int commissionRate = trackMember.getCommissionRate();
+
+                    Optional<Transaction> transaction = transactionRepository.findTransactionByOriginalTransactionAndDurationAndTrackMember(
+                            originalTransaction,
+                            originalTransaction.getUploadAt(),
+                            trackMember
+                    );
+                    if (transaction.isPresent()) {
+                        Transaction existedTransaction = transaction.get();
+                        existedTransaction.updateAmount(amount * commissionRate / 100);
+                        transactionRepository.save(existedTransaction);
+                    } else {
+                        transactionRepository.save(createNewTransaction(amount * commissionRate / 100, originalTransaction, trackMember));
+                    }
+
+                }
+            }
+        }
+    }
     private int getTransactionAt(Row row, String transactionAt) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         for (Cell cell: row) {
