@@ -2,6 +2,7 @@ package com.github.bluekey.entity.track;
 
 import com.github.bluekey.entity.BaseTimeEntity;
 import com.github.bluekey.entity.album.Album;
+import com.github.bluekey.entity.transaction.Transaction;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,6 +29,9 @@ public class Track extends BaseTimeEntity {
 
 	@OneToMany(mappedBy = "track", cascade = CascadeType.ALL)
 	private List<TrackMember> trackMembers = new ArrayList<>();
+
+	@OneToMany(mappedBy = "track", cascade = CascadeType.ALL)
+	private List<Transaction> transactions = new ArrayList<>();
 
 	@Column(nullable = false)
 	private String name;

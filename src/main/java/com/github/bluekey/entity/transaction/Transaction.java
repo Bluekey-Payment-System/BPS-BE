@@ -1,6 +1,7 @@
 package com.github.bluekey.entity.transaction;
 
 import com.github.bluekey.entity.BaseTimeEntity;
+import com.github.bluekey.entity.track.Track;
 import com.github.bluekey.entity.track.TrackMember;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -21,6 +22,11 @@ public class Transaction extends BaseTimeEntity {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "track_id")
+	private Track track;
+
+	@Deprecated
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "track_member_id")
 	private TrackMember trackMember;
 
@@ -32,8 +38,9 @@ public class Transaction extends BaseTimeEntity {
 	private Double amount;
 
 	@Builder
-	public Transaction(TrackMember trackMember, OriginalTransaction originalTransaction, String duration, Double amount) {
+	public Transaction(TrackMember trackMember, Track track, OriginalTransaction originalTransaction, String duration, Double amount) {
 		this.trackMember = trackMember;
+		this.track = track;
 		this.originalTransaction = originalTransaction;
 		this.duration = duration;
 		this.amount = amount;
