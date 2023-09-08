@@ -116,13 +116,13 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
 
     private void migrate(List<String> artistExtractedNames, String albumName, String trackName, Double amount, OriginalTransaction originalTransaction) {
         Optional<Album> album = albumRepository.findAlbumByNameIgnoreCaseOrEnNameIgnoreCase(albumName, albumName);
-
+        boolean isExistTrackByName = false;
         // 앨범이 존재할 경우
         if (album.isPresent()) {
             Album findAlbum = album.get();
-            Optional<Track> track = trackRepository.findTrackByNameIgnoreCaseOrEnNameIgnoreCaseAndAlbum(trackName, trackName, findAlbum);
-            if (track.isPresent()) {
-                Track findTrack = track.get();
+            Optional<Track> trackByName = trackRepository.findTrackByNameIgnoreCaseAndAlbum(trackName, findAlbum);
+            if (trackByName.isPresent()) {
+                Track findTrack = trackByName.get();
 
                 Optional<Transaction> transaction = transactionRepository.findTransactionsByOriginalTransactionAndDurationAndTrack(
                         originalTransaction,
@@ -134,46 +134,57 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
                     Transaction existedTransaction = transaction.get();
                     existedTransaction.updateAmount(amount);
                     transactionRepository.save(existedTransaction);
-                    if (trackName.equals("그대 안아줄게요")) {
-                        log.info("amount1 = {}", amount);
-                    }
                 } else {
-                    if (trackName.equals("그대 안아줄게요")) {
-                        log.info("amount1 = {}", amount);
-                    }
+                    transactionRepository.save(createNewTransaction(amount, originalTransaction, findTrack));
+                }
+                isExistTrackByName = true;
+            }
+
+            Optional<Track> trackByEnName = trackRepository.findTrackByEnNameIgnoreCaseAndAlbum(trackName, findAlbum);
+            if (trackByEnName.isPresent() && !isExistTrackByName) {
+                Track findTrack = trackByEnName.get();
+
+                Optional<Transaction> transaction = transactionRepository.findTransactionsByOriginalTransactionAndDurationAndTrack(
+                        originalTransaction,
+                        originalTransaction.getUploadAt(),
+                        findTrack
+                );
+
+                if (transaction.isPresent()) {
+                    Transaction existedTransaction = transaction.get();
+                    existedTransaction.updateAmount(amount);
+                    transactionRepository.save(existedTransaction);
+                } else {
                     transactionRepository.save(createNewTransaction(amount, originalTransaction, findTrack));
                 }
             }
+
         }
 
         // 앨범이 존재하지 않는 경우 경우 -> 유튜브인 경우 album이 0으로 들어올 경우
         if (album.isEmpty()) {
-            Optional<Track> track = trackRepository.findTrackByNameIgnoreCaseOrEnNameIgnoreCase(trackName, trackName);
-            if (track.isPresent()) {
-                Track findTrack = track.get();
-                for (TrackMember trackMember : findTrack.getTrackMembers()) {
-                    if (artistExtractedNames.contains(trackMember.getName())) {
-                        Optional<Transaction> transaction = transactionRepository.findTransactionsByOriginalTransactionAndDurationAndTrack(
-                                originalTransaction,
-                                originalTransaction.getUploadAt(),
-                                findTrack
-                        );
+            List<Track> tracks = trackRepository.findTrackByNameIgnoreCaseOrEnNameIgnoreCase(trackName, trackName);
+            if (tracks.size() > 0) {
+                for (Track track : tracks) {
+                    for (TrackMember trackMember : track.getTrackMembers()) {
+                        if (artistExtractedNames.contains(trackMember.getName())) {
+                            Optional<Transaction> transaction = transactionRepository.findTransactionsByOriginalTransactionAndDurationAndTrack(
+                                    originalTransaction,
+                                    originalTransaction.getUploadAt(),
+                                    track
+                            );
 
-                        if (transaction.isPresent()) {
-                            Transaction existedTransaction = transaction.get();
-                            existedTransaction.updateAmount(amount);
-                            transactionRepository.save(existedTransaction);
-                            if (trackName.equals("그대 안아줄게요")) {
-                                log.info("amount1 = {}", amount);
+                            if (transaction.isPresent()) {
+                                Transaction existedTransaction = transaction.get();
+                                existedTransaction.updateAmount(amount);
+                                transactionRepository.save(existedTransaction);
+                            } else {
+                                transactionRepository.save(createNewTransaction(amount, originalTransaction, track));
                             }
-                        } else {
-                            if (trackName.equals("그대 안아줄게요")) {
-                                log.info("amount1 = {}", amount);
-                            }
-                            transactionRepository.save(createNewTransaction(amount, originalTransaction, findTrack));
                         }
                     }
                 }
+
             }
         }
     }
