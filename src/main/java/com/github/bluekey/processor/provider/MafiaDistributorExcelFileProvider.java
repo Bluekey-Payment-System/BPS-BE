@@ -17,10 +17,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.github.bluekey.processor.type.AtoExcelColumnType.ALBUM_NAME;
-import static com.github.bluekey.processor.type.AtoExcelColumnType.TRACK_NAME;
+import static com.github.bluekey.processor.type.MafiaExcelColumnType.ALBUM_NAME;
+import static com.github.bluekey.processor.type.MafiaExcelColumnType.TRACK_NAME;
 import static com.github.bluekey.processor.type.ExcelRowExceptionType.*;
-import static com.github.bluekey.processor.type.MafiaExcelColumnType.*;
 
 @Slf4j
 @Getter
@@ -41,6 +40,7 @@ public class MafiaDistributorExcelFileProvider implements ExcelFileProvider {
     private String artistName;
     private String uploadAt;
     private int activeColumnIndex;
+    private List<String> albumName = new ArrayList<>();
     private final DBPersistenceValidator dbPersistenceValidator;
 
     public MafiaDistributorExcelFileProvider(
@@ -120,11 +120,15 @@ public class MafiaDistributorExcelFileProvider implements ExcelFileProvider {
     }
 
     private void validateCell(Cell cell, Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
         if (ALBUM_NAME.getIndex() == cell.getColumnIndex()) {
-//            validateAlbumNameCell(cell, row);
+            validateAlbumNameCell(cell, row);
+            if (!dataFormatter.formatCellValue(cell).equals("")) {
+                this.albumName.add(dataFormatter.formatCellValue(cell));
+            }
         }
         if (TRACK_NAME.getIndex() == cell.getColumnIndex()) {
-//            validateTrackNameCell(cell, row);
+            validateTrackNameCell(cell, row, this.albumName.get(this.albumName.size()-1));
         }
     }
 
@@ -137,10 +141,10 @@ public class MafiaDistributorExcelFileProvider implements ExcelFileProvider {
         }
     }
 
-    private void validateTrackNameCell(Cell cell, Row row) {
+    private void validateTrackNameCell(Cell cell, Row row, String albumName) {
         // 엑셀파일에서 트랙명이 null인 경우
         if (!distributorCellValidator.hasCellNullValue(cell)) {
-            if (dbPersistenceValidator.hasNotExistedTrack(cell, row.getCell(ALBUM_NAME.getIndex()))) {
+            if (dbPersistenceValidator.hasNotExistedTrackInMafia(cell, albumName)) {
                 ExcelRowException excelRowException = distributorCellValidator.generateException(TRACK_NAME, NOT_EXIST, cell, row.getRowNum());
                 errorRows.add(excelRowException);
             }
