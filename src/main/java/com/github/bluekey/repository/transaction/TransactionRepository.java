@@ -1,5 +1,6 @@
 package com.github.bluekey.repository.transaction;
 
+import com.github.bluekey.entity.track.Track;
 import com.github.bluekey.entity.track.TrackMember;
 import com.github.bluekey.entity.transaction.OriginalTransaction;
 import com.github.bluekey.entity.transaction.Transaction;
@@ -14,6 +15,12 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             OriginalTransaction originalTransaction,
             String duration,
             TrackMember trackMember
+    );
+
+    Optional<Transaction> findTransactionsByOriginalTransactionAndDurationAndTrack(
+            OriginalTransaction originalTransaction,
+            String duration,
+            Track track
     );
 
     List<Transaction> findTransactionsByDuration(String duration);
