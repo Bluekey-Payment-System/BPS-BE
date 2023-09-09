@@ -4,10 +4,12 @@ import com.github.bluekey.dto.request.track.TrackRequestDto;
 import com.github.bluekey.dto.response.track.TrackResponseDto;
 import com.github.bluekey.dto.track.TrackCommissionRateDto;
 import com.github.bluekey.entity.album.Album;
+import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.track.Track;
 import com.github.bluekey.entity.track.TrackMember;
 
 import com.github.bluekey.repository.album.AlbumRepository;
+import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.repository.track.TrackMemberRepository;
 import com.github.bluekey.repository.track.TrackRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ public class TrackService {
     private final TrackRepository trackRepository;
     private final AlbumRepository albumRepository;
     private final TrackMemberRepository trackMemberRepository;
+    private final MemberRepository memberRepository;
 
 
     @Transactional
@@ -81,9 +84,42 @@ public class TrackService {
         if (dto.getName() != null) {
             track.updateName(dto.getName());
         }
+
         if (dto.getEnName() != null) {
             track.updateEnName(dto.getEnName());
         }
+
+        if (dto.getIsOriginalTrack() != null) {
+            track.updateIsOriginalTrack(dto.getIsOriginalTrack());
+        }
+
+        if (dto.getArtists() != null) {
+            List<TrackCommissionRateDto> trackCommissionRateDtos = dto.getArtists();
+            List<TrackMember> trackMembers = new ArrayList<>();
+            for (TrackCommissionRateDto trackCommissionRateDto : trackCommissionRateDtos) {
+                Long memberId = trackCommissionRateDto.getMemberId();
+
+                if (memberId != null) {
+                    Member artist = memberRepository.findMemberByIdAndIsRemovedFalseOrElseThrow(memberId);
+                    TrackMember trackMember = TrackMember.ByArtistBuilder()
+                            .name(artist.getName())
+                            .track(track)
+                            .memberId(artist.getId())
+                            .commissionRate(trackCommissionRateDto.getCommissionRate())
+                            .build();
+                    trackMembers.add(trackMember);
+                } else {
+                    TrackMember trackMember = TrackMember.ByContractSingerBuilder()
+                            .name(trackCommissionRateDto.getName())
+                            .track(track)
+                            .build();
+                    trackMembers.add(trackMember);
+                }
+
+            }
+            track.updateTrackMembers(trackMembers);
+        }
+
 
         track.updateIsOriginalTrack(dto.getIsOriginalTrack());
     }
