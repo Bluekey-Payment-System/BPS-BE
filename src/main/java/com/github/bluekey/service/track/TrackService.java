@@ -61,11 +61,8 @@ public class TrackService {
     @Transactional
     public TrackResponseDto updateTrack(Long trackId, TrackRequestDto dto) {
         Track track = trackRepository.findByIdOrElseThrow(trackId);
-
         updateTrack(track, dto);
-
         trackRepository.save(track);
-//        List<TrackMember> trackMembers = new ArrayList<>();
 
         return TrackResponseDto.from(track, track.getTrackMembers());
     }
