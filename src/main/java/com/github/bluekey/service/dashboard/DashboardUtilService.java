@@ -6,11 +6,7 @@ import com.github.bluekey.entity.track.TrackMember;
 import com.github.bluekey.entity.transaction.Transaction;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +28,11 @@ public class DashboardUtilService {
 	}
 
 	public Double getGrowthRate(Double previousMonthAmount, double amount) {
-		if (previousMonthAmount == null || amount == 0.0) {
+		if (previousMonthAmount == null) {
+			return null;
+		}
+
+		if (amount == 0.0) {
 			return null;
 		}
 
@@ -41,6 +41,7 @@ public class DashboardUtilService {
 		}
 
 		double percentage = (amount - previousMonthAmount) / previousMonthAmount * 100;
+
 		if (0 < percentage && percentage < 10) {
 			return Math.floor(percentage * 10) / 10;
 		}
@@ -49,6 +50,7 @@ public class DashboardUtilService {
 
 	public double getProportion(double amount, double totalAmount) {
 		double percentage = (amount / totalAmount) * 100;
+
 		if (0 < percentage && percentage < 1) {
 			return Math.floor(percentage * 10) / 10;
 		}
@@ -98,120 +100,128 @@ public class DashboardUtilService {
 		}
 
 		int fromIndex = (page) * pageSize;
+
 		if (sources == null || sources.size() <= fromIndex) {
 			return Collections.emptyList();
 		}
 
-		// toIndex exclusive
 		return sources.subList(fromIndex, Math.min(fromIndex + pageSize, sources.size()));
 	}
 
 	/* ------------- Grouping ------------- */
 	public Map<Track, Double> getAmountGroupedByTrackFilteredByMemberId(List<Transaction> transactions, Long memberId) {
 		return transactions.stream()
-				.filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-				.filter(transaction -> transaction.getTrackMember().getMemberId().equals(memberId))
+				.filter(transaction -> hasMemberIdInTrackMembers(transaction, memberId))
 				.collect(Collectors.groupingBy(
-						transaction -> transaction.getTrackMember().getTrack(),
+						Transaction::getTrack,
 						Collectors.summingDouble(Transaction::getAmount)
 				));
 	}
 
 	public Map<Track, Double> getAmountGroupedByTrackFilteredByMemberIdNotNull(List<Transaction> transactions) {
 		return transactions.stream()
-				.filter(transaction -> transaction.getTrackMember().getMemberId() != null)
+				.filter(this::isMemberNotNull)
 				.collect(Collectors.groupingBy(
-						transaction -> transaction.getTrackMember().getTrack(),
+						Transaction::getTrack,
 						Collectors.summingDouble(Transaction::getAmount)
 				));
 	}
 
 	public Map<Track, Double> getAmountGroupedByTrackFilteredByMemberIdAndAlbumId(List<Transaction> transactions, Long memberId, Long albumId) {
 		return transactions.stream()
-				.filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-				.filter(transaction -> transaction.getTrackMember().getMemberId().equals(memberId))
-				.filter(transaction -> transaction.getTrackMember().getTrack().getAlbum().getId().equals(albumId))
+				.filter(transaction -> hasMemberIdInTrackMembers(transaction, memberId))
+				.filter(transaction -> hasAlbumIdInTransaction(transaction, albumId))
 				.collect(Collectors.groupingBy(
-						transaction -> transaction.getTrackMember().getTrack(),
+						Transaction::getTrack,
 						Collectors.summingDouble(Transaction::getAmount)
 				));
 	}
 
 	public Map<Track, Double> getAmountGroupedByTrackFilteredByAlbumId(List<Transaction> transactions, Long albumId) {
 		return transactions.stream()
-				.filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-				.filter(transaction -> transaction.getTrackMember().getTrack().getAlbum().getId().equals(albumId))
+				.filter(this::isMemberNotNull)
+				.filter(transaction -> hasAlbumIdInTransaction(transaction, albumId))
 				.collect(Collectors.groupingBy(
-						transaction -> transaction.getTrackMember().getTrack(),
+						Transaction::getTrack,
 						Collectors.summingDouble(Transaction::getAmount)
 				));
 	}
 
 	public Map<TrackMember, Double> getAmountGroupedByTrackMember(List<Transaction> transactions) {
 		return transactions.stream()
+				.flatMap(transaction -> transaction.getTrack().getTrackMembers().stream()
+						.map(trackMember -> new AbstractMap.SimpleEntry<>(trackMember, transaction.getAmount())))
 				.collect(Collectors.groupingBy(
-						Transaction::getTrackMember,
-						Collectors.summingDouble(Transaction::getAmount)
+						Map.Entry::getKey,
+						Collectors.summingDouble(Map.Entry::getValue)
 				));
 	}
 
 	public Map<TrackMember, Double> getAmountGroupedByTrackMemberFilteredByMemberIdNotNull(List<Transaction> transactions) {
 		return transactions.stream()
-				.filter(transaction -> transaction.getTrackMember().getMemberId() != null)
+				.filter(this::isMemberNotNull)
+				.flatMap(transaction -> transaction.getTrack().getTrackMembers().stream()
+						.map(trackMember -> new AbstractMap.SimpleEntry<>(trackMember, transaction.getAmount())))
 				.collect(Collectors.groupingBy(
-						Transaction::getTrackMember,
-						Collectors.summingDouble(Transaction::getAmount)
+						Map.Entry::getKey,
+						Collectors.summingDouble(Map.Entry::getValue)
 				));
 	}
 
 	public Map<TrackMember, Double> getAmountGroupedByTrackMemberFilteredByMemberId(List<Transaction> transactions, Long memberId) {
 		return transactions.stream()
-				.filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-				.filter(transaction -> transaction.getTrackMember().getMemberId().equals(memberId))
+				.filter(this::isMemberNotNull)
+				.filter(transaction -> hasMemberIdInTrackMembers(transaction, memberId))
+				.flatMap(transaction -> transaction.getTrack().getTrackMembers().stream()
+						.map(trackMember -> new AbstractMap.SimpleEntry<>(trackMember, transaction.getAmount())))
 				.collect(Collectors.groupingBy(
-						Transaction::getTrackMember,
-						Collectors.summingDouble(Transaction::getAmount)
+						Map.Entry::getKey,
+						Collectors.summingDouble(Map.Entry::getValue)
 				));
 	}
 
 	public Map<TrackMember, Double> getAmountGroupedByTrackMemberFilteredByMemberIdAndAlbumId(
 			List<Transaction> transactions, Long memberId, Long albumId) {
 		return transactions.stream()
-				.filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-				.filter(transaction -> transaction.getTrackMember().getMemberId().equals(memberId))
-				.filter(transaction -> transaction.getTrackMember().getTrack().getAlbum().getId().equals(albumId))
+				.filter(transaction -> hasMemberIdInTrackMembers(transaction, memberId))
+				.filter(transaction -> hasAlbumIdInTransaction(transaction, albumId))
+				.flatMap(transaction -> transaction.getTrack().getTrackMembers().stream()
+						.map(trackMember -> new AbstractMap.SimpleEntry<>(trackMember, transaction.getAmount())))
 				.collect(Collectors.groupingBy(
-						Transaction::getTrackMember,
-						Collectors.summingDouble(Transaction::getAmount)
+						Map.Entry::getKey,
+						Collectors.summingDouble(Map.Entry::getValue)
 				));
 	}
 
 	public Map<TrackMember, Double> getAmountGroupedByTrackMemberFilteredByAlbumId(List<Transaction> transactions, Long albumId) {
 		return transactions.stream()
-				.filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-				.filter(transaction -> transaction.getTrackMember().getTrack().getAlbum().getId().equals(albumId))
+				.filter(this::isMemberNotNull)
+				.filter(transaction -> hasAlbumIdInTransaction(transaction, albumId))
+				.flatMap(transaction -> transaction.getTrack().getTrackMembers().stream()
+						.map(trackMember -> new AbstractMap.SimpleEntry<>(trackMember, transaction.getAmount())))
 				.collect(Collectors.groupingBy(
-						Transaction::getTrackMember,
-						Collectors.summingDouble(Transaction::getAmount)
+						Map.Entry::getKey,
+						Collectors.summingDouble(Map.Entry::getValue)
 				));
 	}
 
 	public Map<Album, Double> getAmountGroupedByAlbumMemberFilteredByMemberId(List<Transaction> transactions, Long memberId) {
 		return transactions.stream()
-				.filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-				.filter(transaction -> transaction.getTrackMember().getMemberId().equals(memberId))
+				.filter(transaction -> hasMemberIdInTrackMembers(transaction, memberId))
 				.collect(Collectors.groupingBy(
-						transaction -> transaction.getTrackMember().getTrack().getAlbum(),
+						transaction -> transaction.getTrack().getAlbum(),
 						Collectors.summingDouble(Transaction::getAmount)
 				));
 	}
 
 	public Map<Long, Double> getAmountGroupedByMemberId(List<Transaction> transactions) {
 		return transactions.stream()
-				.filter((transaction -> transaction.getTrackMember().getMemberId() != null))
+				.filter((this::isMemberNotNull))
+				.flatMap(transaction -> transaction.getTrack().getTrackMembers().stream()
+						.map(trackMember -> new AbstractMap.SimpleEntry<>(trackMember.getMemberId(), transaction.getAmount())))
 				.collect(Collectors.groupingBy(
-						transaction -> transaction.getTrackMember().getMemberId(),
-						Collectors.summingDouble(Transaction::getAmount)
+						Map.Entry::getKey,
+						Collectors.summingDouble(Map.Entry::getValue)
 				));
 	}
 
@@ -257,5 +267,19 @@ public class DashboardUtilService {
 						(e1, e2) -> e1,
 						LinkedHashMap::new
 				));
+	}
+
+	private boolean hasMemberIdInTrackMembers(Transaction transaction, Long memberId) {
+		return transaction.getTrack().getTrackMembers().stream()
+				.anyMatch(trackMember -> trackMember.getMemberId() != null && trackMember.getMemberId().equals(memberId));
+	}
+
+	private boolean hasAlbumIdInTransaction(Transaction transaction, Long albumId) {
+		return transaction.getTrack().getAlbum().getId().equals(albumId);
+	}
+
+	private boolean isMemberNotNull(Transaction transaction) {
+		return transaction.getTrack().getTrackMembers().stream()
+				.anyMatch(trackMember -> trackMember.getMemberId() != null);
 	}
 }
