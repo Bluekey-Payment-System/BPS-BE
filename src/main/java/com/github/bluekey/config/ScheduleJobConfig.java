@@ -1,8 +1,9 @@
 package com.github.bluekey.config;
 
-import com.github.bluekey.schedule.job.ExcelToDatabaseJob;
+import com.github.bluekey.schedule.job.EmailSendJob;
 import lombok.RequiredArgsConstructor;
 import org.quartz.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
@@ -17,14 +18,26 @@ import static org.quartz.JobBuilder.newJob;
 public class ScheduleJobConfig {
     private static final String EXCEL_TO_DATABASE_CRON_CONFIG = "0 1 1 * *";
     private static final String EXCEL_TO_DATABASE_CRON_CONFIG_LOCAL_VER = "0 3 * * * ?";
+    private static final String EMAIL_SEND_CRON_CONFIG = "0 9 1 * *";
+    private static final String EMAIL_SEND_CRON_CONFIG_DEV_VER = "0 9 1 * *";
+    private static final String EMAIL_SEND_CRON_CONFIG_LOCAL_VER = "0 */10 * * * ?";
+    private static final String PRODUCTION = "prod";
+    private static final String DEV = "dev";
+    @Value("${spring.config.activate.on-profile}")
+    private String profile;
     private final Scheduler scheduler;
 
     @PostConstruct
     public void run(){
-        JobDetail detail = runJobDetail(ExcelToDatabaseJob.class, new HashMap<>());
+        JobDetail detail = runJobDetail(EmailSendJob.class, new HashMap<>());
 
         try {
-            scheduler.scheduleJob(detail, runJobTrigger(EXCEL_TO_DATABASE_CRON_CONFIG_LOCAL_VER));
+            if (profile.equals(PRODUCTION))
+                scheduler.scheduleJob(detail, runJobTrigger(EMAIL_SEND_CRON_CONFIG));
+            else if (profile.equals(DEV))
+                scheduler.scheduleJob(detail, runJobTrigger(EMAIL_SEND_CRON_CONFIG_DEV_VER));
+            else
+                scheduler.scheduleJob(detail, runJobTrigger(EMAIL_SEND_CRON_CONFIG_LOCAL_VER));
         } catch (SchedulerException e) {
             e.printStackTrace();
         }
