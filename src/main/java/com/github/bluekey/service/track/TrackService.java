@@ -58,15 +58,16 @@ public class TrackService {
         return TrackResponseDto.from(track, trackMembers);
     }
 
+    @Transactional
     public TrackResponseDto updateTrack(Long trackId, TrackRequestDto dto) {
         Track track = trackRepository.findByIdOrElseThrow(trackId);
 
         updateTrack(track, dto);
 
         trackRepository.save(track);
-        List<TrackMember> trackMembers = new ArrayList<>();
+//        List<TrackMember> trackMembers = new ArrayList<>();
 
-        return TrackResponseDto.from(track, trackMembers);
+        return TrackResponseDto.from(track, track.getTrackMembers());
     }
 
 
@@ -95,6 +96,7 @@ public class TrackService {
 
         if (dto.getArtists() != null) {
             List<TrackCommissionRateDto> trackCommissionRateDtos = dto.getArtists();
+            trackMemberRepository.deleteAll(track.getTrackMembers());
             List<TrackMember> trackMembers = new ArrayList<>();
             for (TrackCommissionRateDto trackCommissionRateDto : trackCommissionRateDtos) {
                 Long memberId = trackCommissionRateDto.getMemberId();
@@ -119,8 +121,5 @@ public class TrackService {
             }
             track.updateTrackMembers(trackMembers);
         }
-
-
-        track.updateIsOriginalTrack(dto.getIsOriginalTrack());
     }
 }
