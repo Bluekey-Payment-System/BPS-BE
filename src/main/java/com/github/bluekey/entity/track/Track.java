@@ -1,5 +1,6 @@
 package com.github.bluekey.entity.track;
 
+import com.github.bluekey.dto.track.TrackCommissionRateDto;
 import com.github.bluekey.entity.BaseTimeEntity;
 import com.github.bluekey.entity.album.Album;
 import com.github.bluekey.entity.transaction.Transaction;
@@ -64,5 +65,9 @@ public class Track extends BaseTimeEntity {
 
 	public void updateIsOriginalTrack(boolean isOriginalTrack) {
 		this.isOriginalTrack = isOriginalTrack;
+	}
+
+	public void updateTrackMembers(List<TrackMember> trackMembers) {
+		this.trackMembers = trackMembers;
 	}
 }
