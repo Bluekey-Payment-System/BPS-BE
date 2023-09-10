@@ -18,9 +18,12 @@ import static org.quartz.JobBuilder.newJob;
 public class ScheduleJobConfig {
     private static final String EXCEL_TO_DATABASE_CRON_CONFIG = "0 1 1 * *";
     private static final String EXCEL_TO_DATABASE_CRON_CONFIG_LOCAL_VER = "0 3 * * * ?";
+    // 매월 1일 오전 9시에 실행
     private static final String EMAIL_SEND_CRON_CONFIG = "0 9 1 * *";
+    // 매월 1일 오전 9시에 실행
     private static final String EMAIL_SEND_CRON_CONFIG_DEV_VER = "0 9 1 * *";
-    private static final String EMAIL_SEND_CRON_CONFIG_LOCAL_VER = "0 */10 * * * ?";
+    // 실행 후 10분마다 실행
+    private static final String EMAIL_SEND_CRON_CONFIG_LOCAL_VER = "0 */1 * * * ?";
     private static final String PRODUCTION = "prod";
     private static final String DEV = "dev";
     @Value("${spring.config.activate.on-profile}")

@@ -12,19 +12,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-@Service
 @Slf4j
+@Service
 @RequiredArgsConstructor
 public class EmailService {
-	private final EmailSender emailSender;
-	private final MemberRepository memberRepository;
-	@Value("${spring.config.activate.on-profile}")
-	private String profile;
 	private static final String DEV_TARGET_EMAIL = "wnl383@naver.com";
 	private static final String DEV_TARGET_EMAIL_NAME = "조세영";
 	private static final String EMAIL_TITLE = "Bluekey music 정산 알림";
 	private static final String PRODUCTION = "prod";
 	private static final String DEV = "dev";
+	private final EmailSender emailSender;
+	private final MemberRepository memberRepository;
+	@Value("${spring.config.activate.on-profile}")
+	private String profile;
 
 	public void sendNotificationEmail() throws MessagingException, IOException {
 		String year = String.valueOf(LocalDateTime.now().getYear());
