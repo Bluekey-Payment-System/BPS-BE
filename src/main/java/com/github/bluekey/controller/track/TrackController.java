@@ -50,7 +50,7 @@ public class TrackController {
                             schema = @Schema(implementation = TrackResponseDto.class)
                     )),
     })
-    @PatchMapping("/albums/{trackId}")
+    @PatchMapping("/{trackId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<TrackResponseDto> trackUpdate(
             @PathVariable("trackId") Long trackId,
