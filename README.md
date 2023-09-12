@@ -16,6 +16,16 @@
 <br />
 매출 추이 등의 통계 지표를 볼 수 있는 정산 플랫폼 사이트입니다.
 
-
-
 </div>
+
+<br />
+
+## Architecture
+### Infra
+- `EC2` t2.micro instance
+- `Docker container`
+  - Production Server
+  - Dev Server
+  - Dev Server MySQL
+  
+<img src="docs/images/infra.png" alt = "Infra" />
