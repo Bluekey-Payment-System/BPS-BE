@@ -4,9 +4,7 @@
 [![GitHub License](https://img.shields.io/github/license/Bluekey-Payment-System/BPS-BE?style=for-the-badge)](https://github.com/Bluekey-Payment-System/BPS-BE/blob/main/LICENSE)
 
 <br />
-
-# Bluekey music dashboard server
-
+<br />
 
 <div align="center">
 <img src= "docs/images/logo.png" alt = "logo" style="width: 200px" />
