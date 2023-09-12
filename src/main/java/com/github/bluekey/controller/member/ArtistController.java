@@ -217,7 +217,6 @@ public class ArtistController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = SimpleArtistAccountListResponseDto.class))),
     })
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     @GetMapping("/simple")
     public ResponseEntity<SimpleArtistAccountListResponseDto> getSimpleArtists() {
         return ok(memberService.getSimpleArtistAccounts());
