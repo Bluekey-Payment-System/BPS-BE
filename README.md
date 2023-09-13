@@ -25,7 +25,7 @@
 </div>
 
 <br />
-<br />>
+<br />
 
 # Useful Links
 [🎖 **View Production Site**🎖](https://bluekeyinsight.net) <br />
@@ -53,10 +53,9 @@
 <br />
 
 ## Infra
-
-<img src="https://img.shields.io/badge/Amazon AWS-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white" alt="amazon"/>
-<img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white" alt="docker"/>
-<img src="https://img.shields.io/badge/GitHub Actions-181717?style=for-the-badge&logo=GitHub&logoColor=white" alt="github actions"/>
+![AMAZON AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white)
+![Github Actions](https://img.shields.io/badge/GitHubActions-181717?style=for-the-badge&logo=GitHub&logoColor=white)
 
 ### Flow
 
@@ -89,9 +88,9 @@
 
 ## Server
 
-<img src="https://img.shields.io/badge/Java-007396?style=for-the-badge&logo=java&logoColor=white"/>
-<img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=Spring&logoColor=white"/>
-<img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"/>
+![Java](https://img.shields.io/badge/Java-007396?style=for-the-badge&logo=java&logoColor=white)
+![Spring](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=Spring&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white)
 
 ### Flow
 
