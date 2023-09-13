@@ -25,9 +25,13 @@
 </div>
 
 <br />
+<br />>
 
 # Useful Links
 [🎖 **View Production Site**🎖](https://bluekeyinsight.net) <br />
+
+<br />
+<br />
 
 # Contributors
 
@@ -40,10 +44,13 @@
 </table>
 
 <br />
+<br />
 
 # Architecture
 ## ERD
 <img src="docs/images/bluekey_erd.png" alt = "ERD" />
+
+<br />
 
 ## Infra
 
@@ -138,6 +145,7 @@
 - 500 Error 발생 시 Sentry capture 로직 실행
 - `Slack Webhooks`를 통해서 sentry link와 에러에 대한 사항을 bot을 통해 메시지 생성 및 알림
 
+<br />
 <br />
 
 # License
