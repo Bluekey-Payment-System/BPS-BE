@@ -18,16 +18,9 @@ import static org.quartz.JobBuilder.newJob;
 public class ScheduleJobConfig {
     private static final String EXCEL_TO_DATABASE_CRON_CONFIG = "0 1 1 * *";
     private static final String EXCEL_TO_DATABASE_CRON_CONFIG_LOCAL_VER = "0 3 * * * ?";
-    // 매월 1일 오전 9시에 실행
-    private static final String EMAIL_SEND_CRON_CONFIG = "0 9 1 * *";
-    // 매월 1일 오전 9시에 실행
-    private static final String EMAIL_SEND_CRON_CONFIG_DEV_VER = "0 9 1 * *";
-    // 실행 후 10분마다 실행
-    private static final String EMAIL_SEND_CRON_CONFIG_LOCAL_VER = "0 */1 * * * ?";
-    private static final String PRODUCTION = "prod";
-    private static final String DEV = "dev";
-    @Value("${spring.config.activate.on-profile}")
-    private String profile;
+
+    @Value("${bluekey.schedule.cron-config}")
+    private String cronConfig;
     private final Scheduler scheduler;
 
     @PostConstruct
@@ -35,12 +28,7 @@ public class ScheduleJobConfig {
         JobDetail detail = runJobDetail(EmailSendJob.class, new HashMap<>());
 
         try {
-            if (profile.equals(PRODUCTION))
-                scheduler.scheduleJob(detail, runJobTrigger(EMAIL_SEND_CRON_CONFIG));
-            else if (profile.equals(DEV))
-                scheduler.scheduleJob(detail, runJobTrigger(EMAIL_SEND_CRON_CONFIG_DEV_VER));
-            else
-                scheduler.scheduleJob(detail, runJobTrigger(EMAIL_SEND_CRON_CONFIG_LOCAL_VER));
+            scheduler.scheduleJob(detail, runJobTrigger(cronConfig));
         } catch (SchedulerException e) {
             e.printStackTrace();
         }
