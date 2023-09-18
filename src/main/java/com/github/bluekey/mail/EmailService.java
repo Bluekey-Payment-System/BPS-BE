@@ -16,14 +16,11 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class EmailService {
-	private static final String DEV_TARGET_EMAIL = "wnl383@naver.com";
-	private static final String DEV_TARGET_EMAIL_NAME = "조세영";
 	private static final String EMAIL_TITLE = "Bluekey music 정산 알림";
 	private static final String PRODUCTION = "prod";
-	private static final String DEV = "dev";
 	private final EmailSender emailSender;
 	private final MemberRepository memberRepository;
-	@Value("${spring.config.activate.on-profile}")
+	@Value("${bluekey.profile}")
 	private String profile;
 
 	public void sendNotificationEmail() throws MessagingException, IOException {
@@ -36,11 +33,8 @@ public class EmailService {
 				if (profile.equals(PRODUCTION)) {
 					emailSender.sendMail(artist.getEmail().getValue(), EMAIL_TITLE,
 							artist.getName(), year, month);
-				} else if (profile.equals(DEV)) {
-					emailSender.sendMail(DEV_TARGET_EMAIL, EMAIL_TITLE,
-							DEV_TARGET_EMAIL_NAME, year, month);
 				} else {
-					log.info("[local] {}에게 메일을 전송합니다.", artist.getName());
+					log.info("[{}] {}에게 메일을 전송합니다.", profile, artist.getName());
 				}
 			} catch (MessagingException | IOException e) {
 				log.error("{}에게 메일 전송 실패 : {}", artist.getName(), e.getMessage());
