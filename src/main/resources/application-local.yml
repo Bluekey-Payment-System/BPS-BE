@@ -70,3 +70,7 @@ springdoc:
       enabled: true
   cache:
     disabled: true
+bluekey:
+  profile: local
+  schedule:
+    cron-config: 0 */1 * * * ? # 실행 후 1분마다 실행
