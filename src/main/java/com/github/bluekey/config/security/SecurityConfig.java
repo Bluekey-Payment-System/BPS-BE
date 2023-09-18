@@ -47,7 +47,7 @@ public class SecurityConfig {
 				.cors(c -> {
 					c.configurationSource(request -> {
 						CorsConfiguration config = new CorsConfiguration();
-						config.setAllowedOrigins(List.of("http://localhost:3000", beHost, feHost));
+						config.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:3001", beHost, feHost));
 						config.setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE"));
 						config.setAllowedHeaders(Arrays.asList("*"));
 						return config;

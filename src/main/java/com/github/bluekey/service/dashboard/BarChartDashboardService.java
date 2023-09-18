@@ -4,6 +4,8 @@ import com.github.bluekey.dto.common.MonthlyTrendDto;
 import com.github.bluekey.dto.response.common.MonthlyTrendResponseDto;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
+import com.github.bluekey.entity.track.Track;
+import com.github.bluekey.entity.track.TrackMember;
 import com.github.bluekey.entity.transaction.Transaction;
 import com.github.bluekey.exception.AuthenticationException;
 import com.github.bluekey.exception.BusinessException;
@@ -194,7 +196,7 @@ public class BarChartDashboardService {
 
     private Map<String, Double> getAdminAmountGroupedByMonthForAlbum(List<Transaction> transactions, Long albumId) {
         return transactions.stream()
-                .filter(transaction -> transaction.getTrackMember().getTrack().getAlbum().getId().equals(albumId))
+                .filter(transaction -> transaction.getTrack().getAlbum().getId().equals(albumId))
                 .collect(
                         Collectors.groupingBy(
                                 Transaction::getDuration,
@@ -204,7 +206,7 @@ public class BarChartDashboardService {
 
     private Map<String, Integer> getAdminNetIncomeGroupedByMonthForAlbum(List<Transaction> transactions, Long albumId) {
         return transactions.stream()
-                .filter(transaction -> transaction.getTrackMember().getTrack().getAlbum().getId().equals(albumId))
+                .filter(transaction -> transaction.getTrack().getAlbum().getId().equals(albumId))
                 .collect(
                         Collectors.groupingBy(
                                 Transaction::getDuration,
@@ -214,21 +216,20 @@ public class BarChartDashboardService {
 
     private Map<String, Integer> getArtistSettlementGroupedByMonthForAlbum(List<Transaction> transactions, Long albumId, Long memberId) {
         return transactions.stream()
-                .filter(transaction -> transaction.getTrackMember().getTrack().getAlbum().getId().equals(albumId))
-                .filter(transaction -> transaction.getTrackMember().isArtistTrack())
-                .filter(transaction -> transaction.getTrackMember().getMemberId().equals(memberId))
+                .filter(transaction -> dashboardUtilService.hasAlbumIdInTransaction(transaction, albumId))
+                .filter(transaction -> dashboardUtilService.hasMemberIdInTrackMembers(transaction, memberId))
                 .collect(
                         Collectors.groupingBy(
                                 Transaction::getDuration,
-                                Collectors.summingInt((t) -> dashboardUtilService.getArtistSettlement(t.getAmount(), t.getTrackMember().getCommissionRate()))
+                                Collectors.summingInt((t) ->
+                                        dashboardUtilService.getArtistSettlement(t.getAmount(), getCommissionRateByTrack(t.getTrack(), memberId)))
                         ));
     }
 
     private Map<String, Double> getArtistAmountGroupedByMonthForAlbum(List<Transaction> transactions, Long albumId, Long memberId) {
         return transactions.stream()
-                .filter(transaction -> transaction.getTrackMember().getTrack().getAlbum().getId().equals(albumId))
-                .filter(transaction -> transaction.getTrackMember().isArtistTrack())
-                .filter(transaction -> transaction.getTrackMember().getMemberId().equals(memberId))
+                .filter(transaction -> dashboardUtilService.hasAlbumIdInTransaction(transaction, albumId))
+                .filter(transaction -> dashboardUtilService.hasMemberIdInTrackMembers(transaction, memberId))
                 .collect(
                         Collectors.groupingBy(
                                 Transaction::getDuration,
@@ -251,30 +252,44 @@ public class BarChartDashboardService {
                         Collectors.groupingBy(
                                 Transaction::getDuration,
                                 Collectors.summingInt((t) -> dashboardUtilService
-                                        .getCompanyNetIncome(t.getAmount(), t.getTrackMember().getCommissionRate()))
+                                        .getCompanyNetIncome(t.getAmount(), getTotalCommissionRateByTrack(t.getTrack())))
                         ));
     }
 
     private Map<String, Integer> getArtistSettlementGroupedByMonth(List<Transaction> transactions, Long memberId) {
         return transactions.stream()
-                .filter(transaction -> transaction.getTrackMember().isArtistTrack())
-                .filter(transaction -> transaction.getTrackMember().getMemberId().equals(memberId))
+                .filter(transaction -> dashboardUtilService.hasMemberIdInTrackMembers(transaction, memberId))
                 .collect(
                         Collectors.groupingBy(
                                 Transaction::getDuration,
                                 Collectors.summingInt((t) -> dashboardUtilService
-                                        .getArtistSettlement(t.getAmount(), t.getTrackMember().getCommissionRate()))
+                                        .getArtistSettlement(t.getAmount(), getCommissionRateByTrack(t.getTrack(), memberId)))
                         ));
     }
 
     private Map<String, Double> getArtistAmountGroupedByMonth(List<Transaction> transactions, Long memberId) {
         return transactions.stream()
-                .filter(transaction -> transaction.getTrackMember().isArtistTrack())
-                .filter(transaction -> transaction.getTrackMember().getMemberId().equals(memberId))
+                .filter(transaction -> dashboardUtilService.hasMemberIdInTrackMembers(transaction, memberId))
                 .collect(
                         Collectors.groupingBy(
                                 Transaction::getDuration,
                                 Collectors.summingDouble(Transaction::getAmount))
                 );
+    }
+
+    private Integer getCommissionRateByTrack(Track track, Long memberId) {
+        return track.getTrackMembers()
+                .stream()
+                .filter(trackMember -> trackMember.getMemberId().equals(memberId))
+                .findFirst()
+                .get()
+                .getCommissionRate();
+    }
+
+    private Integer getTotalCommissionRateByTrack(Track track) {
+        return track.getTrackMembers()
+                .stream()
+                .mapToInt(TrackMember::getCommissionRate)
+                .sum();
     }
 }

@@ -269,17 +269,17 @@ public class DashboardUtilService {
 				));
 	}
 
-	private boolean hasMemberIdInTrackMembers(Transaction transaction, Long memberId) {
+	public boolean isMemberNotNull(Transaction transaction) {
+		return transaction.getTrack().getTrackMembers().stream()
+				.anyMatch(trackMember -> trackMember.getMemberId() != null);
+	}
+
+	public boolean hasMemberIdInTrackMembers(Transaction transaction, Long memberId) {
 		return transaction.getTrack().getTrackMembers().stream()
 				.anyMatch(trackMember -> trackMember.getMemberId() != null && trackMember.getMemberId().equals(memberId));
 	}
 
-	private boolean hasAlbumIdInTransaction(Transaction transaction, Long albumId) {
+	public boolean hasAlbumIdInTransaction(Transaction transaction, Long albumId) {
 		return transaction.getTrack().getAlbum().getId().equals(albumId);
-	}
-
-	private boolean isMemberNotNull(Transaction transaction) {
-		return transaction.getTrack().getTrackMembers().stream()
-				.anyMatch(trackMember -> trackMember.getMemberId() != null);
 	}
 }

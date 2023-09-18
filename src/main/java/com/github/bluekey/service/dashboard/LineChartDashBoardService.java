@@ -83,7 +83,7 @@ public class LineChartDashBoardService {
         List<AlbumTrackMonthlyTrendInfoDto> albumTrackMonthlyTrends = new ArrayList<>();
         List<AlbumTrackMonthlyTrendInfoDto> trends = transactions
                 .stream()
-                .filter(transaction -> transaction.getTrackMember().getTrack().getId().equals(trackId))
+                .filter(transaction -> transaction.getTrack().getId().equals(trackId))
                 .map(transaction -> AlbumTrackMonthlyTrendInfoDto
                         .builder()
                         .month(dashboardUtilService.convertDate(transaction.getDuration()).getMonthValue())
@@ -134,7 +134,7 @@ public class LineChartDashBoardService {
 
         List<AlbumTrackMonthlyTrendInfoDto> trends = transactions
                 .stream()
-                .filter(transaction -> transaction.getTrackMember().getTrack().getId().equals(trackId))
+                .filter(transaction -> transaction.getTrack().getId().equals(trackId))
                 .map(transaction -> AlbumTrackMonthlyTrendInfoDto
                         .builder()
                         .month(dashboardUtilService.convertDate(transaction.getDuration()).getMonthValue())
@@ -170,7 +170,7 @@ public class LineChartDashBoardService {
             transactionStream = getFilteredMemberTransactionStream(transactionStream, memberId);
         }
 
-        return transactionStream.map(transaction -> transaction.getTrackMember().getTrack())
+        return transactionStream.map(Transaction::getTrack)
                 .distinct()
                 .sorted(Comparator.comparing(Track::getId))
                 .collect(Collectors.toList());
@@ -178,12 +178,11 @@ public class LineChartDashBoardService {
 
     private Stream<Transaction> getFilteredTransactionStream(List<Transaction> transactions, Long albumId) {
         return transactions.stream()
-                .filter(transaction -> transaction.getTrackMember().getTrack().getAlbum().getId().equals(albumId));
+                .filter(transaction -> dashboardUtilService.hasAlbumIdInTransaction(transaction, albumId));
     }
 
     private Stream<Transaction> getFilteredMemberTransactionStream(Stream<Transaction> transactionStream, Long memberId) {
         return transactionStream
-                .filter(transaction -> transaction.getTrackMember().isArtistTrack())
-                .filter(transaction -> transaction.getTrackMember().getMemberId().equals(memberId));
+                .filter(transaction -> dashboardUtilService.hasMemberIdInTrackMembers(transaction, memberId));
     }
 }

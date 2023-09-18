@@ -61,7 +61,7 @@ public class MonthlyTracksDashBoardService {
                     return false;
                 })
                 .collect(Collectors.groupingBy(
-                        transaction -> transaction.getTrackMember().getTrack(),
+                        transaction -> transaction.getTrack(),
                         Collectors.summingDouble(Transaction::getAmount)
                 ));
 
@@ -135,7 +135,7 @@ public class MonthlyTracksDashBoardService {
                     }
 
                     String convertedKeyword = keyword.toLowerCase();
-                    Track track = transaction.getTrackMember().getTrack();
+                    Track track = transaction.getTrack();
                     String trackName = track.getName().toLowerCase();
                     String trackEnName = track.getEnName().toLowerCase();
 
@@ -152,7 +152,7 @@ public class MonthlyTracksDashBoardService {
                     return false;
                 })
                 .collect(Collectors.groupingBy(
-                        transaction -> transaction.getTrackMember().getTrack(),
+                        transaction -> transaction.getTrack(),
                         Collectors.summingDouble(Transaction::getAmount)
                 ));
 
