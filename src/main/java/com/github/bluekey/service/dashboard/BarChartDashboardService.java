@@ -1,7 +1,7 @@
 package com.github.bluekey.service.dashboard;
 
-import com.github.bluekey.dto.common.MonthlyTrendDto;
-import com.github.bluekey.dto.response.common.MonthlyTrendResponseDto;
+import com.github.bluekey.dto.swagger.common.MonthlyTrendDto;
+import com.github.bluekey.dto.swagger.response.common.MonthlyTrendResponseDto;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.track.Track;

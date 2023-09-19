@@ -1,8 +1,8 @@
 package com.github.bluekey.service.track;
 
-import com.github.bluekey.dto.request.track.TrackRequestDto;
-import com.github.bluekey.dto.response.track.TrackResponseDto;
-import com.github.bluekey.dto.track.TrackCommissionRateDto;
+import com.github.bluekey.dto.swagger.request.track.TrackRequestDto;
+import com.github.bluekey.dto.swagger.response.track.TrackResponseDto;
+import com.github.bluekey.dto.swagger.track.TrackCommissionRateDto;
 import com.github.bluekey.entity.album.Album;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.track.Track;

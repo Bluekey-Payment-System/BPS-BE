@@ -1,9 +1,9 @@
 package com.github.bluekey.controller.transaction;
 
-import com.github.bluekey.dto.request.transaction.OriginalTransactionRequestDto;
-import com.github.bluekey.dto.response.common.ListResponse;
-import com.github.bluekey.dto.response.transaction.OriginalTransactionPaginationResponseDto;
-import com.github.bluekey.dto.response.transaction.OriginalTransactionResponseDto;
+import com.github.bluekey.dto.swagger.request.transaction.OriginalTransactionRequestDto;
+import com.github.bluekey.dto.swagger.response.common.ListResponse;
+import com.github.bluekey.dto.swagger.response.transaction.OriginalTransactionPaginationResponseDto;
+import com.github.bluekey.dto.swagger.response.transaction.OriginalTransactionResponseDto;
 import com.github.bluekey.exception.UploadErrorResponse;
 import com.github.bluekey.service.transaction.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;

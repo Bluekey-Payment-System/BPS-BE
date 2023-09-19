@@ -1,11 +1,15 @@
 package com.github.bluekey.service.dashboard;
 
 import com.github.bluekey.dto.artist.*;
-import com.github.bluekey.dto.common.TotalAndGrowthDto;
-import com.github.bluekey.dto.response.album.AlbumSummaryResponseDto;
-import com.github.bluekey.dto.response.artist.ArtistSummaryResponseDto;
-import com.github.bluekey.dto.response.common.DashboardTotalInfoResponseDto;
-import com.github.bluekey.dto.track.BestTrackDto;
+import com.github.bluekey.dto.swagger.artist.ArtistMonthlyInfoDto;
+import com.github.bluekey.dto.swagger.artist.ArtistMonthlySettlementInfoDto;
+import com.github.bluekey.dto.swagger.artist.ArtistMonthlyTrackInfoDto;
+import com.github.bluekey.dto.swagger.artist.BestArtistDto;
+import com.github.bluekey.dto.swagger.common.TotalAndGrowthDto;
+import com.github.bluekey.dto.swagger.response.album.AlbumSummaryResponseDto;
+import com.github.bluekey.dto.swagger.response.artist.ArtistSummaryResponseDto;
+import com.github.bluekey.dto.swagger.response.common.DashboardTotalInfoResponseDto;
+import com.github.bluekey.dto.swagger.track.BestTrackDto;
 import com.github.bluekey.entity.album.Album;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;

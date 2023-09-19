@@ -1,15 +1,15 @@
 package com.github.bluekey.controller.member;
 
-import com.github.bluekey.dto.admin.AdminProfileUpdateDto;
-import com.github.bluekey.dto.admin.AdminProfileViewDto;
-import com.github.bluekey.dto.filter.MonthlyTrackFilter;
-import com.github.bluekey.dto.response.admin.AdminAccountsResponseDto;
-import com.github.bluekey.dto.response.admin.AdminProfileResponseDto;
-import com.github.bluekey.dto.response.artist.ArtistAccountsResponseDto;
-import com.github.bluekey.dto.response.artist.ArtistsRevenueProportionResponseDto;
-import com.github.bluekey.dto.response.common.DashboardTotalInfoResponseDto;
-import com.github.bluekey.dto.response.common.MonthlyTrendResponseDto;
-import com.github.bluekey.dto.response.track.TracksSettlementAmountResponseDto;
+import com.github.bluekey.dto.swagger.admin.AdminProfileUpdateDto;
+import com.github.bluekey.dto.swagger.admin.AdminProfileViewDto;
+import com.github.bluekey.dto.swagger.filter.MonthlyTrackFilter;
+import com.github.bluekey.dto.swagger.response.admin.AdminAccountsResponseDto;
+import com.github.bluekey.dto.swagger.response.admin.AdminProfileResponseDto;
+import com.github.bluekey.dto.swagger.response.artist.ArtistAccountsResponseDto;
+import com.github.bluekey.dto.swagger.response.artist.ArtistsRevenueProportionResponseDto;
+import com.github.bluekey.dto.swagger.response.common.DashboardTotalInfoResponseDto;
+import com.github.bluekey.dto.swagger.response.common.MonthlyTrendResponseDto;
+import com.github.bluekey.dto.swagger.response.track.TracksSettlementAmountResponseDto;
 import com.github.bluekey.config.security.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.dashboard.BarChartDashboardService;
 import com.github.bluekey.service.dashboard.MonthlyTracksDashBoardService;

@@ -1,6 +1,5 @@
 package com.github.bluekey.entity.track;
 
-import com.github.bluekey.dto.track.TrackCommissionRateDto;
 import com.github.bluekey.entity.BaseTimeEntity;
 import com.github.bluekey.entity.album.Album;
 import com.github.bluekey.entity.transaction.Transaction;

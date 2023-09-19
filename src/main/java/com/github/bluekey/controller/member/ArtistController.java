@@ -2,16 +2,16 @@ package com.github.bluekey.controller.member;
 
 import static org.springframework.http.ResponseEntity.ok;
 
-import com.github.bluekey.dto.artist.ArtistAccountDto;
-import com.github.bluekey.dto.artist.ArtistProfileViewDto;
-import com.github.bluekey.dto.filter.MonthlyTrackFilter;
-import com.github.bluekey.dto.request.admin.AdminArtistProfileRequestDto;
-import com.github.bluekey.dto.request.artist.ArtistProfileRequestDto;
-import com.github.bluekey.dto.request.artist.ArtistRequestDto;
-import com.github.bluekey.dto.response.admin.AdminArtistProfileListReponseDto;
-import com.github.bluekey.dto.response.artist.*;
-import com.github.bluekey.dto.response.auth.MemberIdResponseDto;
-import com.github.bluekey.dto.response.common.MonthlyTrendResponseDto;
+import com.github.bluekey.dto.swagger.artist.ArtistAccountDto;
+import com.github.bluekey.dto.swagger.artist.ArtistProfileViewDto;
+import com.github.bluekey.dto.swagger.filter.MonthlyTrackFilter;
+import com.github.bluekey.dto.swagger.request.admin.AdminArtistProfileRequestDto;
+import com.github.bluekey.dto.swagger.request.artist.ArtistProfileRequestDto;
+import com.github.bluekey.dto.swagger.request.artist.ArtistRequestDto;
+import com.github.bluekey.dto.swagger.response.admin.AdminArtistProfileListReponseDto;
+import com.github.bluekey.dto.swagger.response.artist.*;
+import com.github.bluekey.dto.swagger.response.auth.MemberIdResponseDto;
+import com.github.bluekey.dto.swagger.response.common.MonthlyTrendResponseDto;
 import com.github.bluekey.config.security.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.auth.AuthService;
 import com.github.bluekey.service.dashboard.BarChartDashboardService;

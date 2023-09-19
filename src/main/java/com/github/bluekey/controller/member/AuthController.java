@@ -3,14 +3,14 @@ package com.github.bluekey.controller.member;
 
 import static org.springframework.http.ResponseEntity.ok;
 
-import com.github.bluekey.dto.request.auth.PasswordRequestDto;
-import com.github.bluekey.dto.request.auth.LoginRequestDto;
-import com.github.bluekey.dto.request.auth.SignupRequestDto;
-import com.github.bluekey.dto.response.auth.AdminLoginTokenResponseDto;
-import com.github.bluekey.dto.response.auth.LoginTokenResponseDto;
-import com.github.bluekey.dto.response.auth.MemberIdResponseDto;
-import com.github.bluekey.dto.response.auth.NewPasswordResponseDto;
-import com.github.bluekey.dto.response.auth.SignupResponseDto;
+import com.github.bluekey.dto.swagger.request.auth.PasswordRequestDto;
+import com.github.bluekey.dto.swagger.request.auth.LoginRequestDto;
+import com.github.bluekey.dto.swagger.request.auth.SignupRequestDto;
+import com.github.bluekey.dto.swagger.response.auth.AdminLoginTokenResponseDto;
+import com.github.bluekey.dto.swagger.response.auth.LoginTokenResponseDto;
+import com.github.bluekey.dto.swagger.response.auth.MemberIdResponseDto;
+import com.github.bluekey.dto.swagger.response.auth.NewPasswordResponseDto;
+import com.github.bluekey.dto.swagger.response.auth.SignupResponseDto;
 import com.github.bluekey.config.security.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.auth.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
