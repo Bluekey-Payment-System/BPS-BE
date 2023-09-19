@@ -1,14 +1,14 @@
 package com.github.bluekey.service.album;
 
-import com.github.bluekey.dto.album.AlbumInfoDto;
-import com.github.bluekey.dto.album.NewAlbumInfoDto;
-import com.github.bluekey.dto.artist.ArtistInfoDto;
-import com.github.bluekey.dto.response.album.AlbumIdResponseDto;
-import com.github.bluekey.dto.response.album.AlbumResponseDto;
-import com.github.bluekey.dto.response.album.AlbumTrackListResponseDto;
-import com.github.bluekey.dto.response.artist.ArtistAlbumsListResponseDto;
-import com.github.bluekey.dto.track.TrackArtistsDto;
-import com.github.bluekey.dto.track.TrackInfoListDto;
+import com.github.bluekey.dto.swagger.album.AlbumInfoDto;
+import com.github.bluekey.dto.swagger.album.NewAlbumInfoDto;
+import com.github.bluekey.dto.swagger.artist.ArtistInfoDto;
+import com.github.bluekey.dto.swagger.response.album.AlbumIdResponseDto;
+import com.github.bluekey.dto.swagger.response.album.AlbumResponseDto;
+import com.github.bluekey.dto.swagger.response.album.AlbumTrackListResponseDto;
+import com.github.bluekey.dto.swagger.response.artist.ArtistAlbumsListResponseDto;
+import com.github.bluekey.dto.swagger.track.TrackArtistsDto;
+import com.github.bluekey.dto.swagger.track.TrackInfoListDto;
 import com.github.bluekey.entity.album.Album;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.track.Track;

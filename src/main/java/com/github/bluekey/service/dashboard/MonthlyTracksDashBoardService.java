@@ -1,13 +1,13 @@
 package com.github.bluekey.service.dashboard;
 
-import com.github.bluekey.dto.common.AlbumBaseDto;
-import com.github.bluekey.dto.artist.ArtistMonthlyTrackListDto;
-import com.github.bluekey.dto.common.MemberBaseDto;
-import com.github.bluekey.dto.filter.MonthlyTrackFilter;
-import com.github.bluekey.dto.response.artist.ArtistMonthlyTrackListResponseDto;
-import com.github.bluekey.dto.response.track.TracksSettlementAmountResponseDto;
-import com.github.bluekey.dto.common.TrackBaseDto;
-import com.github.bluekey.dto.track.TrackSettlementAmountDto;
+import com.github.bluekey.dto.swagger.common.AlbumBaseDto;
+import com.github.bluekey.dto.swagger.artist.ArtistMonthlyTrackListDto;
+import com.github.bluekey.dto.swagger.common.MemberBaseDto;
+import com.github.bluekey.dto.swagger.filter.MonthlyTrackFilter;
+import com.github.bluekey.dto.swagger.response.artist.ArtistMonthlyTrackListResponseDto;
+import com.github.bluekey.dto.swagger.response.track.TracksSettlementAmountResponseDto;
+import com.github.bluekey.dto.swagger.common.TrackBaseDto;
+import com.github.bluekey.dto.swagger.track.TrackSettlementAmountDto;
 import com.github.bluekey.entity.album.Album;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.track.Track;

@@ -1,9 +1,9 @@
 package com.github.bluekey.service.transaction;
 
 import com.amazonaws.services.s3.model.S3Object;
-import com.github.bluekey.dto.request.transaction.OriginalTransactionRequestDto;
-import com.github.bluekey.dto.response.common.ListResponse;
-import com.github.bluekey.dto.response.transaction.OriginalTransactionResponseDto;
+import com.github.bluekey.dto.swagger.request.transaction.OriginalTransactionRequestDto;
+import com.github.bluekey.dto.swagger.response.common.ListResponse;
+import com.github.bluekey.dto.swagger.response.transaction.OriginalTransactionResponseDto;
 import com.github.bluekey.entity.transaction.OriginalTransaction;
 import com.github.bluekey.entity.transaction.Transaction;
 import com.github.bluekey.exception.BusinessException;

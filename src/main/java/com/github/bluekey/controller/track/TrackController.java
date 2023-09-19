@@ -1,9 +1,9 @@
 package com.github.bluekey.controller.track;
 
-import com.github.bluekey.dto.request.track.TrackRequestDto;
-import com.github.bluekey.dto.response.track.TrackIdResponseDto;
-import com.github.bluekey.dto.response.track.TrackResponseDto;
-import com.github.bluekey.dto.response.transaction.OriginalTransactionResponseDto;
+import com.github.bluekey.dto.swagger.request.track.TrackRequestDto;
+import com.github.bluekey.dto.swagger.response.track.TrackIdResponseDto;
+import com.github.bluekey.dto.swagger.response.track.TrackResponseDto;
+import com.github.bluekey.dto.swagger.response.transaction.OriginalTransactionResponseDto;
 import com.github.bluekey.service.track.TrackService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

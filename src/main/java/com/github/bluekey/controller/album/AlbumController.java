@@ -1,15 +1,15 @@
 package com.github.bluekey.controller.album;
 
-import com.github.bluekey.dto.album.NewAlbumInfoDto;
-import com.github.bluekey.dto.response.album.AlbumIdResponseDto;
-import com.github.bluekey.dto.response.album.AlbumMonthlyAccontsReponseDto;
-import com.github.bluekey.dto.response.album.AlbumResponseDto;
-import com.github.bluekey.dto.response.album.AlbumSummaryResponseDto;
-import com.github.bluekey.dto.response.album.AlbumTopResponseDto;
-import com.github.bluekey.dto.response.album.AlbumTrackTrendResponseDto;
-import com.github.bluekey.dto.response.album.AlbumTrackListResponseDto;
-import com.github.bluekey.dto.response.artist.ArtistAlbumsListResponseDto;
-import com.github.bluekey.dto.response.common.MonthlyTrendResponseDto;
+import com.github.bluekey.dto.swagger.album.NewAlbumInfoDto;
+import com.github.bluekey.dto.swagger.response.album.AlbumIdResponseDto;
+import com.github.bluekey.dto.swagger.response.album.AlbumMonthlyAccontsReponseDto;
+import com.github.bluekey.dto.swagger.response.album.AlbumResponseDto;
+import com.github.bluekey.dto.swagger.response.album.AlbumSummaryResponseDto;
+import com.github.bluekey.dto.swagger.response.album.AlbumTopResponseDto;
+import com.github.bluekey.dto.swagger.response.album.AlbumTrackTrendResponseDto;
+import com.github.bluekey.dto.swagger.response.album.AlbumTrackListResponseDto;
+import com.github.bluekey.dto.swagger.response.artist.ArtistAlbumsListResponseDto;
+import com.github.bluekey.dto.swagger.response.common.MonthlyTrendResponseDto;
 import com.github.bluekey.config.security.jwt.PrincipalConvertUtil;
 import com.github.bluekey.service.album.AlbumService;
 import com.github.bluekey.service.dashboard.BarChartDashboardService;
