@@ -1,6 +1,5 @@
-package com.github.bluekey.dto.swagger.response.common;
+package com.github.bluekey.dto.common;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

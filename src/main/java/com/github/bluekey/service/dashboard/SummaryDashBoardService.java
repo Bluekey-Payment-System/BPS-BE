@@ -1,6 +1,5 @@
 package com.github.bluekey.service.dashboard;
 
-import com.github.bluekey.dto.artist.*;
 import com.github.bluekey.dto.swagger.artist.ArtistMonthlyInfoDto;
 import com.github.bluekey.dto.swagger.artist.ArtistMonthlySettlementInfoDto;
 import com.github.bluekey.dto.swagger.artist.ArtistMonthlyTrackInfoDto;
