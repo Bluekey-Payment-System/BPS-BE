@@ -56,7 +56,7 @@ public class AlbumController {
     })
     @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AlbumResponseDto> albumsInsert(
+    public ResponseEntity<AlbumResponseDto> createAlbum(
             @RequestParam(value = "file", required = false) MultipartFile file,
             @RequestPart("data") NewAlbumInfoDto dto
     ) {
@@ -74,7 +74,7 @@ public class AlbumController {
     })
     @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     @PatchMapping(path = "/{albumId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AlbumResponseDto> albumsUpdate(
+    public ResponseEntity<AlbumResponseDto> updateAlbum(
             @RequestParam(value = "file", required = false) MultipartFile file,
             @RequestPart(value = "data", required = false) NewAlbumInfoDto dto,
             @PathVariable("albumId") Long albumId
@@ -92,7 +92,7 @@ public class AlbumController {
     })
     @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     @DeleteMapping("/{albumId}")
-    public ResponseEntity<AlbumIdResponseDto> albumsDelete(@PathVariable("albumId") Long albumId) {
+    public ResponseEntity<AlbumIdResponseDto> removeAlbum(@PathVariable("albumId") Long albumId) {
         return ResponseEntity.ok(albumService.deleteAlbum(albumId));
     }
 
@@ -105,7 +105,7 @@ public class AlbumController {
                     )),
     })
     @GetMapping("/{albumId}/dashboard/top-track")
-    public ResponseEntity<AlbumTopResponseDto> getAlbumTopList(
+    public ResponseEntity<AlbumTopResponseDto> getAlbumTopTracks(
             @RequestParam("monthly") String monthly,
             @RequestParam("rank") Integer rank,
             @PathVariable("albumId") Long albumId
@@ -159,7 +159,7 @@ public class AlbumController {
                     ))
     })
     @GetMapping("/{albumId}/dashboard")
-    public ResponseEntity<MonthlyTrendResponseDto> getAlbumMonthlyAccounts(
+    public ResponseEntity<MonthlyTrendResponseDto> getAlbumMonthlySettlementAmount(
             @RequestParam("startDate") String startDate,
             @RequestParam("endDate") String endDate,
             @PathVariable("albumId") Long albumId
@@ -177,9 +177,9 @@ public class AlbumController {
                             schema = @Schema(implementation = AlbumTrackListResponseDto.class)
                     )),
     })
-//    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     @GetMapping("/{albumId}")
-    public ResponseEntity<AlbumTrackListResponseDto> getAlbum(
+    public ResponseEntity<AlbumTrackListResponseDto> getAlbumTracks(
             @PathVariable("albumId") Long albumId
     ) {
         return ResponseEntity.ok(albumService.getAlbumTrackList(albumId));
@@ -217,7 +217,7 @@ public class AlbumController {
     })
     @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     @DeleteMapping("/{albumId}/image")
-    public ResponseEntity<AlbumIdResponseDto> deleteAlbumImage(
+    public ResponseEntity<AlbumIdResponseDto> removeAlbumImage(
             @PathVariable("albumId") Long albumId
     ) {
         albumService.deleteAlbumImage(albumId);

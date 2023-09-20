@@ -55,7 +55,7 @@ public class ArtistController {
             @ApiResponse(responseCode = "200", description = "아티스트 정보 변경 성공"), })
     @PreAuthorize("hasRole('ARTIST')")
     @PatchMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ArtistProfileResponseDto> artistProfileUpdate(
+    public ResponseEntity<ArtistProfileResponseDto> updateArtistProfile(
             @Parameter(schema = @Schema(implementation = ArtistProfileRequestDto.class), description = "Artist 수정 API 입니다.")
             @RequestPart(value = "data", required = false) @Valid ArtistProfileRequestDto requestDto,
             @Parameter(description = "multipart/form-data 형식의 프로필 이미지 데이터, key 값은 file 입니다.")
@@ -101,7 +101,7 @@ public class ArtistController {
             @ApiResponse(responseCode = "200", description = "당월 아티스트가 트랙별 정산 내역 조회 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistMonthlyTrackListResponseDto.class))),
     })
     @GetMapping("/{memberId}/dashboard/track")
-    public ResponseEntity<ArtistMonthlyTrackListResponseDto> getArtistMonthlyTracks(
+    public ResponseEntity<ArtistMonthlyTrackListResponseDto> getArtistMonthlyTracksSettlementAmount(
             @RequestParam("monthly") String monthly,
             @RequestParam("page") Integer page,
             @RequestParam("size") Integer size,
@@ -142,7 +142,7 @@ public class ArtistController {
             @ApiResponse(responseCode = "200", description = "아티스트 기준 당월 TOP N 트랙 매출 LIST 조회 완료", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistTopResponseDto.class))),
     })
     @GetMapping("/{memberId}/dashboard/top-track")
-    public ResponseEntity<ArtistTopResponseDto> getArtistTop(
+    public ResponseEntity<ArtistTopResponseDto> getArtistTopTracks(
             @RequestParam("monthly") String monthly,
             @RequestParam("rank") Integer rank,
             @PathVariable("memberId") Long memberId
@@ -171,7 +171,7 @@ public class ArtistController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ArtistMonthlyAccountsResponseDto.class))),
     })
     @GetMapping("/{memberId}/dashboard/trend")
-    public ResponseEntity<MonthlyTrendResponseDto> getArtistMonthlyAccounts(
+    public ResponseEntity<MonthlyTrendResponseDto> getArtistDashboardMonthlySettlementAmount(
             @RequestParam("startDate") String startDate,
             @RequestParam("endDate") String endDate,
             @PathVariable("memberId") Long memberId
@@ -186,7 +186,7 @@ public class ArtistController {
     })
     @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @PatchMapping("/{memberId}/profile")
-    public ResponseEntity<ArtistAccountDto> AdminArtistProfileUpdate(
+    public ResponseEntity<ArtistAccountDto> updateArtistProfileByAdmin(
             @RequestBody AdminArtistProfileRequestDto dto,
             @PathVariable("memberId") Long memberId
     ) {
@@ -201,7 +201,7 @@ public class ArtistController {
     })
     @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<AdminArtistProfileListReponseDto> getAdminArtistProfiles(
+    public ResponseEntity<AdminArtistProfileListReponseDto> getArtists(
             @RequestParam("page") Integer page,
             @RequestParam("size") Integer size,
             @RequestParam("monthly") String monthly,
@@ -239,7 +239,7 @@ public class ArtistController {
     })
     @PreAuthorize("hasRole('ARTIST')")
     @DeleteMapping("/profile/image")
-    public ResponseEntity<MemberIdResponseDto> deleteArtistProfileImage() {
+    public ResponseEntity<MemberIdResponseDto> removeArtistProfileImage() {
         memberService.deleteArtistProfileImage(PrincipalConvertUtil.getMemberId());
         return ok(MemberIdResponseDto.builder().memberId(PrincipalConvertUtil.getMemberId()).build());
     }
