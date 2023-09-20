@@ -38,7 +38,7 @@ public class TrackController {
     public ResponseEntity<TrackResponseDto> createTrack(
             @PathVariable("albumId") Long albumId,
             @RequestBody TrackRequestDto dto) {
-        return ok(trackService.insertTrack(albumId, dto));
+        return ok(trackService.createTrack(albumId, dto));
     }
 
     // TODO: api url 수정 희망 -> albums/ 뒤에 trackId가 오는 것이 어색한 점.
@@ -68,7 +68,7 @@ public class TrackController {
     })
     @DeleteMapping("/{trackId}")
     public ResponseEntity<TrackIdResponseDto> removeTrack(@PathVariable("trackId") Long trackId) {
-        Long deleteTrackId = trackService.deleteTrack(trackId);
-        return ok(TrackIdResponseDto.builder().trackId(deleteTrackId).build());
+        Long removeTrackId = trackService.removeTrack(trackId);
+        return ok(TrackIdResponseDto.builder().trackId(removeTrackId).build());
     }
 }

@@ -49,7 +49,7 @@ public class AuthController {
 	})
 	@PostMapping("/admin/login")
 	public ResponseEntity<AdminLoginTokenResponseDto> loginAdmin(@RequestBody LoginRequestDto dto) {
-		return ok(authService.adminLogin(dto));
+		return ok(authService.loginAdmin(dto));
 	}
 
 	@Operation(summary = "admin 회원가입", description = "admin 회원가입")
@@ -114,7 +114,7 @@ public class AuthController {
 	})
 	@DeleteMapping("/members/{memberId}/withdrawal")
 	public ResponseEntity<MemberIdResponseDto> withdrawal(@PathVariable("memberId") Long memberId) {
-		Long removedMemberId = authService.deleteMember(memberId);
+		Long removedMemberId = authService.removeMember(memberId);
 		return ok(MemberIdResponseDto.builder().memberId(removedMemberId).build());
 	}
 }

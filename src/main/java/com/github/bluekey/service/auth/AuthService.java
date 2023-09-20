@@ -50,7 +50,7 @@ public class AuthService {
 		return generateLoginTokenResponseDto(member, token);
 	}
 
-	public AdminLoginTokenResponseDto adminLogin(LoginRequestDto dto) {
+	public AdminLoginTokenResponseDto loginAdmin(LoginRequestDto dto) {
 		Member member = validateLogin(dto);
 		if (!member.isAdmin())
 			throw new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED);
@@ -96,10 +96,11 @@ public class AuthService {
 	}
 
 	@Transactional
-	public Long deleteMember(Long memberId) {
+	public Long removeMember(Long memberId) {
 		Member member = memberRepository.findByIdOrElseThrow(memberId);
 		member.memberRemoved();
-		// TODO: S3 이미지 삭제 로직
+		if (member.getProfileImage() != null)
+			imageUploadUtil.removeImage(member.getProfileImage());
 		memberRepository.save(member);
 		return memberId;
 	}

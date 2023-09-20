@@ -93,7 +93,7 @@ public class AlbumController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     @DeleteMapping("/{albumId}")
     public ResponseEntity<AlbumIdResponseDto> removeAlbum(@PathVariable("albumId") Long albumId) {
-        return ResponseEntity.ok(albumService.deleteAlbum(albumId));
+        return ResponseEntity.ok(albumService.removeAlbum(albumId));
     }
 
     @Operation(summary = "앨범의 당월 매출 TOP n 트랙 LIST 정보", description = "앨범의 당월 매출 TOP n 트랙 LIST 정보")
@@ -182,7 +182,7 @@ public class AlbumController {
     public ResponseEntity<AlbumTrackListResponseDto> getAlbumTracks(
             @PathVariable("albumId") Long albumId
     ) {
-        return ResponseEntity.ok(albumService.getAlbumTrackList(albumId));
+        return ResponseEntity.ok(albumService.getAlbumTracks(albumId));
     }
 
     @Operation(summary = "앨범 리스트 조회", description = "앨범 리스트 조회")
@@ -220,7 +220,7 @@ public class AlbumController {
     public ResponseEntity<AlbumIdResponseDto> removeAlbumImage(
             @PathVariable("albumId") Long albumId
     ) {
-        albumService.deleteAlbumImage(albumId);
+        albumService.removeAlbumImage(albumId);
         return ResponseEntity.ok(AlbumIdResponseDto.builder().albumId(albumId).build());
     }
 }

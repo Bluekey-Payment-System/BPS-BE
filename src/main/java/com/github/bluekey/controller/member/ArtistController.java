@@ -132,7 +132,7 @@ public class ArtistController {
                 .commissionRateFrom(commissionRateFrom)
                 .commissionRateTo(commissionRateTo)
                 .build();
-        memberService.permissionCheck(memberId, PrincipalConvertUtil.getMemberId());
+        memberService.checkPermission(memberId, PrincipalConvertUtil.getMemberId());
         return ResponseEntity.ok(monthlyTracksDashBoardService
                 .getArtistTracks(monthly, pageable, sortBy, searchType, keyword, memberId, monthlyTrackFilter));
     }
@@ -147,7 +147,7 @@ public class ArtistController {
             @RequestParam("rank") Integer rank,
             @PathVariable("memberId") Long memberId
     ) {
-        memberService.permissionCheck(memberId, PrincipalConvertUtil.getMemberId());
+        memberService.checkPermission(memberId, PrincipalConvertUtil.getMemberId());
         return ResponseEntity.ok(topTrackDashBoardService.getArtistTopTracks(monthly, rank, memberId));
     }
 
@@ -161,7 +161,7 @@ public class ArtistController {
             @RequestParam("monthly") String monthly,
             @PathVariable("memberId") Long memberId
     ) {
-        memberService.permissionCheck(memberId, PrincipalConvertUtil.getMemberId());
+        memberService.checkPermission(memberId, PrincipalConvertUtil.getMemberId());
         return ResponseEntity.ok(summaryDashBoardService.getArtistDashboardInformation(monthly, memberId));
     }
 
@@ -176,7 +176,7 @@ public class ArtistController {
             @RequestParam("endDate") String endDate,
             @PathVariable("memberId") Long memberId
     ) {
-        memberService.permissionCheck(memberId, PrincipalConvertUtil.getMemberId());
+        memberService.checkPermission(memberId, PrincipalConvertUtil.getMemberId());
         return ok(barChartDashboardService.getBarChartDashboard(startDate, endDate, memberId));
     }
 
@@ -240,7 +240,7 @@ public class ArtistController {
     @PreAuthorize("hasRole('ARTIST')")
     @DeleteMapping("/profile/image")
     public ResponseEntity<MemberIdResponseDto> removeArtistProfileImage() {
-        memberService.deleteArtistProfileImage(PrincipalConvertUtil.getMemberId());
+        memberService.removeArtistProfileImage(PrincipalConvertUtil.getMemberId());
         return ok(MemberIdResponseDto.builder().memberId(PrincipalConvertUtil.getMemberId()).build());
     }
 }

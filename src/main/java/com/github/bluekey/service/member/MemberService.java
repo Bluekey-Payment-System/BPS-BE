@@ -77,10 +77,10 @@ public class MemberService {
     }
 
 	@Transactional
-	public void deleteArtistProfileImage(Long memberId) {
+	public void removeArtistProfileImage(Long memberId) {
 		Member member = memberRepository.findByIdOrElseThrow(memberId);
 		if (member.getProfileImage() != null) {
-			imageUploadUtil.deleteImage(member.getProfileImage());
+			imageUploadUtil.removeImage(member.getProfileImage());
 			member.updateProfileImage(null);
 		}
 		memberRepository.save(member);
@@ -123,7 +123,7 @@ public class MemberService {
         return AdminProfileViewDto.from(member);
     }
 
-    public void permissionCheck(Long memberId, Long loginMemberId) {
+    public void checkPermission(Long memberId, Long loginMemberId) {
         Member member = memberRepository.findByIdOrElseThrow(loginMemberId);
         if (member.getRole() == MemberRole.ARTIST && !memberId.equals(loginMemberId)) {
             throw new BusinessException(ErrorCode.AUTHENTICATION_FAILED);
@@ -165,7 +165,7 @@ public class MemberService {
             return;
         }
         if (member.getProfileImage() != null) {
-            imageUploadUtil.deleteImage(member.getProfileImage());
+            imageUploadUtil.removeImage(member.getProfileImage());
         }
         String profileImage = imageUploadUtil.uploadImage(file,
                 imageUploadUtil.getProfileImageKey(file.getOriginalFilename(), member.getId()));
