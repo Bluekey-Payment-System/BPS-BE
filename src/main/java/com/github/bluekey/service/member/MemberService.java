@@ -88,7 +88,7 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public AdminAccountsResponseDto getAdminAccounts(PageRequest pageable) {
-        Page<Member> admins = memberRepository.findMembersByType(MemberType.ADMIN, pageable);
+        Page<Member> admins = memberRepository.findMembersByTypeAndIsRemovedFalse(MemberType.ADMIN, pageable);
         return AdminAccountsResponseDto.builder()
                 .totalItems(admins.getTotalElements())
                 .contents(admins.getContent().stream().map(AdminAccountDto::from).collect(Collectors.toList()))
@@ -98,7 +98,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public ArtistAccountsResponseDto getArtistAccounts(PageRequest pageable) {
 
-        Page<Member> artists = memberRepository.findMembersByRole(MemberRole.ARTIST, pageable);
+        Page<Member> artists = memberRepository.findMembersByRoleAndIsRemovedFalse(MemberRole.ARTIST, pageable);
         return ArtistAccountsResponseDto.builder()
                 .totalItems(artists.getTotalElements())
                 .contents(artists.getContent().stream().map(ArtistAccountDto::from).collect(Collectors.toList()))
