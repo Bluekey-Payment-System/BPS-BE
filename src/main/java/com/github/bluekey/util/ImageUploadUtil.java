@@ -25,7 +25,7 @@ public class ImageUploadUtil {
 		return awsS3Manager.getS3Value(image.getValue() + filename, image);
 	}
 
-	public void deleteImage(String imageUrl) {
+	public void removeImage(String imageUrl) {
 		String key = awsS3Manager.getS3Key(imageUrl, image);
 		awsS3Manager.delete(image.getValue() + key, image);
 	}

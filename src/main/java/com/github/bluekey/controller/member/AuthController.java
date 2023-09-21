@@ -48,8 +48,8 @@ public class AuthController {
 							schema = @Schema(implementation = AdminLoginTokenResponseDto.class))),
 	})
 	@PostMapping("/admin/login")
-	public ResponseEntity<AdminLoginTokenResponseDto> adminLogin(@RequestBody LoginRequestDto dto) {
-		return ok(authService.adminLogin(dto));
+	public ResponseEntity<AdminLoginTokenResponseDto> loginAdmin(@RequestBody LoginRequestDto dto) {
+		return ok(authService.loginAdmin(dto));
 	}
 
 	@Operation(summary = "admin 회원가입", description = "admin 회원가입")
@@ -59,7 +59,7 @@ public class AuthController {
 							schema = @Schema(implementation = SignupResponseDto.class))),
 	})
 	@PostMapping("/admin/signup")
-	public ResponseEntity<SignupResponseDto> adminSignup(@Valid @RequestBody SignupRequestDto dto) {
+	public ResponseEntity<SignupResponseDto> signupAdmin(@Valid @RequestBody SignupRequestDto dto) {
 		return ok(authService.createAdmin(dto));
 	}
 
@@ -70,7 +70,7 @@ public class AuthController {
 							schema = @Schema(implementation = AdminLoginTokenResponseDto.class))),
 	})
 	@PostMapping("/member/login")
-	public ResponseEntity<LoginTokenResponseDto> memberLogin(@RequestBody LoginRequestDto dto) {
+	public ResponseEntity<LoginTokenResponseDto> loginMember(@RequestBody LoginRequestDto dto) {
 		return ok(authService.login(dto));
 	}
 
@@ -79,7 +79,7 @@ public class AuthController {
 			@ApiResponse(responseCode = "200", description = "비밀번호 변경 성공"),
 	})
 	@PatchMapping("/member/password")
-	public ResponseEntity<?> passwordChange(@Valid @RequestBody PasswordRequestDto dto) {
+	public ResponseEntity<?> updatePassword(@Valid @RequestBody PasswordRequestDto dto) {
 		authService.changePassword(dto, PrincipalConvertUtil.getMemberId());
 		return ok().build();
 	}
@@ -89,7 +89,7 @@ public class AuthController {
 			@ApiResponse(responseCode = "200", description = "비밀번호 확인 성공"),
 	})
 	@PostMapping("/member/password/confirm")
-	public ResponseEntity<?> passwordCheck(@RequestBody PasswordRequestDto dto) {
+	public ResponseEntity<?> checkPassword(@RequestBody PasswordRequestDto dto) {
 		authService.matchPassword(dto, PrincipalConvertUtil.getMemberId());
 		return ok().build();
 	}
@@ -102,7 +102,7 @@ public class AuthController {
 	})
 	@PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
 	@PatchMapping("/members/{memberId}/password")
-	public ResponseEntity<NewPasswordResponseDto> passwordIssue(
+	public ResponseEntity<NewPasswordResponseDto> issuePassword(
 			@PathVariable("memberId") Long memberId
 	) {
 		return ok(authService.issuePassword(memberId));
@@ -114,7 +114,7 @@ public class AuthController {
 	})
 	@DeleteMapping("/members/{memberId}/withdrawal")
 	public ResponseEntity<MemberIdResponseDto> withdrawal(@PathVariable("memberId") Long memberId) {
-		Long removedMemberId = authService.deleteMember(memberId);
+		Long removedMemberId = authService.removeMember(memberId);
 		return ok(MemberIdResponseDto.builder().memberId(removedMemberId).build());
 	}
 }

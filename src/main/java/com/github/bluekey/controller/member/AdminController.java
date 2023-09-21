@@ -68,7 +68,7 @@ public class AdminController {
 			@ApiResponse(responseCode = "200", description = "정상 반환", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TracksSettlementAmountResponseDto.class))),
 	})
 	@GetMapping("/dashboard/track")
-	public ResponseEntity<TracksSettlementAmountResponseDto> getTracksSettlementAmount(
+	public ResponseEntity<TracksSettlementAmountResponseDto> getAdminDashboardTracksSettlementAmount(
 			@Parameter(description = "정보를 얻고 싶은 월 (format: yyyy-MM)") @RequestParam("monthly") String monthly,
 			@RequestParam("page") Integer page,
 			@RequestParam("size") Integer size,
@@ -105,7 +105,7 @@ public class AdminController {
 			@ApiResponse(responseCode = "200", description = "정상 반환", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DashboardTotalInfoResponseDto.class))),
 	})
 	@GetMapping("/dashboard/summary")
-	public ResponseEntity<DashboardTotalInfoResponseDto> getDashboardTotalInfo(
+	public ResponseEntity<DashboardTotalInfoResponseDto> getAdminDashboardSummary(
 			@Parameter(description = "정보를 얻고 싶은 월 (format: yyyy-MM)") @RequestParam("monthly") String monthly
 	) {
 		return ResponseEntity.ok(summaryDashBoardService.getAdminDashBoardSummaryInformation(monthly, PrincipalConvertUtil.getMemberId()));
@@ -118,7 +118,7 @@ public class AdminController {
 	})
 	@GetMapping("/dashboard/trend")
 	@PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
-	public ResponseEntity<MonthlyTrendResponseDto> getMonthlyRevenueTrend(
+	public ResponseEntity<MonthlyTrendResponseDto> getAdminDashboardMonthlyRevenueTrend(
 			@Parameter(description = "월별 추이의 시작일 (format: yyyyMM)") @RequestParam("startDate") String startDate,
 			@Parameter(description = "월별 추이의 종료일 (format: yyyyMM)") @RequestParam("endDate") String endDate
 	) {

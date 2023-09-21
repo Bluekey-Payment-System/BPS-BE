@@ -35,10 +35,10 @@ public class TrackController {
             )
     )
     @PostMapping("/albums/{albumId}")
-    public ResponseEntity<TrackResponseDto> tracksInsert(
+    public ResponseEntity<TrackResponseDto> createTrack(
             @PathVariable("albumId") Long albumId,
             @RequestBody TrackRequestDto dto) {
-        return ok(trackService.insertTrack(albumId, dto));
+        return ok(trackService.createTrack(albumId, dto));
     }
 
     // TODO: api url 수정 희망 -> albums/ 뒤에 trackId가 오는 것이 어색한 점.
@@ -52,7 +52,7 @@ public class TrackController {
     })
     @PatchMapping("/{trackId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
-    public ResponseEntity<TrackResponseDto> trackUpdate(
+    public ResponseEntity<TrackResponseDto> updateTrack(
             @PathVariable("trackId") Long trackId,
             @RequestBody TrackRequestDto dto) {
         return ok(trackService.updateTrack(trackId, dto));
@@ -67,8 +67,8 @@ public class TrackController {
                     )),
     })
     @DeleteMapping("/{trackId}")
-    public ResponseEntity<TrackIdResponseDto> trackDelete(@PathVariable("trackId") Long trackId) {
-        Long deleteTrackId = trackService.deleteTrack(trackId);
-        return ok(TrackIdResponseDto.builder().trackId(deleteTrackId).build());
+    public ResponseEntity<TrackIdResponseDto> removeTrack(@PathVariable("trackId") Long trackId) {
+        Long removeTrackId = trackService.removeTrack(trackId);
+        return ok(TrackIdResponseDto.builder().trackId(removeTrackId).build());
     }
 }

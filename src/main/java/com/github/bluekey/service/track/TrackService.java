@@ -29,7 +29,7 @@ public class TrackService {
 
 
     @Transactional
-    public TrackResponseDto insertTrack(Long albumId, TrackRequestDto dto) {
+    public TrackResponseDto createTrack(Long albumId, TrackRequestDto dto) {
         Album album = albumRepository.findAlbumByIdAndIsRemovedFalseOrElseThrow(albumId);
         Track track = trackRepository.save(dto.toTrack(album));
 
@@ -68,7 +68,7 @@ public class TrackService {
     }
 
 
-    public Long deleteTrack(Long trackId) {
+    public Long removeTrack(Long trackId) {
         Track track = trackRepository.findByIdOrElseThrow(trackId);
 
         track.remove();

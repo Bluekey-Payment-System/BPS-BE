@@ -71,12 +71,12 @@ public class AlbumService {
     }
 
     @Transactional
-    public AlbumIdResponseDto deleteAlbum(Long albumId) {
+    public AlbumIdResponseDto removeAlbum(Long albumId) {
         Album album = albumRepository.findAlbumByIdAndIsRemovedFalse(albumId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ALBUM_NOT_FOUND));
 
         album.remove();
-        imageUploadUtil.deleteImage(album.getProfileImage());
+        imageUploadUtil.removeImage(album.getProfileImage());
         album.updateProfileImage(null);
 
         albumRepository.save(album);
@@ -102,17 +102,17 @@ public class AlbumService {
         return AlbumResponseDto.from(album);
     }
 
-    public void deleteAlbumImage(Long albumId) {
+    public void removeAlbumImage(Long albumId) {
         Album album = albumRepository.findAlbumByIdAndIsRemovedFalseOrElseThrow(albumId);
         if (album.getProfileImage() != null) {
-            imageUploadUtil.deleteImage(album.getProfileImage());
+            imageUploadUtil.removeImage(album.getProfileImage());
             album.updateProfileImage(null);
         }
         albumRepository.save(album);
     }
 
     @Transactional(readOnly = true)
-    public AlbumTrackListResponseDto getAlbumTrackList(Long albumId) {
+    public AlbumTrackListResponseDto getAlbumTracks(Long albumId) {
         Album album = albumRepository.findAlbumByIdAndIsRemovedFalse(albumId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ALBUM_NOT_FOUND));
 
@@ -287,7 +287,7 @@ public class AlbumService {
     private void updateAlbumImage(MultipartFile file, Album album) {
         if (!file.isEmpty()) {
             if (album.getProfileImage() != null) {
-                imageUploadUtil.deleteImage(album.getProfileImage());
+                imageUploadUtil.removeImage(album.getProfileImage());
             }
             String albumImagePath = imageUploadUtil.uploadImage(file,
                     imageUploadUtil.getAlbumImageKey(file.getOriginalFilename(), album.getId()));
