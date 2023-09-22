@@ -38,7 +38,7 @@ public class SignupRequestDto {
 			.loginId(this.loginId)
 			.name(this.nickname)
 			.password(this.password)
-			.role(MemberRole.ADMIN) //TODO: 추후 PENDING 으로 변경
+			.role(MemberRole.PENDING)
 			.build();
 	}
 }
