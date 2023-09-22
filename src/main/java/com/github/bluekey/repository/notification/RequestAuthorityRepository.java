@@ -1,4 +1,8 @@
 package com.github.bluekey.repository.notification;
 
-public interface RequestAuthorityRepository {
+import com.github.bluekey.entity.notification.RequestAuthority;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface RequestAuthorityRepository extends JpaRepository<RequestAuthority, Long> {
+
 }

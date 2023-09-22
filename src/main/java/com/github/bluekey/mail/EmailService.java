@@ -27,7 +27,7 @@ public class EmailService {
 		String year = String.valueOf(LocalDateTime.now().getYear());
 		String month = String.valueOf(LocalDateTime.now().getMonthValue());
 
-		List<Member> artists = memberRepository.findMemberByRoleAndIsRemovedFalse(MemberRole.ARTIST);
+		List<Member> artists = memberRepository.findMembersByRoleAndIsRemovedFalse(MemberRole.ARTIST);
 		artists.forEach(artist -> {
 			try {
 				if (profile.equals(PRODUCTION)) {
