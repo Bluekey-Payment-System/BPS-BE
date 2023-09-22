@@ -33,8 +33,7 @@ public class Transaction extends BaseTimeEntity {
 	private Double amount;
 
 	@Builder
-	public Transaction(TrackMember trackMember, Track track, OriginalTransaction originalTransaction, String duration, Double amount) {
-//		this.trackMember = trackMember;
+	public Transaction(Track track, OriginalTransaction originalTransaction, String duration, Double amount) {
 		this.track = track;
 		this.originalTransaction = originalTransaction;
 		this.duration = duration;
