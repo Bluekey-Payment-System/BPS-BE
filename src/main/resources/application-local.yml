@@ -19,7 +19,7 @@ spring:
     be-host: http://localhost:8080
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
 #        globally_quoted_identifiers: true
@@ -29,7 +29,7 @@ spring:
     defer-datasource-initialization: true
   sql:
     init:
-      mode: always
+      mode: embedded
       schema-locations:
         - classpath:sql/schema-h2.sql
         - classpath:sql/data.sql
