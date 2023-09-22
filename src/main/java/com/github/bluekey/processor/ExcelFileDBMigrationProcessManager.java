@@ -253,51 +253,6 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
         migrate(artistExtractedNames, albumName, trackName, amount, originalTransaction);
     }
 
-    @Deprecated
-    private void deprecatedMigrate(List<String> artistExtractedNames, String trackName, Double amount, OriginalTransaction originalTransaction) {
-        for (String artistExtractedName : artistExtractedNames) {
-            Optional<Track> trackFindByEnName = trackRepository.findTrackByEnNameIgnoreCase(trackName);
-            if (trackFindByEnName.isPresent()) {
-                Optional<TrackMember> trackMemberFindByName = trackMemberRepository.findTrackMemberByNameAndTrack(artistExtractedName, trackFindByEnName.get());
-                if (trackMemberFindByName.isPresent()) {
-                    TrackMember trackMemberByEnName = trackMemberFindByName.get();
-                    Optional<Transaction> transaction = transactionRepository.findTransactionByOriginalTransactionAndDurationAndTrackMember(
-                            originalTransaction,
-                            originalTransaction.getUploadAt(),
-                            trackMemberByEnName
-                    );
-//                    if (transaction.isPresent()) {
-//                        Transaction existedTransaction = transaction.get();
-//                        existedTransaction.updateAmount(amount);
-//                        transactionRepository.save(existedTransaction);
-//                    } else {
-//                        transactionRepository.save(createNewTransaction(amount, originalTransaction, trackMemberByEnName));
-//                    }
-                }
-            }
-            Optional<Track> trackFindByName = trackRepository.findTrackByNameIgnoreCase(trackName);
-
-            if (trackFindByName.isPresent() && !trackFindByName.get().getEnName().equals(trackFindByName.get().getName())) {
-                Optional<TrackMember> trackMemberFindByName = trackMemberRepository.findTrackMemberByNameAndTrack(artistExtractedName, trackFindByName.get());
-                if (trackMemberFindByName.isPresent()) {
-                    TrackMember trackMemberByName = trackMemberFindByName.get();
-                    Optional<Transaction> transaction = transactionRepository.findTransactionByOriginalTransactionAndDurationAndTrackMember(
-                            originalTransaction,
-                            originalTransaction.getUploadAt(),
-                            trackMemberByName
-                    );
-//                    if (transaction.isPresent()) {
-//                        Transaction existedTransaction = transaction.get();
-//                        existedTransaction.updateAmount(amount);
-//                        transactionRepository.save(existedTransaction);
-//                    } else {
-//                        transactionRepository.save(createNewTransaction(amount, originalTransaction, trackMemberByName));
-//                    }
-                }
-            }
-        }
-    }
-
     private Transaction createNewTransaction(Double amount, OriginalTransaction originalTransaction, Track track) {
         return Transaction.builder()
                 .amount(amount)

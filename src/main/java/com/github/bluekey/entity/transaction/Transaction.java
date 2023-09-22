@@ -25,11 +25,6 @@ public class Transaction extends BaseTimeEntity {
 	@JoinColumn(name = "track_id")
 	private Track track;
 
-	@Deprecated
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "track_member_id")
-	private TrackMember trackMember;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "original_transaction_id")
 	private OriginalTransaction originalTransaction;
@@ -38,8 +33,7 @@ public class Transaction extends BaseTimeEntity {
 	private Double amount;
 
 	@Builder
-	public Transaction(TrackMember trackMember, Track track, OriginalTransaction originalTransaction, String duration, Double amount) {
-		this.trackMember = trackMember;
+	public Transaction(Track track, OriginalTransaction originalTransaction, String duration, Double amount) {
 		this.track = track;
 		this.originalTransaction = originalTransaction;
 		this.duration = duration;

@@ -6,6 +6,7 @@ import com.github.bluekey.dto.swagger.response.album.AlbumTrackTrendResponseDto;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.track.Track;
+import com.github.bluekey.entity.track.TrackMember;
 import com.github.bluekey.entity.transaction.Transaction;
 import com.github.bluekey.exception.AuthenticationException;
 import com.github.bluekey.exception.BusinessException;
@@ -124,24 +125,33 @@ public class LineChartDashBoardService {
                         .trackId(track.getId())
                         .name(track.getName())
                         .enName(track.getEnName())
-                        .monthlyTrend(getArtistMonthlyTrend(transactions, track.getId(), startDate, endDate))
+                        .monthlyTrend(getArtistMonthlyTrend(transactions, track.getId(), startDate, endDate, memberId))
                         .build())
                 .collect(Collectors.toList());
     }
 
-    private List<AlbumTrackMonthlyTrendInfoDto> getArtistMonthlyTrend(List<Transaction> transactions, Long trackId, String startDate, String endDate) {
+    private List<AlbumTrackMonthlyTrendInfoDto> getArtistMonthlyTrend(List<Transaction> transactions, Long trackId, String startDate, String endDate, Long memberId) {
         List<AlbumTrackMonthlyTrendInfoDto> albumTrackMonthlyTrends = new ArrayList<>();
 
         List<AlbumTrackMonthlyTrendInfoDto> trends = transactions
                 .stream()
                 .filter(transaction -> transaction.getTrack().getId().equals(trackId))
-                .map(transaction -> AlbumTrackMonthlyTrendInfoDto
+                .map(transaction -> {
+
+                    List<TrackMember> trackMembers = transaction.getTrack().getTrackMembers();
+                    List<TrackMember> filteredTrackMembers = trackMembers.stream().filter(
+                            trackMember -> trackMember.getMemberId().equals(memberId)
+                    ).collect(Collectors.toList());
+
+                    return AlbumTrackMonthlyTrendInfoDto
                         .builder()
                         .month(dashboardUtilService.convertDate(transaction.getDuration()).getMonthValue())
                         .revenue(0)
-                        .settlement(dashboardUtilService.getArtistSettlement(transaction.getAmount(), transaction.getTrackMember().getCommissionRate()))
-                        .build())
+                        .settlement(dashboardUtilService.getArtistSettlement(transaction.getAmount(), filteredTrackMembers.get(0).getCommissionRate()))
+                        .build();
+                })
                 .collect(Collectors.toList());
+
         for (Integer month : dashboardUtilService.extractMonths(startDate, endDate)) {
 
             Optional<AlbumTrackMonthlyTrendInfoDto> matchedMonthTrend = trends.stream()

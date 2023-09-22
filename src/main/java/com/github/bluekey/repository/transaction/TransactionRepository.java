@@ -11,12 +11,6 @@ import java.util.Optional;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
-    Optional<Transaction> findTransactionByOriginalTransactionAndDurationAndTrackMember(
-            OriginalTransaction originalTransaction,
-            String duration,
-            TrackMember trackMember
-    );
-
     Optional<Transaction> findTransactionsByOriginalTransactionAndDurationAndTrack(
             OriginalTransaction originalTransaction,
             String duration,
