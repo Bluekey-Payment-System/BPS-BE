@@ -15,6 +15,8 @@ import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.repository.transaction.TransactionRepository;
 
 import com.github.bluekey.service.album.AlbumService;
+
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -207,10 +209,13 @@ public class BarChartDashboardService {
     private Map<String, Integer> getAdminNetIncomeGroupedByMonthForAlbum(List<Transaction> transactions, Long albumId) {
         return transactions.stream()
                 .filter(transaction -> transaction.getTrack().getAlbum().getId().equals(albumId))
+                .flatMap(transaction -> transaction.getTrack().getTrackMembers().stream()
+                        .map(trackMember -> new AbstractMap.SimpleEntry<>(transaction, trackMember))
+                )
                 .collect(
                         Collectors.groupingBy(
-                                Transaction::getDuration,
-                                Collectors.summingInt((t) -> dashboardUtilService.getCompanyNetIncome(t.getAmount(), t.getTrackMember().getCommissionRate()))
+                                entry -> entry.getKey().getDuration(),
+                                Collectors.summingInt((t) -> dashboardUtilService.getCompanyNetIncome(t.getKey().getAmount(), t.getValue().getCommissionRate()))
                         ));
     }
 

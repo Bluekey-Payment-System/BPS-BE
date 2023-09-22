@@ -38,15 +38,14 @@ public class MonthlyTracksDashBoardService {
         Comparator<ArtistMonthlyTrackListDto> comparator = getArtistSortComparator(sortBy);
 
         Map<Track, Double> trackMappedByAmount = transactions.stream()
-                .filter(transaction -> transaction.getTrackMember().getMemberId() != null)
-                .filter(transaction -> transaction.getTrackMember().getMemberId().equals(memberId))
+                .filter(transaction -> transaction.getTrack().getTrackMembers().stream().anyMatch(trackMember -> trackMember.getMemberId() != null && trackMember.getMemberId().equals(memberId)))
                 .filter(transaction -> {
                     if (keyword == null) {
                         return true;
                     }
 
                     String convertedKeyword = keyword.toLowerCase();
-                    Track track = transaction.getTrackMember().getTrack();
+                    Track track = transaction.getTrack();
                     String trackName = track.getName().toLowerCase();
                     String trackEnName = track.getEnName().toLowerCase();
 
