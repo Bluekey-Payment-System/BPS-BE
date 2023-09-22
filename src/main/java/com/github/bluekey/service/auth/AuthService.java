@@ -20,6 +20,7 @@ import com.github.bluekey.exception.member.MemberNotFoundException;
 import com.github.bluekey.config.security.jwt.JwtProvider;
 import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.service.member.MemberService;
+import com.github.bluekey.service.notification.RequestAuthorityService;
 import com.github.bluekey.util.ImageUploadUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,7 @@ public class AuthService {
 	private final PasswordEncoder passwordEncoder;
 	private final JwtProvider jwtProvider;
 	private final ImageUploadUtil imageUploadUtil;
+	private final RequestAuthorityService requestAuthorityService;
 
 	public LoginTokenResponseDto login(LoginRequestDto dto) {
 		Member member = validateLogin(dto);
@@ -64,6 +66,7 @@ public class AuthService {
 		Member admin = dto.toMember();
 		encodeMemberPassword(admin);
 		Member newMember = memberRepository.save(admin);
+		requestAuthorityService.requestAuthority(newMember.getId());
 		return SignupResponseDto.from(newMember);
 	}
 
