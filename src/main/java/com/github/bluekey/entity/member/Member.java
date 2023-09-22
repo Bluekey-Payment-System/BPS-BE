@@ -1,8 +1,11 @@
 package com.github.bluekey.entity.member;
 
 import com.github.bluekey.entity.BaseTimeEntity;
+import com.github.bluekey.entity.notification.MemberRequestAuthority;
 import com.github.bluekey.exception.BusinessException;
 import com.github.bluekey.exception.ErrorCode;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -55,6 +58,13 @@ public class Member extends BaseTimeEntity {
 
 	@Column(name = "profile_image")
 	private String profileImage;
+
+	@OneToMany(
+			mappedBy = "member",
+			fetch = FetchType.LAZY,
+			cascade = CascadeType.ALL,
+			orphanRemoval = true)
+	private List<MemberRequestAuthority> memberRequestAuthorities = new ArrayList<>();
 
 	@Builder(builderClassName = "ByArtistBuilder", builderMethodName = "ByArtistBuilder")
 	public Member(String email, String loginId, String password, String name, String enName, Integer commissionRate, String profileImage) {
