@@ -30,7 +30,7 @@ public class RequestAuthorityService {
 	 */
 	@Transactional
 	public void requestAuthority(Long senderId) {
-		List<Member> superAdmins = memberRepository.findMemberByRoleAndIsRemovedFalse(MemberRole.SUPER_ADMIN);
+		List<Member> superAdmins = memberRepository.findMembersByRoleAndIsRemovedFalse(MemberRole.SUPER_ADMIN);
 
 		RequestAuthority requestAuthority = RequestAuthority.builder()
 				.senderId(senderId)

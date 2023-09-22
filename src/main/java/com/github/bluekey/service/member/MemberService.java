@@ -107,7 +107,7 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public SimpleArtistAccountListResponseDto getSimpleArtistAccounts() {
-        List<Member> artists = memberRepository.findMemberByRoleAndIsRemovedFalse(MemberRole.ARTIST);
+        List<Member> artists = memberRepository.findMembersByRoleAndIsRemovedFalse(MemberRole.ARTIST);
         return SimpleArtistAccountListResponseDto.from(artists);
     }
 
@@ -209,7 +209,7 @@ public class MemberService {
 		if (keyword != null) {
 			artists = memberRepository.findMembersByRoleAndIsRemovedFalseAndNameContainingIgnoreCaseOrEnNameContainingIgnoreCase(MemberRole.ARTIST, keyword, keyword);
 		} else {
-			artists = memberRepository.findMemberByRoleAndIsRemovedFalse(MemberRole.ARTIST);
+			artists = memberRepository.findMembersByRoleAndIsRemovedFalse(MemberRole.ARTIST);
 		}
 		List<AdminArtistProfileListDto> adminArtistProfiles = new ArrayList<>();
 

@@ -41,7 +41,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Page<Member> findMembersByTypeAndIsRemovedFalse(MemberType type, PageRequest pageable);
     Page<Member> findMembersByRoleAndIsRemovedFalse(MemberRole role, PageRequest pageable);
 
-    List<Member> findMemberByRoleAndIsRemovedFalse(MemberRole role);
+    List<Member> findMembersByRoleAndIsRemovedFalse(MemberRole role);
 
     List<Member> findMembersByRoleAndIsRemovedFalseAndNameContainingIgnoreCaseOrEnNameContainingIgnoreCase(MemberRole role, String name, String enName);
 
