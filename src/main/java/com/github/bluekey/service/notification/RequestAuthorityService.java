@@ -1,5 +1,8 @@
 package com.github.bluekey.service.notification;
 
+import com.github.bluekey.dto.common.ListResponse;
+import com.github.bluekey.dto.common.MemberBase;
+import com.github.bluekey.dto.response.RequestAuthorityResponse;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.notification.MemberRequestAuthority;
@@ -65,5 +68,26 @@ public class RequestAuthorityService {
 
 		memberRepository.save(sender);
 		requestAuthorityRepository.save(requestAuthority);
+	}
+
+	@Transactional(readOnly = true)
+	public ListResponse<RequestAuthorityResponse> getRequestAuthority(Long loginUserId) {
+
+		Member loginMember = memberRepository.findMemberByIdAndIsRemovedFalseOrElseThrow(loginUserId);
+
+		List<RequestAuthorityResponse> requestAuthorities = loginMember.getMemberRequestAuthorities().stream()
+				.filter(memberRequestAuthority -> memberRequestAuthority.getRequestAuthority().getStatus() == RequestStatus.PENDING)
+				.map(memberRequestAuthority -> {
+					Member sender = memberRepository
+							.findMemberByIdAndIsRemovedFalseOrElseThrow(memberRequestAuthority.getRequestAuthority().getSenderId());
+					return RequestAuthorityResponse.builder()
+							.requestAuthorityId(memberRequestAuthority.getRequestAuthority().getId())
+							.sender(MemberBase.from(sender))
+							.createdAt(memberRequestAuthority.getRequestAuthority().getCreatedAt())
+							.build();
+				})
+				.collect(Collectors.toList());
+
+		return new ListResponse<>(requestAuthorities.size(), requestAuthorities);
 	}
 }
