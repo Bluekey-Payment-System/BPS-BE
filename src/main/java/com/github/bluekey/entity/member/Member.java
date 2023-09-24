@@ -115,6 +115,10 @@ public class Member extends BaseTimeEntity {
 		this.commissionRate = commissionRate;
 	}
 
+	public void updateRole(MemberRole role) {
+		this.role = role;
+	}
+
 	public void memberRemoved() {
 		if (isRemoved()) {
 			throw new BusinessException(ErrorCode.MEMBER_ALREADY_REMOVED);

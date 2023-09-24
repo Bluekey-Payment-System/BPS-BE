@@ -4,6 +4,7 @@ import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.notification.MemberRequestAuthority;
 import com.github.bluekey.entity.notification.RequestAuthority;
+import com.github.bluekey.entity.notification.RequestStatus;
 import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.repository.notification.MemberRequestAuthorityRepository;
 import com.github.bluekey.repository.notification.RequestAuthorityRepository;
@@ -44,5 +45,25 @@ public class RequestAuthorityService {
 						.build())
 				.collect(Collectors.toList());
 		memberRequestAuthorityRepository.saveAll(memberRequestAuthorities);
+	}
+
+	@Transactional
+	public void approveAuthority(Long loginUserId, Long requestAuthorityId) {
+		// requestAuthorityId가 존재하는지 확인
+		RequestAuthority requestAuthority = requestAuthorityRepository
+				.findRequestAuthorityByIdAndStatusOrElseThrow(requestAuthorityId, RequestStatus.PENDING);
+
+		// memberRequestAuthorities에 loginUserId가 존재하는지 확인
+		memberRequestAuthorityRepository.findMemberRequestAuthorityByMemberIdAndRequestAuthorityIdOrElseThrow(loginUserId, requestAuthorityId);
+
+		// MemberRole을 ADMIN으로 변경
+		Member sender = memberRepository.findMemberByIdAndIsRemovedFalseOrElseThrow(requestAuthority.getSenderId());
+		sender.updateRole(MemberRole.ADMIN);
+
+		// requestAuthority의 상태를 ACCEPTED로 변경
+		requestAuthority.confirm(RequestStatus.ACCEPTED);
+
+		memberRepository.save(sender);
+		requestAuthorityRepository.save(requestAuthority);
 	}
 }

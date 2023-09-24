@@ -32,7 +32,7 @@ public enum ErrorCode {
 
 
     // Not Found Error
-    TRACK_NOT_FOUND(HttpStatus.BAD_REQUEST, "T_001", "존재하지 않는 트랙입니다."),
+    TRACK_NOT_FOUND(HttpStatus.NOT_FOUND, "T_001", "존재하지 않는 트랙입니다."),
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "M_001", "존재하지 않는 회원입니다."),
     ALBUM_NOT_FOUND(HttpStatus.NOT_FOUND, "A_001", "존재하지 않는 앨범입니다."),
 
@@ -64,7 +64,10 @@ public enum ErrorCode {
     ORIGINAL_TRANSACTION_NOT_READ_FROM_S3(HttpStatus.BAD_REQUEST, "TR_004", "S3에서 해당 엑셀파일을 불러오는데 실패하였습니다."),
     ORIGINAL_TRANSACTION_INVALID_EXCEL_FILE_TYPE(HttpStatus.BAD_REQUEST, "TR_005", "엑셀파일 타입이 일치하지 않습니다."),
     ORIGINAL_TRANSACTION_NOT_EXIST(HttpStatus.NOT_FOUND, "TR_006", "엑셀파일 업로드 내역에서 해당하는 id를 가진 Original Transaction이 존재하지 않습니다."),
-    TRANSACTION_INVALID_EXCEL_FILE_NAME(HttpStatus.BAD_REQUEST, "TR_007", "엑셀 파일명 포맷이 잘못됬습니다.");
+    TRANSACTION_INVALID_EXCEL_FILE_NAME(HttpStatus.BAD_REQUEST, "TR_007", "엑셀 파일명 포맷이 잘못됬습니다."),
+
+    // Request Authority Error
+    REQUEST_AUTHORITY_NOT_PENDING(HttpStatus.BAD_REQUEST, "RA_001", "해당 권한 요청은 PENDING 상태가 아닙니다.");
 
     private final HttpStatus status;
     private final String code;
