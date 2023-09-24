@@ -66,4 +66,19 @@ public class RequestAuthorityService {
 		memberRepository.save(sender);
 		requestAuthorityRepository.save(requestAuthority);
 	}
+
+	@Transactional
+	public void rejectAuthority(Long loginUserId, Long requestAuthorityId) {
+		// requestAuthorityId가 존재하는지 확인
+		RequestAuthority requestAuthority = requestAuthorityRepository
+				.findRequestAuthorityByIdAndStatusOrElseThrow(requestAuthorityId, RequestStatus.PENDING);
+
+		// memberRequestAuthorities에 loginUserId가 존재하는지 확인
+		memberRequestAuthorityRepository.findMemberRequestAuthorityByMemberIdAndRequestAuthorityIdOrElseThrow(loginUserId, requestAuthorityId);
+
+		// requestAuthority의 상태를 REJECTED로 변경
+		requestAuthority.confirm(RequestStatus.REJECTED);
+
+		requestAuthorityRepository.save(requestAuthority);
+	}
 }
