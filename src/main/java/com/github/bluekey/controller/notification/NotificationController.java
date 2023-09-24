@@ -24,10 +24,22 @@ public class NotificationController {
 			@ApiResponse(responseCode = "200", description = "정상 반환"),
 	})
 	@PreAuthorize("hasRole('SUPER_ADMIN')")
-	@PatchMapping("/request-authority/{requestAuthorityId}/approve")
+	@PatchMapping("/request-authorities/{requestAuthorityId}/approve")
 	public void approveRequestAuthority(
 			@PathVariable("requestAuthorityId") Long requestAuthorityId
 	) {
 		requestAuthorityService.approveAuthority(PrincipalConvertUtil.getMemberId(), requestAuthorityId);
+	}
+
+	@Operation(summary = "권한 요청 거절", description = "권한 요청 거절")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "정상 반환"),
+	})
+	@PreAuthorize("hasRole('SUPER_ADMIN')")
+	@PatchMapping("/request-authorities/{requestAuthorityId}/reject")
+	public void rejectRequestAuthority(
+			@PathVariable("requestAuthorityId") Long requestAuthorityId
+	) {
+		requestAuthorityService.rejectAuthority(PrincipalConvertUtil.getMemberId(), requestAuthorityId);
 	}
 }
