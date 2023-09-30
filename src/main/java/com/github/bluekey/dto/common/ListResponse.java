@@ -13,8 +13,8 @@ public class ListResponse<T> {
     private int totalItems;
     private List<T> contents = new ArrayList<>();
 
-    public ListResponse(int totalItems, List<T> contents) {
-        this.totalItems = totalItems;
+    public ListResponse(List<T> contents) {
+        this.totalItems = contents.size();
         this.contents = contents;
     }
 }

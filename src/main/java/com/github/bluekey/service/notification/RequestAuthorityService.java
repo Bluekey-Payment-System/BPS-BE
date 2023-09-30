@@ -103,6 +103,6 @@ public class RequestAuthorityService {
 				})
 				.collect(Collectors.toList());
 
-		return new ListResponse<>(requestAuthorities.size(), requestAuthorities);
+		return new ListResponse<>(requestAuthorities);
 	}
 }
