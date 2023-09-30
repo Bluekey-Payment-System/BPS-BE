@@ -1,4 +1,4 @@
-package com.github.bluekey.service.dashboard;
+package com.github.bluekey.service.dashboard.v2;
 
 import org.springframework.stereotype.Service;
 
