@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,6 +31,15 @@ public class NotificationController {
 	@GetMapping("/request-authorities")
 	public ListResponse<RequestAuthorityResponse> getRequestAuthority() {
 		return requestAuthorityService.getRequestAuthority(PrincipalConvertUtil.getMemberId());
+	}
+
+	@Operation(summary = "권한 요청", description = "로그인한 유저가 슈퍼 어드민에게 권한을 요청")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "정상 반환"),
+	})
+	@PostMapping("/request-authorities")
+	public void requestAuthority() {
+		requestAuthorityService.requestAuthority(PrincipalConvertUtil.getMemberId());
 	}
 
 	@Operation(summary = "권한 요청 승인", description = "권한 요청 승인")
