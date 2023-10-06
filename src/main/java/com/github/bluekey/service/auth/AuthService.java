@@ -66,6 +66,7 @@ public class AuthService {
 		Member admin = dto.toMember();
 		encodeMemberPassword(admin);
 		Member newMember = memberRepository.save(admin);
+		requestAuthorityService.requestAuthority(newMember.getId());
 		return SignupResponseDto.from(newMember);
 	}
 
