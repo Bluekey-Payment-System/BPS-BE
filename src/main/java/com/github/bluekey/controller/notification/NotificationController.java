@@ -40,7 +40,7 @@ public class NotificationController {
 			@ApiResponse(responseCode = "204", description = "No Content"),
 	})
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	@PreAuthorize("hasRole('PENDING')")
+	@PreAuthorize("hasRole('PENDING') or hasRole('ADMIN')")
 	@PostMapping("/request-authorities")
 	public void requestAuthority() {
 		requestAuthorityService.requestAuthority(PrincipalConvertUtil.getMemberId());
