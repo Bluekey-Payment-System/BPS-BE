@@ -8,6 +8,7 @@ import com.github.bluekey.service.dashboard.v2.strategy.DashboardTransactionAllS
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DashboardTransactionAdminClient implements DashboardTransactionAllStrategy<Transaction> {
@@ -19,12 +20,17 @@ public class DashboardTransactionAdminClient implements DashboardTransactionAllS
 
     @Override
     public Stream<Transaction> filteredByAlbumId(Long albumId) {
-        return null;
+        return transactions.stream().filter(transaction -> transaction.getTrack().getAlbum().getId().equals(albumId));
     }
 
     @Override
     public Map<Track, Double> groupedByTrack() {
-        return null;
+        return transactions.stream()
+                .collect(
+                        Collectors.groupingBy(
+                                Transaction::getTrack,
+                                Collectors.summingDouble(Transaction::getAmount)
+                        ));
     }
 
     @Override
@@ -34,12 +40,22 @@ public class DashboardTransactionAdminClient implements DashboardTransactionAllS
 
     @Override
     public Map<Album, Double> groupedByAlbum() {
-        return null;
+        return transactions.stream()
+                .collect(
+                        Collectors.groupingBy(
+                                transaction -> transaction.getTrack().getAlbum(),
+                                Collectors.summingDouble(Transaction::getAmount)
+                        ));
     }
 
     @Override
     public Map<String, Double> groupedByMonth() {
-        return null;
+        return transactions.stream()
+                .collect(
+                        Collectors.groupingBy(
+                                Transaction::getDuration,
+                                Collectors.summingDouble(Transaction::getAmount)
+                        ));
     }
 
     @Override
