@@ -1,7 +1,7 @@
 package com.github.bluekey.service.notification;
 
+import com.github.bluekey.dto.common.AdminBase;
 import com.github.bluekey.dto.common.ListResponse;
-import com.github.bluekey.dto.common.MemberBase;
 import com.github.bluekey.dto.response.RequestAuthorityResponse;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
@@ -11,6 +11,8 @@ import com.github.bluekey.entity.notification.RequestStatus;
 import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.repository.notification.MemberRequestAuthorityRepository;
 import com.github.bluekey.repository.notification.RequestAuthorityRepository;
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -91,16 +93,22 @@ public class RequestAuthorityService {
 		Member loginMember = memberRepository.findMemberByIdAndIsRemovedFalseOrElseThrow(loginUserId);
 
 		List<RequestAuthorityResponse> requestAuthorities = loginMember.getMemberRequestAuthorities().stream()
-				.filter(memberRequestAuthority -> memberRequestAuthority.getRequestAuthority().getStatus() == RequestStatus.PENDING)
+				.filter(memberRequestAuthority ->
+						memberRequestAuthority.getRequestAuthority().getStatus() == RequestStatus.PENDING
+								|| LocalDateTime.now().minusWeeks(1).isBefore(memberRequestAuthority.getRequestAuthority().getConfirmAt()))
 				.map(memberRequestAuthority -> {
 					Member sender = memberRepository
 							.findMemberByIdAndIsRemovedFalseOrElseThrow(memberRequestAuthority.getRequestAuthority().getSenderId());
 					return RequestAuthorityResponse.builder()
 							.requestAuthorityId(memberRequestAuthority.getRequestAuthority().getId())
-							.sender(MemberBase.from(sender))
+							.sender(AdminBase.from(sender))
+							.status(memberRequestAuthority.getRequestAuthority().getStatus())
 							.createdAt(memberRequestAuthority.getRequestAuthority().getCreatedAt())
 							.build();
 				})
+				.sorted(Comparator.comparing((RequestAuthorityResponse requestAuthorityResponse)
+								-> requestAuthorityResponse.getStatus() == RequestStatus.PENDING ? 1 : 0)
+						.thenComparing(RequestAuthorityResponse::getCreatedAt).reversed())
 				.collect(Collectors.toList());
 
 		return new ListResponse<>(requestAuthorities.size(), requestAuthorities);
