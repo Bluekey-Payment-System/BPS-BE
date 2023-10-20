@@ -65,8 +65,8 @@ public class RequestAuthorityService {
 		Member sender = memberRepository.findMemberByIdAndIsRemovedFalseOrElseThrow(requestAuthority.getSenderId());
 		sender.updateRole(MemberRole.ADMIN);
 
-		// requestAuthority의 상태를 ACCEPTED로 변경
-		requestAuthority.confirm(RequestStatus.ACCEPTED);
+		// requestAuthority의 상태를 APPROVED로 변경
+		requestAuthority.confirm(RequestStatus.APPROVED);
 
 		memberRepository.save(sender);
 		requestAuthorityRepository.save(requestAuthority);
