@@ -113,4 +113,10 @@ public class RequestAuthorityService {
 
 		return new ListResponse<>(requestAuthorities.size(), requestAuthorities);
 	}
+
+	@Transactional(readOnly = true)
+	public boolean hasPendingRequestAuthority(Long loginUserId) {
+		Member loginMember = memberRepository.findMemberByIdAndIsRemovedFalseOrElseThrow(loginUserId);
+		return loginMember.getMemberRequestAuthorities().stream().anyMatch(request -> request.getRequestAuthority().getStatus().equals(RequestStatus.PENDING));
+	}
 }
