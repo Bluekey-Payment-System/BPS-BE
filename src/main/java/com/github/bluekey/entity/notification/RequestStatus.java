@@ -1,5 +1,5 @@
 package com.github.bluekey.entity.notification;
 
 public enum RequestStatus {
-	PENDING, APPROVED, REJECTED
+	PENDING, APPROVED, REJECTED, AUTO_REJECTED
 }

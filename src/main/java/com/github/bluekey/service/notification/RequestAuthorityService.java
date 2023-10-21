@@ -2,6 +2,7 @@ package com.github.bluekey.service.notification;
 
 import com.github.bluekey.dto.common.AdminBase;
 import com.github.bluekey.dto.common.ListResponse;
+import com.github.bluekey.dto.response.RequestAuthorityPendingStatusResponseDto;
 import com.github.bluekey.dto.response.RequestAuthorityResponse;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
@@ -112,5 +113,12 @@ public class RequestAuthorityService {
 				.collect(Collectors.toList());
 
 		return new ListResponse<>(requestAuthorities.size(), requestAuthorities);
+	}
+
+	@Transactional(readOnly = true)
+	public RequestAuthorityPendingStatusResponseDto hasPendingRequestAuthority(Long loginUserId) {
+		Member loginMember = memberRepository.findMemberByIdAndIsRemovedFalseOrElseThrow(loginUserId);
+		boolean hasPendingRequestAuthority = loginMember.getMemberRequestAuthorities().stream().anyMatch(request -> request.getRequestAuthority().getStatus().equals(RequestStatus.PENDING));
+		return new RequestAuthorityPendingStatusResponseDto(hasPendingRequestAuthority);
 	}
 }
