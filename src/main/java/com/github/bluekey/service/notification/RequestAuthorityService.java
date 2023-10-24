@@ -4,6 +4,7 @@ import com.github.bluekey.dto.common.AdminBase;
 import com.github.bluekey.dto.common.ListResponse;
 import com.github.bluekey.dto.response.RequestAuthorityPendingStatusResponseDto;
 import com.github.bluekey.dto.response.RequestAuthorityResponse;
+import com.github.bluekey.dto.response.RequestAuthorityUpdateResponseDto;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.notification.MemberRequestAuthority;
@@ -54,7 +55,7 @@ public class RequestAuthorityService {
 	}
 
 	@Transactional
-	public void approveAuthority(Long loginUserId, Long requestAuthorityId) {
+	public RequestAuthorityUpdateResponseDto approveAuthority(Long loginUserId, Long requestAuthorityId) {
 		// requestAuthorityId가 존재하는지 확인
 		RequestAuthority requestAuthority = requestAuthorityRepository
 				.findRequestAuthorityByIdAndStatusOrElseThrow(requestAuthorityId, RequestStatus.PENDING);
@@ -71,10 +72,11 @@ public class RequestAuthorityService {
 
 		memberRepository.save(sender);
 		requestAuthorityRepository.save(requestAuthority);
+		return RequestAuthorityUpdateResponseDto.from(sender);
 	}
 
 	@Transactional
-	public void rejectAuthority(Long loginUserId, Long requestAuthorityId) {
+	public RequestAuthorityUpdateResponseDto rejectAuthority(Long loginUserId, Long requestAuthorityId) {
 		// requestAuthorityId가 존재하는지 확인
 		RequestAuthority requestAuthority = requestAuthorityRepository
 				.findRequestAuthorityByIdAndStatusOrElseThrow(requestAuthorityId, RequestStatus.PENDING);
@@ -85,7 +87,12 @@ public class RequestAuthorityService {
 		// requestAuthority의 상태를 REJECTED로 변경
 		requestAuthority.confirm(RequestStatus.REJECTED);
 
+		// request authority 요청 주체
+		Long senderId = requestAuthority.getSenderId();
+		Member sender = memberRepository.findMemberByIdAndIsRemovedFalseOrElseThrow(senderId);
+
 		requestAuthorityRepository.save(requestAuthority);
+		return RequestAuthorityUpdateResponseDto.from(sender);
 	}
 
 	@Transactional(readOnly = true)

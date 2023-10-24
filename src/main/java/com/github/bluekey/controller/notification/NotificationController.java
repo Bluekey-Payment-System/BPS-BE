@@ -4,6 +4,7 @@ import com.github.bluekey.config.security.jwt.PrincipalConvertUtil;
 import com.github.bluekey.dto.common.ListResponse;
 import com.github.bluekey.dto.response.RequestAuthorityPendingStatusResponseDto;
 import com.github.bluekey.dto.response.RequestAuthorityResponse;
+import com.github.bluekey.dto.response.RequestAuthorityUpdateResponseDto;
 import com.github.bluekey.dto.swagger.response.artist.SimpleArtistAccountListResponseDto;
 import com.github.bluekey.service.notification.RequestAuthorityService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,10 +58,11 @@ public class NotificationController {
 	})
 	@PreAuthorize("hasRole('SUPER_ADMIN')")
 	@PatchMapping("/request-authorities/{requestAuthorityId}/approve")
-	public void approveRequestAuthority(
+	public ResponseEntity<RequestAuthorityUpdateResponseDto> approveRequestAuthority(
 			@PathVariable("requestAuthorityId") Long requestAuthorityId
 	) {
-		requestAuthorityService.approveAuthority(PrincipalConvertUtil.getMemberId(), requestAuthorityId);
+		RequestAuthorityUpdateResponseDto response = requestAuthorityService.approveAuthority(PrincipalConvertUtil.getMemberId(), requestAuthorityId);
+		return ResponseEntity.ok(response);
 	}
 
 	@Operation(summary = "권한 요청 거절", description = "권한 요청 거절")
@@ -69,10 +71,11 @@ public class NotificationController {
 	})
 	@PreAuthorize("hasRole('SUPER_ADMIN')")
 	@PatchMapping("/request-authorities/{requestAuthorityId}/reject")
-	public void rejectRequestAuthority(
+	public ResponseEntity<RequestAuthorityUpdateResponseDto> rejectRequestAuthority(
 			@PathVariable("requestAuthorityId") Long requestAuthorityId
 	) {
-		requestAuthorityService.rejectAuthority(PrincipalConvertUtil.getMemberId(), requestAuthorityId);
+		RequestAuthorityUpdateResponseDto response = requestAuthorityService.rejectAuthority(PrincipalConvertUtil.getMemberId(), requestAuthorityId);
+		return ResponseEntity.ok(response);
 	}
 
 	@Operation(summary = "Pending 상태 권한 요청 여부", description = "알림 여부를 제공하기 위한 Pending status인 권한 요청이 있는지에 대한 여부 데이터 반환")
