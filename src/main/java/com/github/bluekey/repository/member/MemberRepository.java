@@ -57,4 +57,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
                 new BusinessException(ErrorCode.MEMBER_NOT_FOUND)
         );
     }
+
 }

@@ -118,7 +118,7 @@ public class AlbumService {
 
         ArtistInfoDto artist = null;
         if (album.getArtistId() != null) {
-            Member member = memberRepository.findMemberByIdAndIsRemovedFalseOrElseThrow(album.getArtistId());
+            Member member = memberRepository.findByIdOrElseThrow(album.getArtistId());
             artist = ArtistInfoDto.from(member);
         }
 
