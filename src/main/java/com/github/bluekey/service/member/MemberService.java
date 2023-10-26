@@ -209,7 +209,7 @@ public class MemberService {
 		if (keyword != null) {
 			artists = memberRepository.findMembersByRoleAndIsRemovedFalseAndNameContainingIgnoreCaseOrEnNameContainingIgnoreCase(MemberRole.ARTIST, keyword, keyword);
 		} else {
-			artists = memberRepository.findMembersByRoleAndIsRemovedFalse(MemberRole.ARTIST);
+			artists = memberRepository.findMembersByRoleAndIsRemoved(MemberRole.ARTIST, false);
 		}
 		List<AdminArtistProfileListDto> adminArtistProfiles = new ArrayList<>();
 
