@@ -132,7 +132,7 @@ public class AlbumService {
                             .map(member -> {
                                 if (member.getMemberId() != null) {
                                     Member memberInfo = memberRepository
-                                            .findMemberByIdAndIsRemovedFalseOrElseThrow(member.getMemberId());
+                                            .findByIdOrElseThrow(member.getMemberId());
 
                                     return TrackArtistsDto.from(memberInfo, member);
                                 } else {
