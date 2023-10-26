@@ -30,6 +30,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 @Slf4j
@@ -72,9 +74,11 @@ public class AuthService {
 
 	@Transactional
 	public ArtistAccountDto createArtist(MultipartFile file, ArtistRequestDto dto) {
-
+		List<Member> artists = memberRepository.getMembersByLoginIdAndIsRemovedFalse(dto.getLoginId());
+		if (artists.size() > 0) {
+			throw new BusinessException(ErrorCode.INVALID_LOGIN_ID_VALUE);
+		}
 		Member member = memberRepository.save(dto.toArtist());
-
 		if (file != null && !file.isEmpty()) {
 			String fileUrl = imageUploadUtil.uploadImage(file, S3_PROFILE_IMAGE_PREFIX + member.getId() + "/" + file.getOriginalFilename()+ "-" +member.getCreatedAt());
 			member.updateProfileImage(fileUrl);

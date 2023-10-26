@@ -33,7 +33,7 @@ public class Member extends BaseTimeEntity {
 	@Embedded
 	private Email email;
 
-	@Column(name = "login_id", nullable = false, unique = true)
+	@Column(name = "login_id", nullable = false)
 	private String loginId;
 
 	@Column(name = "password", nullable = false)
