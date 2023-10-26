@@ -26,4 +26,8 @@ public class TrackCommissionRateDto {
         this.name = trackMember.getName();
         this.commissionRate = trackMember.getCommissionRate();
     }
+
+    public void updateCommissionRate(int commissionRate) {
+        this.commissionRate = commissionRate;
+    }
 }

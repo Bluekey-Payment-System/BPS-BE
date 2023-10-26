@@ -33,9 +33,18 @@ public class TrackService {
         Album album = albumRepository.findAlbumByIdAndIsRemovedFalseOrElseThrow(albumId);
         Track track = trackRepository.save(dto.toTrack(album));
 
-        List<TrackCommissionRateDto> requestArtists = dto.getArtists();
+        List<TrackCommissionRateDto> requestArtistsBefore = dto.getArtists();
+        List<TrackCommissionRateDto> requestArtistsAfter = new ArrayList<>();
 
-        for (TrackCommissionRateDto artist : requestArtists) {
+        for (TrackCommissionRateDto trackCommissionRateDto : requestArtistsBefore) {
+            if (dto.getIsOriginalTrack()) {
+                trackCommissionRateDto.updateCommissionRate(100);
+            }
+            requestArtistsAfter.add(trackCommissionRateDto);
+        }
+
+
+        for (TrackCommissionRateDto artist : requestArtistsAfter) {
             if (artist.getMemberId() == null) {
                 TrackMember trackMember = TrackMember.ByContractSingerBuilder()
                         .name(artist.getName())
