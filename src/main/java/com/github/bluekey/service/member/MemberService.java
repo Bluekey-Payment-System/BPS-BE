@@ -206,10 +206,10 @@ public class MemberService {
 		List<Transaction> previousMonthTransactions = transactionRepository.findTransactionsByDuration(
 				dashboardUtilService.getPreviousMonth(monthly));
 		List<Member> artists;
-		if (keyword != null) {
-			artists = memberRepository.findMembersByRoleAndIsRemovedAndNameContainingIgnoreCaseOrEnNameContainingIgnoreCase(MemberRole.ARTIST, false, keyword, keyword);
+		if (keyword != "") {
+			artists = memberRepository.findMembersByRoleAndIsRemovedFalseAndNameContainingIgnoreCaseOrEnNameContainingIgnoreCase(MemberRole.ARTIST, keyword, keyword);
 		} else {
-			artists = memberRepository.findMembersByRoleAndIsRemoved(MemberRole.ARTIST, false);
+			artists = memberRepository.findMembersByRoleAndIsRemovedFalse(MemberRole.ARTIST);
 		}
 		List<AdminArtistProfileListDto> adminArtistProfiles = new ArrayList<>();
 
