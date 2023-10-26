@@ -207,7 +207,7 @@ public class MemberService {
 				dashboardUtilService.getPreviousMonth(monthly));
 		List<Member> artists;
 		if (keyword != null) {
-			artists = memberRepository.findMembersByRoleAndIsRemovedFalseAndNameContainingIgnoreCaseOrEnNameContainingIgnoreCase(MemberRole.ARTIST, keyword, keyword);
+			artists = memberRepository.findMembersByRoleAndIsRemovedAndNameContainingIgnoreCaseOrEnNameContainingIgnoreCase(MemberRole.ARTIST, false, keyword, keyword);
 		} else {
 			artists = memberRepository.findMembersByRoleAndIsRemoved(MemberRole.ARTIST, false);
 		}

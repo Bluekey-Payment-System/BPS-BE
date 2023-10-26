@@ -45,6 +45,10 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findMembersByRoleAndIsRemoved(MemberRole role, boolean isRemoved);
 
     List<Member> findMembersByRoleAndIsRemovedFalseAndNameContainingIgnoreCaseOrEnNameContainingIgnoreCase(MemberRole role, String name, String enName);
+
+    List<Member> findMembersByRoleAndIsRemovedAndNameContainingIgnoreCaseOrEnNameContainingIgnoreCase(MemberRole role, boolean isRemoved, String name, String enName);
+
+
     List<Member> getMembersByLoginIdAndIsRemovedFalse(String loginId);
 
     default Member findByIdOrElseThrow(Long id) {
