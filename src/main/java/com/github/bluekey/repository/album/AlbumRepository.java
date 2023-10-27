@@ -28,7 +28,7 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
     @Query("SELECT a " +
             "FROM Album a " +
             "WHERE a.isRemoved = false " +
-            "AND (a.name LIKE %:keyword% ESCAPE '&' OR a.enName LIKE %:keyword% ESCAPE '&')" +
+            "AND (a.name LIKE %:keyword% OR a.enName LIKE %:keyword%)" +
             "ORDER BY a.createdAt DESC")
     Page<Album> findAllByIsRemovedFalseAndSearchByKeyword(Pageable pageable, @Param("keyword") String keyword);
 
