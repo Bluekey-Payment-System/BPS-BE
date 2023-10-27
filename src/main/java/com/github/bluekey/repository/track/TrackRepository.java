@@ -14,14 +14,17 @@ public interface TrackRepository extends JpaRepository<Track, Long> {
 
     Optional<Track> findTrackByNameIgnoreCaseAndAlbum(String name, Album album);
     Optional<Track> findTrackByEnNameIgnoreCaseAndAlbum(String enName, Album album);
+    Optional<Track> findTrackByEnNameIgnoreCaseAndAlbumAndIsRemoved(String enName, Album album, boolean isRemoved);
+    Optional<Track> findTrackByNameIgnoreCaseAndAlbumAndIsRemoved(String name, Album album, boolean isRemoved);
+
     List<Track> findTrackByNameIgnoreCaseOrEnNameIgnoreCase(String name, String enName);
     Optional<Track> findTrackByNameIgnoreCase(String name);
     Optional<Track> findTrackByEnNameIgnoreCase(String enName);
 
     List<Track> findAllByAlbumId(Long albumId);
     List<Track> findAllByAlbumIdAndIsRemovedFalse(Long albumId);
-    List<Track> findAllByName(String name);
-    List<Track> findAllByEnName(String enName);
+    List<Track> findAllByNameAndIsRemoved(String name, boolean isRemoved);
+    List<Track> findAllByEnNameAndIsRemoved(String enName, boolean isRemoved);
 
     default Track findByIdOrElseThrow(Long id) {
         return this.findById(id).orElseThrow(() ->

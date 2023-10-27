@@ -15,6 +15,8 @@ import org.springframework.data.repository.query.Param;
 public interface AlbumRepository extends JpaRepository<Album, Long> {
 
     Optional<Album> findAlbumByEnNameIgnoreCase(String name);
+    Optional<Album> findAlbumByEnNameIgnoreCaseAndIsRemoved(String enName, boolean isRemoved);
+    Optional<Album> findAlbumByNameIgnoreCaseAndIsRemoved(String name, boolean isRemoved);
 
     Optional<Album> findAlbumByNameIgnoreCase(String name);
     Optional<Album> findAlbumByNameIgnoreCaseOrEnNameIgnoreCase(String name, String enName);

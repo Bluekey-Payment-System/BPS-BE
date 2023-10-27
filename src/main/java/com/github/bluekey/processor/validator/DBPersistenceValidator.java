@@ -31,11 +31,11 @@ public class DBPersistenceValidator {
         List<String> artistExtractedNames = NameExtractor.getExtractedNames(artistName);
 
         for (String artistExtractedName : artistExtractedNames) {
-            Optional<Member> memberFindByEnName = memberRepository.findMemberByEnName(artistExtractedName);
+            Optional<Member> memberFindByEnName = memberRepository.findMemberByEnNameAndIsRemoved(artistExtractedName, false);
             if (memberFindByEnName.isPresent()) {
                 return false;
             }
-            Optional<Member> memberFindByKoName = memberRepository.findMemberByName(artistExtractedName);
+            Optional<Member> memberFindByKoName = memberRepository.findMemberByNameAndIsRemoved(artistExtractedName, false);
             if (memberFindByKoName.isPresent()) {
                 return false;
             }
@@ -44,11 +44,11 @@ public class DBPersistenceValidator {
     }
 
     public boolean hasNotExistArtistWithExcelName(String artistName) {
-        Optional<Member> memberFindByEnName = memberRepository.findMemberByEnName(artistName);
+        Optional<Member> memberFindByEnName = memberRepository.findMemberByEnNameAndIsRemoved(artistName, false);
         if (memberFindByEnName.isPresent()) {
             return false;
         }
-        Optional<Member> memberFindByKoName = memberRepository.findMemberByName(artistName);
+        Optional<Member> memberFindByKoName = memberRepository.findMemberByNameAndIsRemoved(artistName, false);
         if (memberFindByKoName.isPresent()) {
             return false;
         }
@@ -59,11 +59,11 @@ public class DBPersistenceValidator {
         DataFormatter dataFormatter = new DataFormatter();
         String albumName = dataFormatter.formatCellValue(cell);
 
-        Optional<Album> albumFindByEnName = albumRepository.findAlbumByEnNameIgnoreCase(albumName);
+        Optional<Album> albumFindByEnName = albumRepository.findAlbumByEnNameIgnoreCaseAndIsRemoved(albumName, false);
         if (albumFindByEnName.isPresent()) {
             return false;
         }
-        Optional<Album> albumFindByKoName = albumRepository.findAlbumByNameIgnoreCase(albumName);
+        Optional<Album> albumFindByKoName = albumRepository.findAlbumByNameIgnoreCaseAndIsRemoved(albumName, false);
         if (albumFindByKoName.isPresent()) {
             return false;
         }
@@ -81,14 +81,14 @@ public class DBPersistenceValidator {
 
             Optional<Track> trackFindByEnName = trackRepository.findTrackByEnNameIgnoreCase(trackName);
             if(trackFindByEnName.isPresent()) {
-                Optional<TrackMember> trackMemberFindByEnName = trackMemberRepository.findTrackMemberByNameAndTrack(artistExtractedName, trackFindByEnName.get());
+                Optional<TrackMember> trackMemberFindByEnName = trackMemberRepository.findTrackMemberByNameAndTrackAndIsRemoved(artistExtractedName, trackFindByEnName.get(), false);
                 if (trackMemberFindByEnName.isPresent()) {
                     return false;
                 }
             }
             Optional<Track> trackFindByName = trackRepository.findTrackByNameIgnoreCase(trackName);
             if(trackFindByName.isPresent()) {
-                Optional<TrackMember> trackMemberFindByEnName = trackMemberRepository.findTrackMemberByNameAndTrack(artistExtractedName, trackFindByName.get());
+                Optional<TrackMember> trackMemberFindByEnName = trackMemberRepository.findTrackMemberByNameAndTrackAndIsRemoved(artistExtractedName, trackFindByName.get(), false);
                 if (trackMemberFindByEnName.isPresent()) {
                     return false;
                 }
@@ -101,8 +101,8 @@ public class DBPersistenceValidator {
         DataFormatter dataFormatter = new DataFormatter();
         String trackName = dataFormatter.formatCellValue(cell);
 
-        List<Track> trackByName = trackRepository.findAllByName(trackName);
-        List<Track> trackByEnName = trackRepository.findAllByEnName(trackName);
+        List<Track> trackByName = trackRepository.findAllByNameAndIsRemoved(trackName, false);
+        List<Track> trackByEnName = trackRepository.findAllByEnNameAndIsRemoved(trackName, false);
 
         return trackByEnName.size() + trackByName.size() > 1;
     }
@@ -112,27 +112,27 @@ public class DBPersistenceValidator {
         String trackName = cell.getStringCellValue();
         String albumName = dataFormatter.formatCellValue(cellAlbum);
 
-        Optional<Album> albumFindByEnName = albumRepository.findAlbumByEnNameIgnoreCase(albumName);
+        Optional<Album> albumFindByEnName = albumRepository.findAlbumByEnNameIgnoreCaseAndIsRemoved(albumName, false);
         if (albumFindByEnName.isPresent()) {
-            Optional<Track> trackFindByEnName = trackRepository.findTrackByEnNameIgnoreCaseAndAlbum(trackName, albumFindByEnName.get());
+            Optional<Track> trackFindByEnName = trackRepository.findTrackByEnNameIgnoreCaseAndAlbumAndIsRemoved(trackName, albumFindByEnName.get(), false);
             if(trackFindByEnName.isPresent()) {
                 return false;
             }
 
-            Optional<Track> trackFindByName = trackRepository.findTrackByNameIgnoreCaseAndAlbum(trackName, albumFindByEnName.get());
+            Optional<Track> trackFindByName = trackRepository.findTrackByNameIgnoreCaseAndAlbumAndIsRemoved(trackName, albumFindByEnName.get(), false);
             if(trackFindByName.isPresent()) {
                 return false;
             }
         }
 
-        Optional<Album> albumFindByName = albumRepository.findAlbumByNameIgnoreCase(albumName);
+        Optional<Album> albumFindByName = albumRepository.findAlbumByNameIgnoreCaseAndIsRemoved(albumName, false);
         if (albumFindByName.isPresent()) {
-            Optional<Track> trackFindByEnName = trackRepository.findTrackByEnNameIgnoreCaseAndAlbum(trackName, albumFindByEnName.get());
+            Optional<Track> trackFindByEnName = trackRepository.findTrackByEnNameIgnoreCaseAndAlbumAndIsRemoved(trackName, albumFindByEnName.get(), false);
             if(trackFindByEnName.isPresent()) {
                 return false;
             }
 
-            Optional<Track> trackFindByName = trackRepository.findTrackByNameIgnoreCaseAndAlbum(trackName, albumFindByEnName.get());
+            Optional<Track> trackFindByName = trackRepository.findTrackByNameIgnoreCaseAndAlbumAndIsRemoved(trackName, albumFindByEnName.get(), false);
             if(trackFindByName.isPresent()) {
                 return false;
             }
