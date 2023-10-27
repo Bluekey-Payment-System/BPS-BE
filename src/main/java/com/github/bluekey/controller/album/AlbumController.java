@@ -32,6 +32,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Tag(name = "Albums", description = "Album 관련 API")
 @RestController
 @RequestMapping("/api/v1/albums")
