@@ -20,6 +20,8 @@ public interface TrackRepository extends JpaRepository<Track, Long> {
 
     List<Track> findAllByAlbumId(Long albumId);
     List<Track> findAllByAlbumIdAndIsRemovedFalse(Long albumId);
+    List<Track> findAllByName(String name);
+    List<Track> findAllByEnName(String enName);
 
     default Track findByIdOrElseThrow(Long id) {
         return this.findById(id).orElseThrow(() ->

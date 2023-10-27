@@ -14,6 +14,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -94,6 +95,16 @@ public class DBPersistenceValidator {
             }
         }
         return true;
+    }
+
+    public boolean hasDuplicatedTrack(Cell cell) {
+        DataFormatter dataFormatter = new DataFormatter();
+        String trackName = dataFormatter.formatCellValue(cell);
+
+        List<Track> trackByName = trackRepository.findAllByName(trackName);
+        List<Track> trackByEnName = trackRepository.findAllByEnName(trackName);
+
+        return trackByEnName.size() + trackByName.size() > 1;
     }
 
     public boolean hasNotExistedTrack(Cell cell, Cell cellAlbum) {

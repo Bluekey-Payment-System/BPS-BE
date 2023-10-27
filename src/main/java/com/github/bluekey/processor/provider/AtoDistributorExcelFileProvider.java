@@ -130,6 +130,11 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
         if (isAlbumExceptionAllowCase(cell, row)) {
             ExcelRowException excelRowException = atoDistributorCellValidator.generateException(ALBUM_NAME, ALLOW_EXCEPTION_CASE, cell, row.getRowNum());
             warningRows.add(excelRowException);
+            Cell cellTrack = row.getCell(TRACK_NAME.getIndex());
+            if (dbPersistenceValidator.hasDuplicatedTrack(cellTrack)) {
+                ExcelRowException excelRowExceptionByYouTube = atoDistributorCellValidator.generateException(TRACK_NAME, DUPLICATED_TRACKS_BY_YOUTUBE, cell, row.getRowNum());
+                errorRows.add(excelRowExceptionByYouTube);
+            }
         }
 
         if(!isAlbumExceptionAllowCase(cell, row) && dbPersistenceValidator.hasNotExistedAlbum(cell) && !atoDistributorCellValidator.hasCellNullValue(cell)) {
