@@ -18,7 +18,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String loginId) {
-		Member member = memberRepository.findMemberByLoginId(loginId)
+		Member member = memberRepository.findMemberByLoginIdAndIsRemoved(loginId, false)
 				.orElseThrow(()-> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
 		return User.withUsername(member.getId().toString())

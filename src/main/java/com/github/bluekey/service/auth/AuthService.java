@@ -138,13 +138,13 @@ public class AuthService {
 	}
 
 	private void validateAdminLoginId(String loginId) {
-		memberRepository.findMemberByLoginId(loginId)
+		memberRepository.findMemberByLoginIdAndIsRemoved(loginId, false)
 				.ifPresent(member -> {throw new BusinessException(ErrorCode.INVALID_LOGIN_ID_VALUE);
 				});
 	}
 
 	private Member validateLogin(LoginRequestDto dto){
-		Member member = memberRepository.findMemberByLoginId(dto.getLoginId())
+		Member member = memberRepository.findMemberByLoginIdAndIsRemoved(dto.getLoginId(), false)
 				.orElseThrow(() -> new AuthenticationException(ErrorCode.LOGIN_FAILED));
 		if (!passwordEncoder.matches(dto.getPassword(), member.getPassword())) {
 			throw new AuthenticationException(ErrorCode.LOGIN_FAILED);
