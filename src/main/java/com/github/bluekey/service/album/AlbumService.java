@@ -76,9 +76,10 @@ public class AlbumService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.ALBUM_NOT_FOUND));
 
         album.remove();
-        imageUploadUtil.removeImage(album.getProfileImage());
-        album.updateProfileImage(null);
-
+        if (album.getProfileImage() != null) {
+            imageUploadUtil.removeImage(album.getProfileImage());
+            album.updateProfileImage(null);
+        }
         albumRepository.save(album);
 
         List<Track> tracks = trackRepository.findAllByAlbumId(albumId);
