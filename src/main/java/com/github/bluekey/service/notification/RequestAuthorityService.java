@@ -11,6 +11,7 @@ import com.github.bluekey.entity.notification.MemberRequestAuthority;
 import com.github.bluekey.entity.notification.RequestAuthority;
 import com.github.bluekey.entity.notification.RequestStatus;
 import com.github.bluekey.exception.AuthenticationException;
+import com.github.bluekey.exception.BusinessException;
 import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.repository.notification.MemberRequestAuthorityRepository;
@@ -50,7 +51,7 @@ public class RequestAuthorityService {
 		Member sender = memberRepository.findMemberByIdAndIsRemovedFalseOrElseThrow(senderId);
 
 		if (sender.getRejectCount() >= 5) {
-			throw new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED, "최대 요청 횟수가 초과되었습니다.");
+			throw new BusinessException(ErrorCode.AUTHENTICATION_BANNED);
 		}
 
 		List<MemberRequestAuthority> memberRequestAuthorities = superAdmins.stream()
