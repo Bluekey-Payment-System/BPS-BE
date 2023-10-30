@@ -90,6 +90,8 @@ public class RequestAuthorityService {
 		// request authority 요청 주체
 		Long senderId = requestAuthority.getSenderId();
 		Member sender = memberRepository.findMemberByIdAndIsRemovedFalseOrElseThrow(senderId);
+		sender.updateRole(MemberRole.REJECTED);
+		memberRepository.save(sender);
 
 		requestAuthorityRepository.save(requestAuthority);
 		return RequestAuthorityUpdateResponseDto.from(sender);
