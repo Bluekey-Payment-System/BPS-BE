@@ -19,6 +19,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -59,6 +60,9 @@ public class Member extends BaseTimeEntity {
 	@Column(name = "profile_image")
 	private String profileImage;
 
+	@ColumnDefault("0")
+	private int rejectCount;
+
 	@OneToMany(
 			mappedBy = "member",
 			fetch = FetchType.LAZY,
@@ -77,6 +81,7 @@ public class Member extends BaseTimeEntity {
 		this.type = MemberType.USER;
 		this.role = MemberRole.ARTIST;
 		this.profileImage = profileImage;
+		this.rejectCount = 0;
 	}
 
 	@Builder(builderClassName = "ByAdminBuilder", builderMethodName = "ByAdminBuilder")
@@ -124,6 +129,14 @@ public class Member extends BaseTimeEntity {
 			throw new BusinessException(ErrorCode.MEMBER_ALREADY_REMOVED);
 		}
 		this.remove();
+	}
+
+	public int getRejectCount() {
+		return rejectCount;
+	}
+
+	public void reject() {
+		this.rejectCount += 1;
 	}
 
 	public boolean isUser() {

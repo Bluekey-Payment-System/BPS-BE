@@ -56,6 +56,9 @@ public class AuthService {
 
 	public AdminLoginTokenResponseDto loginAdmin(LoginRequestDto dto) {
 		Member member = validateLogin(dto);
+		if (member.getRejectCount() >= 5) {
+			throw new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED, "최대 요청 횟수가 초과되었습니다.");
+		}
 		if (!member.isAdmin())
 			throw new AuthenticationException(ErrorCode.AUTHENTICATION_FAILED);
 		String token = jwtProvider.generateAccessToken(member.getLoginId(), member.getType(), member.getRole());

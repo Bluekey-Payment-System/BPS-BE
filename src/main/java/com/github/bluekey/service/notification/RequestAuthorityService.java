@@ -91,6 +91,7 @@ public class RequestAuthorityService {
 		Long senderId = requestAuthority.getSenderId();
 		Member sender = memberRepository.findMemberByIdAndIsRemovedFalseOrElseThrow(senderId);
 		sender.updateRole(MemberRole.REJECTED);
+		sender.reject();
 		memberRepository.save(sender);
 
 		requestAuthorityRepository.save(requestAuthority);
