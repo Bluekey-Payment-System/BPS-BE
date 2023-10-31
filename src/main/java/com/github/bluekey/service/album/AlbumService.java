@@ -96,8 +96,9 @@ public class AlbumService {
         if (dto != null) {
             updateAlbumProperties(album, dto);
         }
-
-        updateAlbumImage(file, album);
+        if (file != null) {
+            updateAlbumImage(file, album);
+        }
         albumRepository.save(album);
 
         return AlbumResponseDto.from(album);
