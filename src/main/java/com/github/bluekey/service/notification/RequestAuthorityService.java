@@ -10,6 +10,9 @@ import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.notification.MemberRequestAuthority;
 import com.github.bluekey.entity.notification.RequestAuthority;
 import com.github.bluekey.entity.notification.RequestStatus;
+import com.github.bluekey.exception.AuthenticationException;
+import com.github.bluekey.exception.BusinessException;
+import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.repository.notification.MemberRequestAuthorityRepository;
 import com.github.bluekey.repository.notification.RequestAuthorityRepository;
@@ -44,6 +47,12 @@ public class RequestAuthorityService {
 				.senderId(senderId)
 				.build();
 		RequestAuthority savedRequestAuthority = requestAuthorityRepository.save(requestAuthority);
+
+		Member sender = memberRepository.findMemberByIdAndIsRemovedFalseOrElseThrow(senderId);
+
+		if (sender.getRejectCount() >= 5) {
+			throw new BusinessException(ErrorCode.AUTHENTICATION_BANNED);
+		}
 
 		List<MemberRequestAuthority> memberRequestAuthorities = superAdmins.stream()
 				.map(superAdmin -> MemberRequestAuthority.builder()
@@ -90,6 +99,11 @@ public class RequestAuthorityService {
 		// request authority 요청 주체
 		Long senderId = requestAuthority.getSenderId();
 		Member sender = memberRepository.findMemberByIdAndIsRemovedFalseOrElseThrow(senderId);
+
+		sender.updateRole(MemberRole.REJECTED);
+		sender.reject();
+
+		memberRepository.save(sender);
 
 		requestAuthorityRepository.save(requestAuthority);
 		return RequestAuthorityUpdateResponseDto.from(sender);

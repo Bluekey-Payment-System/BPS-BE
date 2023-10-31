@@ -12,6 +12,7 @@ public enum ErrorCode {
 
     // Authentication & Authorization Error
     AUTHENTICATION_FAILED(HttpStatus.FORBIDDEN, "AU_001", "인증에 실패하였습니다."),
+    AUTHENTICATION_BANNED(HttpStatus.FORBIDDEN, "AU_002", "최대 요청 횟수가 초과되었습니다."),
     AUTHORIZATION_FAILED(HttpStatus.UNAUTHORIZED, "AR_002", "권한이 없습니다."),
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "AU_002", "아이디 또는 비밀번호가 일치하지 않습니다."),
 
