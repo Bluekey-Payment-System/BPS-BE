@@ -102,9 +102,9 @@ public class DBPersistenceValidator {
         String trackName = dataFormatter.formatCellValue(cell);
 
         List<Track> trackByName = trackRepository.findAllByNameAndIsRemoved(trackName, false);
-        List<Track> trackByEnName = trackRepository.findAllByEnNameAndIsRemoved(trackName, false);
+//        List<Track> trackByEnName = trackRepository.findAllByEnNameAndIsRemoved(trackName, false);
 
-        return trackByEnName.size() + trackByName.size() > 1;
+        return trackByName.size() > 1;
     }
 
     public boolean hasNotExistedTrack(Cell cell, Cell cellAlbum) {

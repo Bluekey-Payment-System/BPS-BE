@@ -132,7 +132,7 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
             warningRows.add(excelRowException);
             Cell cellTrack = row.getCell(TRACK_NAME.getIndex());
             if (dbPersistenceValidator.hasDuplicatedTrack(cellTrack)) {
-                ExcelRowException excelRowExceptionByYouTube = atoDistributorCellValidator.generateException(TRACK_NAME, DUPLICATED_TRACKS_BY_YOUTUBE, cell, row.getRowNum());
+                ExcelRowException excelRowExceptionByYouTube = atoDistributorCellValidator.generateException(TRACK_NAME, DUPLICATED_TRACKS_BY_YOUTUBE, cellTrack, row.getRowNum());
                 errorRows.add(excelRowExceptionByYouTube);
             }
         }
