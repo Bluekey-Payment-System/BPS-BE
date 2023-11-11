@@ -67,7 +67,6 @@ public class Track extends BaseTimeEntity {
 	}
 
 	public void updateTrackMembers(List<TrackMember> trackMembers) {
-		this.trackMembers =
 		this.trackMembers = trackMembers;
 	}
 }
