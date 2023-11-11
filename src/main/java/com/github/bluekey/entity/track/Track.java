@@ -27,7 +27,7 @@ public class Track extends BaseTimeEntity {
 	@JoinColumn(name = "album_id")
 	private Album album;
 
-	@OneToMany(mappedBy = "track", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "track", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<TrackMember> trackMembers = new ArrayList<>();
 
 	@OneToMany(mappedBy = "track", cascade = CascadeType.ALL)
@@ -67,6 +67,7 @@ public class Track extends BaseTimeEntity {
 	}
 
 	public void updateTrackMembers(List<TrackMember> trackMembers) {
+		this.trackMembers =
 		this.trackMembers = trackMembers;
 	}
 }
