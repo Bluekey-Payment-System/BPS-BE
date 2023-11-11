@@ -115,11 +115,23 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
     }
 
     private void migrate(List<String> artistExtractedNames, String albumName, String trackName, Double amount, OriginalTransaction originalTransaction) {
-        Optional<Album> album = albumRepository.findAlbumByNameIgnoreCaseOrEnNameIgnoreCaseAndIsRemoved(albumName, albumName, false);
+        Album album = null;
+        List<Album> albums = albumRepository.findAlbumByNameIgnoreCaseOrEnNameIgnoreCaseAndIsRemoved(albumName, albumName, false);
+        
         boolean isExistTrackByName = false;
         // 앨범이 존재할 경우
-        if (album.isPresent()) {
-            Album findAlbum = album.get();
+        if (albums.size() >= 1) {
+            if (albums.size() >= 2) {
+                Album album1 = albums.get(0);
+                Album album2 = albums.get(1);
+                if (album1.getId().equals(album2.getId())) {
+                    album = album1;
+                }
+            } else if(albums.size() == 1) {
+                album = albums.get(0);
+            }
+            
+            Album findAlbum = album;
             Optional<Track> trackByName = trackRepository.findTrackByNameIgnoreCaseAndAlbum(trackName, findAlbum);
             if (trackByName.isPresent()) {
                 Track findTrack = trackByName.get();
@@ -162,7 +174,7 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
         }
 
         // 앨범이 존재하지 않는 경우 경우 -> 유튜브인 경우 album이 0으로 들어올 경우
-        if (album.isEmpty()) {
+        if (albums.size() == 0) {
             List<Track> tracks = trackRepository.findTrackByNameIgnoreCaseOrEnNameIgnoreCase(trackName, trackName);
             if (tracks.size() > 0) {
                 for (Track track : tracks) {

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
@@ -20,7 +21,7 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
 
     Optional<Album> findAlbumByNameIgnoreCase(String name);
     Optional<Album> findAlbumByNameIgnoreCaseOrEnNameIgnoreCase(String name, String enName);
-    Optional<Album> findAlbumByNameIgnoreCaseOrEnNameIgnoreCaseAndIsRemoved(String name, String enName, boolean isRemoved);
+    List<Album> findAlbumByNameIgnoreCaseOrEnNameIgnoreCaseAndIsRemoved(String name, String enName, boolean isRemoved);
     Optional<Album> findAlbumByIdAndIsRemovedFalse(Long id);
 
     Page<Album> findAllByIsRemovedFalseOrderByCreatedAtDesc(Pageable pageable);
