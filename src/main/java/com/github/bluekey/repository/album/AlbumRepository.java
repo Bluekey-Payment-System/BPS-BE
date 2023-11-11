@@ -20,7 +20,7 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
 
     Optional<Album> findAlbumByNameIgnoreCase(String name);
     Optional<Album> findAlbumByNameIgnoreCaseOrEnNameIgnoreCase(String name, String enName);
-
+    Optional<Album> findAlbumByNameIgnoreCaseOrEnNameIgnoreCaseAndIsRemoved(String name, String enName, boolean isRemoved);
     Optional<Album> findAlbumByIdAndIsRemovedFalse(Long id);
 
     Page<Album> findAllByIsRemovedFalseOrderByCreatedAtDesc(Pageable pageable);

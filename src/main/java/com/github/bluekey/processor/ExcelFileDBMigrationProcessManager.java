@@ -115,7 +115,7 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
     }
 
     private void migrate(List<String> artistExtractedNames, String albumName, String trackName, Double amount, OriginalTransaction originalTransaction) {
-        Optional<Album> album = albumRepository.findAlbumByNameIgnoreCaseOrEnNameIgnoreCase(albumName, albumName);
+        Optional<Album> album = albumRepository.findAlbumByNameIgnoreCaseOrEnNameIgnoreCaseAndIsRemoved(albumName, albumName, false);
         boolean isExistTrackByName = false;
         // 앨범이 존재할 경우
         if (album.isPresent()) {
