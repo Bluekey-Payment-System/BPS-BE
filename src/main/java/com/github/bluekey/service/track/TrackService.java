@@ -102,8 +102,9 @@ public class TrackService {
 
         if (dto.getArtists() != null) {
             List<TrackCommissionRateDto> trackCommissionRateDtos = dto.getArtists();
-            trackMemberRepository.deleteAll();
-
+            for (TrackMember trackMember : track.getTrackMembers()) {
+                trackMemberRepository.deleteById(trackMember.getId());
+            }
             List<TrackMember> trackMembers = new ArrayList<>();
             for (TrackCommissionRateDto trackCommissionRateDto : trackCommissionRateDtos) {
                 Long memberId = trackCommissionRateDto.getMemberId();
