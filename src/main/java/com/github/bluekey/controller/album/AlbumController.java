@@ -184,7 +184,7 @@ public class AlbumController {
     public ResponseEntity<AlbumTrackListResponseDto> getAlbumTracks(
             @PathVariable("albumId") Long albumId
     ) {
-        return ResponseEntity.ok(albumService.getAlbumTracks(albumId));
+        return ResponseEntity.ok(albumService.getAlbumTracks(albumId, PrincipalConvertUtil.getMemberId()));
     }
 
     @Operation(summary = "앨범 리스트 조회", description = "앨범 리스트 조회")

@@ -114,9 +114,12 @@ public class AlbumService {
     }
 
     @Transactional(readOnly = true)
-    public AlbumTrackListResponseDto getAlbumTracks(Long albumId) {
+    public AlbumTrackListResponseDto getAlbumTracks(Long albumId, Long loginUserId) {
         Album album = albumRepository.findAlbumByIdAndIsRemovedFalse(albumId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ALBUM_NOT_FOUND));
+
+        Member loginMember = memberRepository
+                .findByIdOrElseThrow(loginUserId);
 
         ArtistInfoDto artist = null;
         if (album.getArtistId() != null) {
@@ -136,9 +139,9 @@ public class AlbumService {
                                     Member memberInfo = memberRepository
                                             .findByIdOrElseThrow(member.getMemberId());
 
-                                    return TrackArtistsDto.from(memberInfo, member);
+                                    return TrackArtistsDto.from(memberInfo, member, loginMember);
                                 } else {
-                                    return TrackArtistsDto.from(member);
+                                    return TrackArtistsDto.from(member, loginMember);
                                 }
                             })
                             .collect(Collectors.toList());
