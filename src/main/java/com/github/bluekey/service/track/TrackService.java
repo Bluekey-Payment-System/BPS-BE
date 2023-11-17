@@ -109,13 +109,25 @@ public class TrackService {
 
                 if (memberId != null) {
                     Member artist = memberRepository.findMemberByIdAndIsRemovedFalseOrElseThrow(memberId);
-                    TrackMember trackMember = TrackMember.ByArtistBuilder()
-                            .name(artist.getName())
-                            .track(track)
-                            .memberId(artist.getId())
-                            .commissionRate(trackCommissionRateDto.getCommissionRate())
-                            .build();
-                    trackMembers.add(trackMember);
+                    if (trackCommissionRateDto.getCommissionRate() == null) {
+                        TrackMember trackMember = TrackMember.ByArtistBuilder()
+                                .name(artist.getName())
+                                .track(track)
+                                .memberId(artist.getId())
+                                .commissionRate(0)
+                                .build();
+                        trackMembers.add(trackMember);
+
+                    } else {
+                        TrackMember trackMember = TrackMember.ByArtistBuilder()
+                                .name(artist.getName())
+                                .track(track)
+                                .memberId(artist.getId())
+                                .commissionRate(trackCommissionRateDto.getCommissionRate())
+                                .build();
+                        trackMembers.add(trackMember);
+                    }
+
                 } else {
                     TrackMember trackMember = TrackMember.ByContractSingerBuilder()
                             .name(trackCommissionRateDto.getName())
@@ -123,7 +135,6 @@ public class TrackService {
                             .build();
                     trackMembers.add(trackMember);
                 }
-
             }
 
             for (TrackMember trackMember : track.getTrackMembers()) {
