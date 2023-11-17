@@ -33,14 +33,6 @@ public class TrackArtistsDto {
     }
 
     public static TrackArtistsDto from(Member member, TrackMember trackMember, Member loginMember) {
-        if (loginMember.isAdmin()) {
-            return TrackArtistsDto.builder()
-                    .memberId(member.getId())
-                    .name(member.getName())
-                    .enName(member.getEnName())
-                    .commissionRate(100 - trackMember.getCommissionRate())
-                    .build();
-        }
         return TrackArtistsDto.builder()
                 .memberId(member.getId())
                 .name(member.getName())
@@ -50,12 +42,6 @@ public class TrackArtistsDto {
     }
 
     public static TrackArtistsDto from(TrackMember trackMember, Member loginMember) {
-        if (loginMember.isAdmin()) {
-            return TrackArtistsDto.builder()
-                    .name(trackMember.getName())
-                    .commissionRate(100- trackMember.getCommissionRate())
-                    .build();
-        }
         return TrackArtistsDto.builder()
                 .name(trackMember.getName())
                 .commissionRate(trackMember.getCommissionRate())
