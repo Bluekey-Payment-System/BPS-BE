@@ -87,7 +87,6 @@ public class TrackService {
     }
 
 
-    @Transactional
     private void updateTrack(Track track, TrackRequestDto dto) {
         if (dto.getName() != null) {
             track.updateName(dto.getName());
