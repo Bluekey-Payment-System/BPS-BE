@@ -131,10 +131,12 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
             ExcelRowException excelRowException = atoDistributorCellValidator.generateException(ALBUM_NAME, ALLOW_EXCEPTION_CASE, cell, row.getRowNum());
             warningRows.add(excelRowException);
             Cell cellTrack = row.getCell(TRACK_NAME.getIndex());
-            if (dbPersistenceValidator.hasDuplicatedTrack(cellTrack)) {
-                ExcelRowException excelRowExceptionByYouTube = atoDistributorCellValidator.generateException(TRACK_NAME, DUPLICATED_TRACKS_BY_YOUTUBE, cellTrack, row.getRowNum());
-                errorRows.add(excelRowExceptionByYouTube);
-            }
+
+            // TODO: 앨범명을 특정할 수 없을 때 track이 서로 다른 앨범에 종속되어 있는 경우
+//            if (dbPersistenceValidator.hasDuplicatedTrack(cellTrack)) {
+//                ExcelRowException excelRowExceptionByYouTube = atoDistributorCellValidator.generateException(TRACK_NAME, DUPLICATED_TRACKS_BY_YOUTUBE, cellTrack, row.getRowNum());
+//                errorRows.add(excelRowExceptionByYouTube);
+//            }
         }
 
         if(!isAlbumExceptionAllowCase(cell, row) && dbPersistenceValidator.hasNotExistedAlbum(cell) && !atoDistributorCellValidator.hasCellNullValue(cell)) {

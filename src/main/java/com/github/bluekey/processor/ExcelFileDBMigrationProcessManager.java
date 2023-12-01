@@ -178,7 +178,7 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
         // 앨범이 존재하지 않는 경우 경우 -> 유튜브인 경우 album이 0으로 들어올 경우
         if (albums.size() == 0) {
             List<Track> tracks = trackRepository.findTrackByNameIgnoreCaseOrEnNameIgnoreCase(trackName, trackName);
-            if (tracks.size() > 0) {
+            if (tracks.size() == 1) {
                 for (Track track : tracks) {
                     for (TrackMember trackMember : track.getTrackMembers()) {
                         if (artistExtractedNames.contains(trackMember.getName())) {
@@ -198,7 +198,30 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
                         }
                     }
                 }
+            } else if(tracks.size() > 1) {
+                Comparator<Track> trackNameComparator = Comparator.comparing(track -> track.getAlbum().getName());
 
+                Track firstTrack = tracks.stream()
+                        .min(trackNameComparator)
+                        .orElse(null);
+
+                for (TrackMember trackMember : firstTrack.getTrackMembers()) {
+                    if (artistExtractedNames.contains(trackMember.getName())) {
+                        Optional<Transaction> transaction = transactionRepository.findTransactionsByOriginalTransactionAndDurationAndTrack(
+                                originalTransaction,
+                                originalTransaction.getUploadAt(),
+                                firstTrack
+                        );
+
+                        if (transaction.isPresent()) {
+                            Transaction existedTransaction = transaction.get();
+                            existedTransaction.updateAmount(amount);
+                            transactionRepository.save(existedTransaction);
+                        } else {
+                            transactionRepository.save(createNewTransaction(amount, originalTransaction, firstTrack));
+                        }
+                    }
+                }
             }
         }
     }
