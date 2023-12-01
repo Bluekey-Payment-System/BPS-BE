@@ -179,7 +179,7 @@ public class AlbumController {
                             schema = @Schema(implementation = AlbumTrackListResponseDto.class)
                     )),
     })
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     @GetMapping("/{albumId}")
     public ResponseEntity<AlbumTrackListResponseDto> getAlbumTracks(
             @PathVariable("albumId") Long albumId
