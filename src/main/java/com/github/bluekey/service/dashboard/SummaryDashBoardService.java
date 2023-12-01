@@ -67,12 +67,13 @@ public class SummaryDashBoardService {
         }
         revenueGrowthRate = dashboardUtilService.getGrowthRate(totalPreviousMonthRevenue, totalRevenue);
 
-        settlementAmount = getSettlementAmount(trackMemberMappedByAmount, memberId);
-        previousMonthSettlementAmount = getSettlementAmount(previousMonthlyTrackMemberMappedByAmount, memberId);
+        settlementAmount = getSummarySettlementAmount(trackMemberMappedByAmount, memberId);
+        previousMonthSettlementAmount = getSummarySettlementAmount(previousMonthlyTrackMemberMappedByAmount, memberId);
         settlementAmountGrowthRate = dashboardUtilService.getGrowthRate(previousMonthSettlementAmount, settlementAmount);
 
-        netIncome = settlementAmount;
-        previousMonthNetIncome = previousMonthSettlementAmount;
+        netIncome = getSettlementAmount(trackMemberMappedByAmount, memberId);
+        previousMonthNetIncome = getSettlementAmount(previousMonthlyTrackMemberMappedByAmount, memberId);
+
         netIncomeGrowthRate = dashboardUtilService.getGrowthRate(previousMonthNetIncome, netIncome);
 
 
@@ -165,14 +166,13 @@ public class SummaryDashBoardService {
         revenueGrowthRate = dashboardUtilService.getGrowthRate(totalPreviousMonthRevenue, totalRevenue);
         // 추후 수정
 
-        settlementAmount = getAdminAlbumSettlementAmount(trackMemberMappedByAmount, memberId);
-        previousMonthSettlementAmount = getAdminAlbumSettlementAmount(previousMonthlyTrackMemberMappedByAmount, memberId);
+        settlementAmount = getSummarySettlementAmount(trackMemberMappedByAmount, memberId);
+        previousMonthSettlementAmount = getSummarySettlementAmount(previousMonthlyTrackMemberMappedByAmount, memberId);
         settlementAmountGrowthRate = dashboardUtilService.getGrowthRate(previousMonthSettlementAmount, settlementAmount);
 
-        netIncome = settlementAmount;
-        previousMonthNetIncome = previousMonthSettlementAmount;
+        netIncome = getAdminAlbumSettlementAmount(trackMemberMappedByAmount, memberId);;
+        previousMonthNetIncome = getAdminAlbumSettlementAmount(previousMonthlyTrackMemberMappedByAmount, memberId);;
         netIncomeGrowthRate = dashboardUtilService.getGrowthRate(previousMonthNetIncome, netIncome);
-
 
 
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
@@ -268,6 +268,24 @@ public class SummaryDashBoardService {
             } else {
 //                totalSettlementAmount += amount - (amount * trackMember.getCommissionRate() / 100);
                 totalSettlementAmount += dashboardUtilService.getCompanyNetIncome(amount, trackMember.getCommissionRate());
+            }
+        }
+        return totalSettlementAmount;
+    }
+
+    private double getSummarySettlementAmount(Map<TrackMember, Double> trackMemberMappedByAmount, Long memberId) {
+        double totalSettlementAmount = 0.0;
+        memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+
+        for (Map.Entry<TrackMember, Double> entry : trackMemberMappedByAmount.entrySet()) {
+            TrackMember trackMember = entry.getKey();
+            Double amount = entry.getValue();
+            Long trackMemberId = trackMember.getMemberId();
+            if (trackMemberId != null) {
+                Member trackMemberInformation = memberRepository.findById(trackMemberId).orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+                if (trackMemberInformation.getRole().equals(MemberRole.ARTIST)) {
+                    totalSettlementAmount += dashboardUtilService.getArtistSettlement(amount, trackMember.getCommissionRate());
+                }
             }
         }
         return totalSettlementAmount;
