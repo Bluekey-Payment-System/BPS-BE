@@ -89,14 +89,14 @@ public class SummaryDashBoardService {
                 )
                 .netIncome(
                         TotalAndGrowthDto.builder()
-                                .totalAmount((int) settlementAmount)
-                                .growthRate(settlementAmountGrowthRate)
+                                .totalAmount((int) netIncome)
+                                .growthRate(netIncomeGrowthRate)
                                 .build()
                 )
                 .settlementAmount(
                         TotalAndGrowthDto.builder()
-                                .totalAmount((int) netIncome)
-                                .growthRate(netIncomeGrowthRate)
+                                .totalAmount((int) settlementAmount)
+                                .growthRate(settlementAmountGrowthRate)
                                 .build()
                 )
                 .build();
@@ -127,7 +127,7 @@ public class SummaryDashBoardService {
                 .bestTrack(getTotalBestTrack(monthly, member, transactions, previousMonthTransactions))
                 .settlementAmount(
                         ArtistMonthlySettlementInfoDto.builder()
-                                .totalAmount(Math.floor(settlementAmount - (settlementAmount * 33 / 1000)))
+                                .totalAmount(settlementAmount)
                                 .growthRate(settlementAmountGrowthRate)
                                 .build()
                 )
@@ -216,14 +216,14 @@ public class SummaryDashBoardService {
                                     .build()
                     )
                     .netIncome(TotalAndGrowthDto.builder()
-                            .totalAmount((int) settlementAmount)
-                            .growthRate(settlementAmountGrowthRate)
+                            .totalAmount((int) netIncome)
+                            .growthRate(netIncomeGrowthRate)
                             .build()
                     )
                     .settlementAmount(
                             TotalAndGrowthDto.builder()
-                                    .totalAmount((int) netIncome)
-                                    .growthRate(netIncomeGrowthRate)
+                                    .totalAmount((int) settlementAmount)
+                                    .growthRate(settlementAmountGrowthRate)
                                     .build()
                     )
                     .build();
