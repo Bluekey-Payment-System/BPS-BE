@@ -38,7 +38,6 @@
 <table>
   <tr>
     <td align="center"><a href="https://github.com/eunbi9n"><img src="https://avatars.githubusercontent.com/u/63849465?v=4?s=100" width="100px;" alt=""/><br /><sub><b>김은비</b></sub></a><br />Backend Developer</td>
-        <td align="center"><a href="https://github.com/kim-raon"><img src="https://avatars.githubusercontent.com/u/131936017?v=4?s=100" width="100px;" alt=""/><br /><sub><b>김도완</b></sub></a><br />Backend Developer</td>
         <td align="center"><a href="https://github.com/oereo"><img src="https://avatars.githubusercontent.com/u/49235528?s=70&v=4?s=100" width="100px;" alt=""/><br /><sub><b>인세훈</b></sub></a><br />Backend Developer</td>
   </tr>
 </table>
