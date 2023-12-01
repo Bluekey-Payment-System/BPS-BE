@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class AlbumService {
 
     private final MemberRepository memberRepository;
@@ -226,8 +228,9 @@ public class AlbumService {
     }
 
     @Transactional(readOnly = true)
-    public boolean isAlbumParticipant(Long memberId, Long AlbumId) {
-        Album album = albumRepository.findAlbumByIdAndIsRemovedFalse(AlbumId)
+    public boolean isAlbumParticipant(Long albumId, Long memberId) {
+        log.info("isAlbumParticipant: memberId={}, AlbumId={}", memberId, albumId);
+        Album album = albumRepository.findAlbumByIdAndIsRemovedFalse(albumId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ALBUM_NOT_FOUND));
 
         long count = album.getTracks()
