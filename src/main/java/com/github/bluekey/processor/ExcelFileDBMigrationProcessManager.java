@@ -117,14 +117,16 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
     private void migrate(List<String> artistExtractedNames, String albumName, String trackName, Double amount, OriginalTransaction originalTransaction) {
         Album album = null;
         List<Album> albums = albumRepository.findAlbumByNameIgnoreCaseOrEnNameIgnoreCaseAndIsRemoved(albumName, albumName, false);
-        
+
+        log.info("size = {}", albums.size());
+
         boolean isExistTrackByName = false;
         // 앨범이 존재할 경우
         if (albums.size() >= 1) {
             if (albums.size() >= 2) {
                 Album album1 = albums.get(0);
                 Album album2 = albums.get(1);
-                if (album1.getId().equals(album2.getId())) {
+                if (album1.getId().equals(album2.getId()) || album1.getName().equals(album2.getName()) || album1.getEnName().equals((album2.getEnName()))) {
                     album = album1;
                 }
             } else if(albums.size() == 1) {
