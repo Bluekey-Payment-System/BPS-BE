@@ -11,6 +11,7 @@ import com.github.bluekey.repository.track.TrackMemberRepository;
 import com.github.bluekey.repository.track.TrackRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.springframework.stereotype.Component;
 
@@ -109,7 +110,16 @@ public class DBPersistenceValidator {
 
     public boolean hasNotExistedTrack(Cell cell, Cell cellAlbum) {
         DataFormatter dataFormatter = new DataFormatter();
-        String trackName = cell.getStringCellValue();
+        CellType cellType = cell.getCellType();
+
+        String trackName = "";
+
+        if(cellType.equals(CellType.STRING)) {
+            trackName = cell.getStringCellValue();
+        } else if (cellType.equals(CellType.NUMERIC)){
+            trackName = Double.toString(cell.getNumericCellValue());
+        }
+
         String albumName = dataFormatter.formatCellValue(cellAlbum);
 
         Optional<Album> albumFindByEnName = albumRepository.findAlbumByEnNameIgnoreCaseAndIsRemoved(albumName, false);
