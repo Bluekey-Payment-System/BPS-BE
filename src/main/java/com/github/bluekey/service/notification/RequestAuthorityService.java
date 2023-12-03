@@ -120,7 +120,7 @@ public class RequestAuthorityService {
 								|| LocalDateTime.now().minusWeeks(1).isBefore(memberRequestAuthority.getRequestAuthority().getConfirmAt()))
 				.map(memberRequestAuthority -> {
 					Member sender = memberRepository
-							.findMemberByIdAndIsRemovedFalseOrElseThrow(memberRequestAuthority.getRequestAuthority().getSenderId());
+							.findByIdOrElseThrow(memberRequestAuthority.getRequestAuthority().getSenderId());
 					return RequestAuthorityResponse.builder()
 							.requestAuthorityId(memberRequestAuthority.getRequestAuthority().getId())
 							.sender(AdminBase.from(sender))
