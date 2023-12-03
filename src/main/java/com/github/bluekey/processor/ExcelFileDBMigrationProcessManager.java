@@ -118,8 +118,6 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
         Album album = null;
         List<Album> albums = albumRepository.findAlbumByNameIgnoreCaseOrEnNameIgnoreCaseAndIsRemoved(albumName, albumName, false);
 
-        log.info("size = {}", albums.size());
-
         boolean isExistTrackByName = false;
         // 앨범이 존재할 경우
         if (albums.size() >= 1) {
