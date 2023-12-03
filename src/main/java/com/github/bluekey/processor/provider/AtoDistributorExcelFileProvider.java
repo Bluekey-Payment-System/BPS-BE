@@ -56,7 +56,7 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
         if (atoDistributorCellValidator.hasInValidColumns(sheet.getRow(HEADER_ROW_INDEX), "ATO")) {
             throw new BusinessException(ErrorCode.EXCEL_INVALID_COLUMN_DEFINITION);
         }
-        for (int i = DATA_ROW_START_INDEX; i<= sheet.getLastRowNum(); i++) {
+        for (int i = DATA_ROW_START_INDEX; i <= sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
             processCell(row);
         }
@@ -86,7 +86,7 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
     }
 
     private void processCell(Row row) {
-        for (Cell cell: row) {
+        for (Cell cell : row) {
             validateCell(cell, row);
         }
     }
@@ -112,7 +112,7 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
 
         // 가창자의 경우 Artist에도 없고 TrackMember에도 없을 경우 exception 반환
         if (dbPersistenceValidator.hasNotExistedArtist(cell)) {
-            if(dbPersistenceValidator.hasNotExistedTrackMember(cell, row.getCell(TRACK_NAME.getIndex()))) {
+            if (dbPersistenceValidator.hasNotExistedTrackMember(cell, row.getCell(TRACK_NAME.getIndex()))) {
                 ExcelRowException excelRowException = atoDistributorCellValidator.generateException(ARTIST_NAME, NOT_EXIST_ARTIST_NAME, cell, row.getRowNum());
                 errorRows.add(excelRowException);
             }
@@ -139,7 +139,7 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
 //            }
         }
 
-        if(!isAlbumExceptionAllowCase(cell, row) && dbPersistenceValidator.hasNotExistedAlbum(cell) && !atoDistributorCellValidator.hasCellNullValue(cell)) {
+        if (!isAlbumExceptionAllowCase(cell, row) && dbPersistenceValidator.hasNotExistedAlbum(cell) && !atoDistributorCellValidator.hasCellNullValue(cell)) {
             ExcelRowException excelRowException = atoDistributorCellValidator.generateException(ALBUM_NAME, NOT_EXIST_ALBUM_NAME, cell, row.getRowNum());
             errorRows.add(excelRowException);
         }
@@ -154,11 +154,29 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
 
         if (dbPersistenceValidator.hasNotExistedTrack(cell, row.getCell(ALBUM_NAME.getIndex()))) {
 
-            if (!isAlbumExceptionAllowCase(cell, row)) {
+            if (!isAlbumExceptionAllowCaseInTrack(row)) {
                 ExcelRowException excelRowException = atoDistributorCellValidator.generateException(TRACK_NAME, NOT_EXIST_TRACK_NAME, cell, row.getRowNum());
                 errorRows.add(excelRowException);
             }
         }
+    }
+
+    private boolean isAlbumExceptionAllowCaseInTrack(Row row) {
+        Cell cellAlbum = row.getCell(ALBUM_NAME.getIndex());
+        Cell cellArtist = row.getCell(ARTIST_NAME.getIndex());
+        Cell cellTrack = row.getCell(TRACK_NAME.getIndex());
+        Cell cellServiceName = row.getCell(SERVICE_NAME.getIndex());
+
+        // 아티스트명, 트랙명이 존재하고, 서비스명이 유튜브일 경우 경고 데이터로 종속
+        if (!atoDistributorCellValidator.hasCellNullValue(cellArtist) &&
+                !atoDistributorCellValidator.hasCellNullValue(cellTrack) &&
+                atoDistributorCellValidator.hasCellNullValue(cellAlbum) &&
+                cellServiceName.getStringCellValue().equals(ALLOW_EXCEPTION_SERVICE_NAME_THRESHOLD)
+        ) {
+            return true;
+        }
+        return false;
+
     }
 
     private boolean isAlbumExceptionAllowCase(Cell cell, Row row) {
