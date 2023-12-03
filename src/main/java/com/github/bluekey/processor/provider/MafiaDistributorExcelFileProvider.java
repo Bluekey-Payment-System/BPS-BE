@@ -94,9 +94,9 @@ public class MafiaDistributorExcelFileProvider implements ExcelFileProvider {
 
         String artistName = fileName.split("_")[2];
         log.info("fileName = {}, artistName = {}", fileName, artistName);
-        if (dbPersistenceValidator.hasNotExistArtistWithExcelName(artistName)) {
-            throw new RuntimeException("Artist not exist.");
-        }
+//        if (dbPersistenceValidator.hasNotExistArtistWithExcelName(artistName)) {
+//            throw new RuntimeException("Artist not exist.");
+//        }
         return artistName;
     }
 
