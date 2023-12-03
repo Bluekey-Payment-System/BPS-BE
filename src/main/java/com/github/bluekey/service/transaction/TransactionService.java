@@ -93,19 +93,25 @@ public class TransactionService {
                 .distributorType(excelFileProcessManager.getDistributorType())
                 .build();
         originalTransactionRepository.save(originalTransaction);
-        ExcelFilesToDBMigration();
+        ExcelFilesToDBMigration(originalTransaction.getId());
         return OriginalTransactionResponseDto.fromWithWarning(originalTransaction, excelFileProcessManager.getWarnings());
     }
 
-    public void ExcelFilesToDBMigration() {
+    public void ExcelFilesToDBMigration(Long originalTransactionId) {
         Map<Workbook, OriginalTransaction> workbooks = new HashMap<>();
+        OriginalTransaction originalTransaction = originalTransactionRepository.findByIdOrElseThrow(originalTransactionId);
         List<OriginalTransaction> originalTransactions = originalTransactionRepository.findAllByIsCompletedFalseAndIsRemovedFalse();
-        for (OriginalTransaction originalTransaction : originalTransactions) {
-            String s3Key = awsS3Manager.getS3Key(originalTransaction.getFileUrl(), S3PrefixType.EXCEL);
-            S3Object s3Object = excelUploadUtil.getExcel(s3Key);
-            Workbook workbook = getWorkBook(s3Object);
-            workbooks.put(workbook, originalTransaction);
-        }
+
+        String s3Key = awsS3Manager.getS3Key(originalTransaction.getFileUrl(), S3PrefixType.EXCEL);
+        S3Object s3Object = excelUploadUtil.getExcel(s3Key);
+        Workbook workbook = getWorkBook(s3Object);
+        workbooks.put(workbook, originalTransaction);
+//        for (OriginalTransaction originalTransaction : originalTransactions) {
+//            String s3Key = awsS3Manager.getS3Key(originalTransaction.getFileUrl(), S3PrefixType.EXCEL);
+//            S3Object s3Object = excelUploadUtil.getExcel(s3Key);
+//            Workbook workbook = getWorkBook(s3Object);
+//            workbooks.put(workbook, originalTransaction);
+//        }
         excelFileDBMigrationProcessManager.updateWorkbooks(workbooks);
         excelFileDBMigrationProcessManager.process();
     }
