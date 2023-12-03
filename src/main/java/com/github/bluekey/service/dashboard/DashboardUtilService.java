@@ -153,7 +153,13 @@ public class DashboardUtilService {
 						.map(trackMember -> new AbstractMap.SimpleEntry<>(trackMember, transaction.getAmount())))
 				.collect(Collectors.groupingBy(
 						Map.Entry::getKey,
-						Collectors.summingDouble(Map.Entry::getValue)
+						Collectors.summarizingDouble(Map.Entry::getValue)
+				))
+				.entrySet()
+				.stream()
+				.collect(Collectors.toMap(
+						Map.Entry::getKey,
+						entry -> entry.getValue().getSum()
 				));
 	}
 
