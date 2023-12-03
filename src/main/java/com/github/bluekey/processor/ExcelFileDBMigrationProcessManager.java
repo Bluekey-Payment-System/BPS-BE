@@ -106,9 +106,9 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
 
         if (amountIndexCell.getStringCellValue().equals(MAFIA_DATA_DOMESTIC) || amountIndexCell.getStringCellValue().equals(MAFIA_DATA_OVERSEAS)) {
             if (trackCell.getStringCellValue().isBlank()) {
-                log.info("albumCell = {}", albumCell.getStringCellValue());
-                log.info("trackCell = {}", trackCell.getStringCellValue());
-                log.info("amountCell = {}", amountCell.getNumericCellValue());
+//                log.info("albumCell = {}", albumCell.getStringCellValue());
+//                log.info("trackCell = {}", trackCell.getStringCellValue());
+//                log.info("amountCell = {}", amountCell.getNumericCellValue());
                 migrate(new ArrayList<>(), albumNameInMafia, trackNameInMafia, amountCell.getNumericCellValue(), originalTransaction);
             }
         }

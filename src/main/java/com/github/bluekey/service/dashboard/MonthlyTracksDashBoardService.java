@@ -213,7 +213,7 @@ public class MonthlyTracksDashBoardService {
             }
         }
         contents.sort(comparator);
-        log.info("trackMappedByAmount = {}", sortedTrackMappedByAmount);
+//        log.info("trackMappedByAmount = {}", sortedTrackMappedByAmount);
 
         return TracksSettlementAmountResponseDto.builder()
                 .totalItems(contents.size())
