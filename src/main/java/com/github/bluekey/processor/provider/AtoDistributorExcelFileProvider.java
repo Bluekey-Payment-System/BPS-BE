@@ -170,7 +170,7 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
         // 아티스트명, 트랙명이 존재하고, 서비스명이 유튜브일 경우 경고 데이터로 종속
         if (!atoDistributorCellValidator.hasCellNullValue(cellArtist) &&
                 !atoDistributorCellValidator.hasCellNullValue(cellTrack) &&
-                atoDistributorCellValidator.hasCellNullValue(cellAlbum) &&
+                atoDistributorCellValidator.hasCellZeroValue(cellAlbum) &&
                 cellServiceName.getStringCellValue().equals(ALLOW_EXCEPTION_SERVICE_NAME_THRESHOLD)
         ) {
             return true;
