@@ -137,12 +137,12 @@ public class DBPersistenceValidator {
 
         Optional<Album> albumFindByName = albumRepository.findAlbumByNameIgnoreCaseAndIsRemoved(albumName, false);
         if (albumFindByName.isPresent()) {
-            Optional<Track> trackFindByEnName = trackRepository.findTrackByEnNameIgnoreCaseAndAlbumAndIsRemoved(trackName, albumFindByEnName.get(), false);
+            Optional<Track> trackFindByEnName = trackRepository.findTrackByEnNameIgnoreCaseAndAlbumAndIsRemoved(trackName, albumFindByName.get(), false);
             if(trackFindByEnName.isPresent()) {
                 return false;
             }
 
-            Optional<Track> trackFindByName = trackRepository.findTrackByNameIgnoreCaseAndAlbumAndIsRemoved(trackName, albumFindByEnName.get(), false);
+            Optional<Track> trackFindByName = trackRepository.findTrackByNameIgnoreCaseAndAlbumAndIsRemoved(trackName, albumFindByName.get(), false);
             if(trackFindByName.isPresent()) {
                 return false;
             }
