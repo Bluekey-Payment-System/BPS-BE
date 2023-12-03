@@ -135,7 +135,7 @@ public class MafiaDistributorExcelFileProvider implements ExcelFileProvider {
     private void validateAlbumNameCell(Cell cell, Row row) {
         if (!distributorCellValidator.hasCellNullValue(cell)) {
             if (dbPersistenceValidator.hasNotExistedAlbum(cell)) {
-                ExcelRowException excelRowException = distributorCellValidator.generateException(ALBUM_NAME, NOT_EXIST, cell, row.getRowNum());
+                ExcelRowException excelRowException = distributorCellValidator.generateException(ALBUM_NAME, NOT_EXIST_ALBUM_NAME, cell, row.getRowNum());
                 errorRows.add(excelRowException);
             }
         }
@@ -145,7 +145,7 @@ public class MafiaDistributorExcelFileProvider implements ExcelFileProvider {
         // 엑셀파일에서 트랙명이 null인 경우
         if (!distributorCellValidator.hasCellNullValue(cell)) {
             if (dbPersistenceValidator.hasNotExistedTrackInMafia(cell, albumName)) {
-                ExcelRowException excelRowException = distributorCellValidator.generateException(TRACK_NAME, NOT_EXIST, cell, row.getRowNum());
+                ExcelRowException excelRowException = distributorCellValidator.generateException(TRACK_NAME, NOT_EXIST_TRACK_NAME, cell, row.getRowNum());
                 errorRows.add(excelRowException);
             }
         }
