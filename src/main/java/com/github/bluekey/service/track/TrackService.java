@@ -38,7 +38,7 @@ public class TrackService {
 
         for (TrackCommissionRateDto trackCommissionRateDto : requestArtistsBefore) {
             if (dto.getIsOriginalTrack()) {
-                trackCommissionRateDto.updateCommissionRate(100);
+                trackCommissionRateDto.updateCommissionRate(0);
             }
             requestArtistsAfter.add(trackCommissionRateDto);
         }
