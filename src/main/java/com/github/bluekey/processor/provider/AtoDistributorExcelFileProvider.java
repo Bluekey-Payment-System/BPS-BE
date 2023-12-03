@@ -153,8 +153,11 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
         }
 
         if (dbPersistenceValidator.hasNotExistedTrack(cell, row.getCell(ALBUM_NAME.getIndex())) && isAlbumExceptionAllowCase(cell, row)) {
-            ExcelRowException excelRowException = atoDistributorCellValidator.generateException(TRACK_NAME, NOT_EXIST_TRACK_NAME, cell, row.getRowNum());
-            errorRows.add(excelRowException);
+
+            if (!isAlbumExceptionAllowCase(cell, row)) {
+                ExcelRowException excelRowException = atoDistributorCellValidator.generateException(TRACK_NAME, NOT_EXIST_TRACK_NAME, cell, row.getRowNum());
+                errorRows.add(excelRowException);
+            }
         }
     }
 
