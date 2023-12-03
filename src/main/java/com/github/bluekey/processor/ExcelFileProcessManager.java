@@ -64,7 +64,8 @@ public class ExcelFileProcessManager implements ProcessManager {
                 return determineExcelFileProviderWithMusicDistributorType(type);
             }
         }
-        throw new BusinessException(ErrorCode.TRANSACTION_INVALID_EXCEL_FILE_NAME);
+        return determineExcelFileProviderWithMusicDistributorType(MusicDistributorType.MAFIA);
+//        throw new BusinessException(ErrorCode.TRANSACTION_INVALID_EXCEL_FILE_NAME);
     }
 
     private ExcelFileProvider determineExcelFileProviderWithMusicDistributorType(MusicDistributorType type) {
