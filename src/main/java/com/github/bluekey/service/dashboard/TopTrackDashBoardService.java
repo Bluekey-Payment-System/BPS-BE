@@ -10,11 +10,13 @@ import com.github.bluekey.dto.swagger.common.TrackBaseDto;
 import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.member.MemberRole;
 import com.github.bluekey.entity.track.Track;
+import com.github.bluekey.entity.track.TrackMember;
 import com.github.bluekey.entity.transaction.Transaction;
 import com.github.bluekey.exception.AuthenticationException;
 import com.github.bluekey.exception.BusinessException;
 import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.repository.member.MemberRepository;
+import com.github.bluekey.repository.track.TrackMemberRepository;
 import com.github.bluekey.repository.transaction.TransactionRepository;
 import com.github.bluekey.service.album.AlbumService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,7 @@ public class TopTrackDashBoardService {
 
     private final MemberRepository memberRepository;
     private final TransactionRepository transactionRepository;
+    private final TrackMemberRepository trackMemberRepository;
     private final AlbumService albumService;
     private final DashboardUtilService dashboardUtilService;
 
@@ -207,8 +210,9 @@ public class TopTrackDashBoardService {
         return AlbumTopResponseDto.from(topAlbums);
 
     }
-    public ArtistTopResponseDto getArtistTopTracks(String monthly, int rank, Long memberId) {
+    public ArtistTopResponseDto getArtistTopTracks(String monthly, int rank, Long memberId, Long loginMemberId) {
         String previousMonthly = dashboardUtilService.getPreviousMonth(monthly);
+        Member loginMember = memberRepository.findMemberByIdAndIsRemovedFalseOrElseThrow(loginMemberId);
         List<AlbumTopDto> albums = new ArrayList<>();
 
         Double totalAmount = 0.0;
@@ -234,6 +238,7 @@ public class TopTrackDashBoardService {
         for(Map.Entry<Track, Double> entry : sortedAmountGroupedByTrack.entrySet()) {
             Track track = entry.getKey();
             Double amount = entry.getValue();
+            TrackMember trackMember = null;
 
             Double previousMonthAmount = sortedAmountGroupedByTrackPreviousMonth.get(entry.getKey());
 
@@ -243,15 +248,31 @@ public class TopTrackDashBoardService {
                     .enName(track.getEnName())
                     .build();
 
-
-            AlbumTopDto albumTopDto = AlbumTopDto.builder()
-                    .track(trackBaseDto)
-                    .revenue(dashboardUtilService.getRevenue(amount))
-                    .growthRate(dashboardUtilService.getGrowthRate(previousMonthAmount, amount))
-                    .proportion(dashboardUtilService.getProportion(amount, totalAmount))
-                    .build();
-
-            albums.add(albumTopDto);
+            List<TrackMember> trackMembers = trackMemberRepository.findTrackMembersByTrack(track);
+            for (TrackMember tMember : trackMembers) {
+                if (tMember.getMemberId().equals(memberId)) {
+                    trackMember = tMember;
+                }
+            }
+            if (loginMember.isAdmin()) {
+                AlbumTopDto albumTopDto = AlbumTopDto.builder()
+                        .track(trackBaseDto)
+                        .revenue(dashboardUtilService.getRevenue(amount))
+                        .growthRate(dashboardUtilService.getGrowthRate(previousMonthAmount, amount))
+                        .proportion(dashboardUtilService.getProportion(amount, totalAmount))
+                        .build();
+                albums.add(albumTopDto);
+            } else {
+                if (trackMember != null) {
+                    AlbumTopDto albumTopDto = AlbumTopDto.builder()
+                            .track(trackBaseDto)
+                            .revenue(dashboardUtilService.getArtistSettlement(amount, trackMember.getCommissionRate()))
+                            .growthRate(dashboardUtilService.getGrowthRate(previousMonthAmount, amount))
+                            .proportion(dashboardUtilService.getProportion(amount, totalAmount))
+                            .build();
+                    albums.add(albumTopDto);
+                }
+            }
         }
 
         List<AlbumTopDto> topAlbums = new ArrayList<>();

@@ -148,7 +148,7 @@ public class ArtistController {
             @PathVariable("memberId") Long memberId
     ) {
         memberService.checkPermission(memberId, PrincipalConvertUtil.getMemberId());
-        return ResponseEntity.ok(topTrackDashBoardService.getArtistTopTracks(monthly, rank, memberId));
+        return ResponseEntity.ok(topTrackDashBoardService.getArtistTopTracks(monthly, rank, memberId, PrincipalConvertUtil.getMemberId()));
     }
 
 
