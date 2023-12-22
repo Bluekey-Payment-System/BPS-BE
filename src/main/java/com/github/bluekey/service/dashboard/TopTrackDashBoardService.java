@@ -157,6 +157,7 @@ public class TopTrackDashBoardService {
         for(Map.Entry<Track, Double> entry : sortedAmountGroupedByTrack.entrySet()) {
             Track track = entry.getKey();
             Double amount = entry.getValue();
+            TrackMember trackMember = null;
 
             Double previousMonthAmount = sortedPreviousMonthAmountGroupedByTrack.get(entry.getKey());
 
@@ -166,15 +167,36 @@ public class TopTrackDashBoardService {
                     .enName(track.getEnName())
                     .build();
 
+            List<TrackMember> trackMembers = trackMemberRepository.findTrackMembersByTrack(track);
 
-            AlbumTopDto albumTopDto = AlbumTopDto.builder()
-                    .track(trackBaseDto)
-                    .revenue(dashboardUtilService.getRevenue(amount))
-                    .growthRate(dashboardUtilService.getGrowthRate(previousMonthAmount, amount))
-                    .proportion(dashboardUtilService.getProportion(amount, totalAmount))
-                    .build();
+            for (TrackMember tMember : trackMembers) {
+                if (tMember.getMemberId().equals(member.getId())) {
+                    trackMember = tMember;
+                }
+            }
 
-            albums.add(albumTopDto);
+            if (member.isAdmin()) {
+                AlbumTopDto albumTopDto = AlbumTopDto.builder()
+                        .track(trackBaseDto)
+                        .revenue(dashboardUtilService.getRevenue(amount))
+                        .growthRate(dashboardUtilService.getGrowthRate(previousMonthAmount, amount))
+                        .proportion(dashboardUtilService.getProportion(amount, totalAmount))
+                        .build();
+
+                albums.add(albumTopDto);
+            }
+            else {
+                if(trackMember != null) {
+                    AlbumTopDto albumTopDto = AlbumTopDto.builder()
+                            .track(trackBaseDto)
+                            .revenue(dashboardUtilService.getArtistSettlement(amount, trackMember.getCommissionRate()))
+                            .growthRate(dashboardUtilService.getGrowthRate(previousMonthAmount, amount))
+                            .proportion(dashboardUtilService.getProportion(amount, totalAmount))
+                            .build();
+
+                    albums.add(albumTopDto);
+                }
+            }
         }
 
         List<AlbumTopDto> topAlbums = new ArrayList<>();
