@@ -8,6 +8,8 @@ import com.github.bluekey.entity.member.Member;
 import com.github.bluekey.entity.track.Track;
 import com.github.bluekey.entity.track.TrackMember;
 
+import com.github.bluekey.exception.BusinessException;
+import com.github.bluekey.exception.ErrorCode;
 import com.github.bluekey.repository.album.AlbumRepository;
 import com.github.bluekey.repository.member.MemberRepository;
 import com.github.bluekey.repository.track.TrackMemberRepository;
@@ -31,6 +33,13 @@ public class TrackService {
     @Transactional
     public TrackResponseDto createTrack(Long albumId, TrackRequestDto dto) {
         Album album = albumRepository.findAlbumByIdAndIsRemovedFalseOrElseThrow(albumId);
+
+        List<Track> tracks = trackRepository.findTracksByAlbumAndName(album, dto.getName());
+
+        if(tracks.size() >= 1) {
+            throw new BusinessException(ErrorCode.DUPLICATED_TRACK_NAME);
+        }
+
         Track track = trackRepository.save(dto.toTrack(album));
 
         List<TrackCommissionRateDto> requestArtistsBefore = dto.getArtists();
