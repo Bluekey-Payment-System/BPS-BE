@@ -108,7 +108,9 @@ public class MonthlyTracksDashBoardService {
                     .commissionRate(commissionRate)
                     .build();
             if (hasArtistValidConditionInFilter(artistMonthlyTrackListDto, monthlyTrackFilter)) {
-                contents.add(artistMonthlyTrackListDto);
+                if (commissionRate > 0) {
+                    contents.add(artistMonthlyTrackListDto);
+                }
             }
         }
 
