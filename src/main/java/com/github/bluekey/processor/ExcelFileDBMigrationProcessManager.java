@@ -137,18 +137,25 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
             Album findAlbum = album;
 //            Optional<Track> trackByName = trackRepository.findTrackByNameIgnoreCaseAndAlbum(trackName, findAlbum);
             List<Track> tracksByName = trackRepository.findAllByNameIgnoreCaseAndAlbum(trackName, findAlbum);
-            Track track = tracksByName.get(0);
-            for (Track findTrack : tracksByName) {
-                if (!findTrack.isRemoved()) {
-                    for (TrackMember trackMember : findTrack.getTrackMembers()) {
-                        for (String artistName : artistExtractedNames) {
-                            if (trackMember.getName().equals(artistName)) {
-                                track = findTrack;
+            Track track = null;
+            if (tracksByName.size() == 1) {
+                track = tracksByName.get(0);
+            }
+
+            if (tracksByName.size() > 1) {
+                for (Track findTrack : tracksByName) {
+                    if (!findTrack.isRemoved()) {
+                        for (TrackMember trackMember : findTrack.getTrackMembers()) {
+                            for (String artistName : artistExtractedNames) {
+                                if (trackMember.getName().equals(artistName)) {
+                                    track = findTrack;
+                                }
                             }
                         }
                     }
                 }
             }
+
             if (track != null) {
                 Track findTrack = track;
 
@@ -170,19 +177,24 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
 
 //            Optional<Track> trackByEnName = trackRepository.findTrackByEnNameIgnoreCaseAndAlbum(trackName, findAlbum);
             List<Track> tracksByEnName = trackRepository.findAllByEnNameIgnoreCaseAndAlbum(trackName, findAlbum);
-
-            Track enTrack = tracksByEnName.get(0);
-            for (Track findTrack : tracksByEnName) {
-                if (!findTrack.isRemoved()) {
-                    for (TrackMember trackMember : findTrack.getTrackMembers()) {
-                        for (String artistName : artistExtractedNames) {
-                            if (trackMember.getName().equals(artistName)) {
-                                enTrack = findTrack;
+            Track enTrack = null;
+            if (tracksByEnName.size() == 1) {
+                enTrack = tracksByEnName.get(0);
+            }
+            if (tracksByEnName.size() > 1) {
+                for (Track findTrack : tracksByEnName) {
+                    if (!findTrack.isRemoved()) {
+                        for (TrackMember trackMember : findTrack.getTrackMembers()) {
+                            for (String artistName : artistExtractedNames) {
+                                if (trackMember.getName().equals(artistName)) {
+                                    enTrack = findTrack;
+                                }
                             }
                         }
                     }
                 }
             }
+
             if (enTrack != null && !isExistTrackByName) {
                 Track findTrack = enTrack;
 
