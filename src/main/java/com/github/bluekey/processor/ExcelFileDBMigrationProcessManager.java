@@ -137,7 +137,7 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
             Album findAlbum = album;
 //            Optional<Track> trackByName = trackRepository.findTrackByNameIgnoreCaseAndAlbum(trackName, findAlbum);
             List<Track> tracksByName = trackRepository.findAllByNameIgnoreCaseAndAlbum(trackName, findAlbum);
-            Track track = null;
+            Track track = tracksByName.get(0);
             for (Track findTrack : tracksByName) {
                 if (!findTrack.isRemoved()) {
                     for (TrackMember trackMember : findTrack.getTrackMembers()) {
@@ -171,7 +171,7 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
 //            Optional<Track> trackByEnName = trackRepository.findTrackByEnNameIgnoreCaseAndAlbum(trackName, findAlbum);
             List<Track> tracksByEnName = trackRepository.findAllByEnNameIgnoreCaseAndAlbum(trackName, findAlbum);
 
-            Track enTrack = null;
+            Track enTrack = tracksByEnName.get(0);
             for (Track findTrack : tracksByEnName) {
                 if (!findTrack.isRemoved()) {
                     for (TrackMember trackMember : findTrack.getTrackMembers()) {
