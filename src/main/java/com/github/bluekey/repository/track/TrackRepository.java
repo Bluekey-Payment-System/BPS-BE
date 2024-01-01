@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface TrackRepository extends JpaRepository<Track, Long> {
 
     Optional<Track> findTrackByNameIgnoreCaseAndAlbum(String name, Album album);
+    List<Track> findAllByNameIgnoreCaseAndAlbum(String name, Album album);
+    List<Track> findAllByEnNameIgnoreCaseAndAlbum(String enName, Album album);
     Optional<Track> findTrackByEnNameIgnoreCaseAndAlbum(String enName, Album album);
     Optional<Track> findTrackByEnNameIgnoreCaseAndAlbumAndIsRemoved(String enName, Album album, boolean isRemoved);
     Optional<Track> findTrackByNameIgnoreCaseAndAlbumAndIsRemoved(String name, Album album, boolean isRemoved);

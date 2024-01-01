@@ -132,9 +132,22 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
             }
             
             Album findAlbum = album;
-            Optional<Track> trackByName = trackRepository.findTrackByNameIgnoreCaseAndAlbum(trackName, findAlbum);
-            if (trackByName.isPresent()) {
-                Track findTrack = trackByName.get();
+//            Optional<Track> trackByName = trackRepository.findTrackByNameIgnoreCaseAndAlbum(trackName, findAlbum);
+            List<Track> tracksByName = trackRepository.findAllByNameIgnoreCaseAndAlbum(trackName, findAlbum);
+            Track track = null;
+            for (Track findTrack : tracksByName) {
+                if (!findTrack.isRemoved()) {
+                    for (TrackMember trackMember : findTrack.getTrackMembers()) {
+                        for (String artistName : artistExtractedNames) {
+                            if (trackMember.getName().equals(artistName)) {
+                                track = findTrack;
+                            }
+                        }
+                    }
+                }
+            }
+            if (track != null) {
+                Track findTrack = track;
 
                 Optional<Transaction> transaction = transactionRepository.findTransactionsByOriginalTransactionAndDurationAndTrack(
                         originalTransaction,
@@ -152,9 +165,23 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
                 isExistTrackByName = true;
             }
 
-            Optional<Track> trackByEnName = trackRepository.findTrackByEnNameIgnoreCaseAndAlbum(trackName, findAlbum);
-            if (trackByEnName.isPresent() && !isExistTrackByName) {
-                Track findTrack = trackByEnName.get();
+//            Optional<Track> trackByEnName = trackRepository.findTrackByEnNameIgnoreCaseAndAlbum(trackName, findAlbum);
+            List<Track> tracksByEnName = trackRepository.findAllByEnNameIgnoreCaseAndAlbum(trackName, findAlbum);
+
+            Track enTrack = null;
+            for (Track findTrack : tracksByEnName) {
+                if (!findTrack.isRemoved()) {
+                    for (TrackMember trackMember : findTrack.getTrackMembers()) {
+                        for (String artistName : artistExtractedNames) {
+                            if (trackMember.getName().equals(artistName)) {
+                                enTrack = findTrack;
+                            }
+                        }
+                    }
+                }
+            }
+            if (enTrack != null && !isExistTrackByName) {
+                Track findTrack = enTrack;
 
                 Optional<Transaction> transaction = transactionRepository.findTransactionsByOriginalTransactionAndDurationAndTrack(
                         originalTransaction,
