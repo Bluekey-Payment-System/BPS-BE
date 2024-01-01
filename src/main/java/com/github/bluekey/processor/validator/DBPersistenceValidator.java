@@ -71,29 +71,56 @@ public class DBPersistenceValidator {
         return true;
     }
 
-    public boolean hasNotExistedTrackMember(Cell cellTrackMember, Cell cellTrack) {
+    public boolean hasNotExistedTrackMember(Cell cellTrackMember, Cell cellTrack, Cell cellAlbum) {
         DataFormatter dataFormatter = new DataFormatter();
         String artistName = cellTrackMember.getStringCellValue();
         String trackName = dataFormatter.formatCellValue(cellTrack);
+        String albumName = dataFormatter.formatCellValue(cellAlbum);
 
         List<String> artistExtractedNames = NameExtractor.getExtractedNames(artistName);
 
         for (String artistExtractedName : artistExtractedNames) {
 
-            Optional<Track> trackFindByEnName = trackRepository.findTrackByEnNameIgnoreCase(trackName);
-            if(trackFindByEnName.isPresent()) {
-                Optional<TrackMember> trackMemberFindByEnName = trackMemberRepository.findTrackMemberByNameAndTrackAndIsRemoved(artistExtractedName, trackFindByEnName.get(), false);
-                if (trackMemberFindByEnName.isPresent()) {
-                    return false;
+//            Optional<Track> trackFindByEnName = trackRepository.findTrackByEnNameIgnoreCase(trackName);
+            List<Track> tracksFindByEnName = trackRepository.findAllByEnNameIgnoreCase(trackName);
+            if (tracksFindByEnName.size() > 0) {
+                for (Track trackFindByEnName : tracksFindByEnName) {
+                    if (!trackFindByEnName.isRemoved() && (
+                            trackFindByEnName.getAlbum().getEnName().equals(albumName) ||
+                                    trackFindByEnName.getAlbum().getName().equals(albumName))) {
+                        Optional<TrackMember> trackMemberFindByEnName = trackMemberRepository.findTrackMemberByNameAndTrackAndIsRemoved(artistExtractedName, trackFindByEnName, false);
+                        if (trackMemberFindByEnName.isPresent()) {
+                            return false;
+                        }
+                    }
                 }
             }
-            Optional<Track> trackFindByName = trackRepository.findTrackByNameIgnoreCase(trackName);
-            if(trackFindByName.isPresent()) {
-                Optional<TrackMember> trackMemberFindByEnName = trackMemberRepository.findTrackMemberByNameAndTrackAndIsRemoved(artistExtractedName, trackFindByName.get(), false);
-                if (trackMemberFindByEnName.isPresent()) {
-                    return false;
+//            if(trackFindByEnName.isPresent()) {
+//                Optional<TrackMember> trackMemberFindByEnName = trackMemberRepository.findTrackMemberByNameAndTrackAndIsRemoved(artistExtractedName, trackFindByEnName.get(), false);
+//                if (trackMemberFindByEnName.isPresent()) {
+//                    return false;
+//                }
+//            }
+//            Optional<Track> trackFindByName = trackRepository.findTrackByNameIgnoreCase(trackName);
+            List<Track> tracksFindByName = trackRepository.findAllByNameIgnoreCase(trackName);
+            if (tracksFindByName.size() > 0) {
+                for (Track trackFindByName : tracksFindByName) {
+                    if (!trackFindByName.isRemoved() && (
+                            trackFindByName.getAlbum().getEnName().equals(albumName) ||
+                                    trackFindByName.getAlbum().getName().equals(albumName))) {
+                        Optional<TrackMember> trackMemberFindByName = trackMemberRepository.findTrackMemberByNameAndTrackAndIsRemoved(artistExtractedName, trackFindByName, false);
+                        if (trackMemberFindByName.isPresent()) {
+                            return false;
+                        }
+                    }
                 }
             }
+//            if(trackFindByName.isPresent()) {
+//                Optional<TrackMember> trackMemberFindByEnName = trackMemberRepository.findTrackMemberByNameAndTrackAndIsRemoved(artistExtractedName, trackFindByName.get(), false);
+//                if (trackMemberFindByEnName.isPresent()) {
+//                    return false;
+//                }
+//            }
         }
         return true;
     }

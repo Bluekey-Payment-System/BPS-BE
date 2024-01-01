@@ -112,7 +112,7 @@ public class AtoDistributorExcelFileProvider implements ExcelFileProvider {
 
         // 가창자의 경우 Artist에도 없고 TrackMember에도 없을 경우 exception 반환
         if (dbPersistenceValidator.hasNotExistedArtist(cell)) {
-            if (dbPersistenceValidator.hasNotExistedTrackMember(cell, row.getCell(TRACK_NAME.getIndex()))) {
+            if (dbPersistenceValidator.hasNotExistedTrackMember(cell, row.getCell(TRACK_NAME.getIndex()), row.getCell(ALBUM_NAME.getIndex()))) {
                 ExcelRowException excelRowException = atoDistributorCellValidator.generateException(ARTIST_NAME, NOT_EXIST_ARTIST_NAME, cell, row.getRowNum());
                 errorRows.add(excelRowException);
             }
