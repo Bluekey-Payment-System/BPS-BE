@@ -63,12 +63,13 @@ public class EmailSender {
 				"    <div style=\"text-align: center; margin-top: 32px\">\n" +
 				"      <img\n" +
 				"        src=\"" + logoImg + "\"\n" +
+				"        style=\"width: 50%\"\n" +
 				"      />\n" +
 				"    </div>\n" +
 				"    <div style=\"margin-top: 124px; text-align: center\">\n" +
 				"      <img\n" +
 				"        src=\"" + mainImg + "\"\n" +
-				"        style=\"width: 189px\"\n" +
+				"        style=\"width: 40%\"\n" +
 				"      />\n" +
 				"    </div>\n" +
 				"    <div\n" +
@@ -118,6 +119,7 @@ public class EmailSender {
 				"          cursor: pointer; padding: 18px 35.5px;\n" +
 				"          border-radius: 6px;\n" +
 				"          background: #1E1E1E;\n" +
+				"		   text-decoration-line: none;\n" +
 				"        \"\n" +
 				"      >\n" +
 				"        <span\n" +
