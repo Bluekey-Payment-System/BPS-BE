@@ -81,16 +81,19 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
         String file = originalTransaction.getFileName();
         String fileName = file.split("\\.")[0];
         String transactionAt = fileName.split("_")[1];
+        List<String> extractedArtistNames = new ArrayList<>();
+        String artistName = fileName.split("_")[2];
+        extractedArtistNames.add(artistName);
         Row header = sheet.getRow(MAFIA_DATA_HEADER_INDEX);
         int columnIndex = getTransactionAt(header, transactionAt);
 
         for (int i = MAFIA_DATA_ROW_START_INDEX; i <= sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
-            migrateMafiaExcelDataToDB(row, originalTransaction, columnIndex);
+            migrateMafiaExcelDataToDB(row, originalTransaction, columnIndex, extractedArtistNames);
         }
     }
 
-    private void migrateMafiaExcelDataToDB(Row row, OriginalTransaction originalTransaction, int transactionAt) {
+    private void migrateMafiaExcelDataToDB(Row row, OriginalTransaction originalTransaction, int transactionAt, List<String> artistNames) {
 
         Cell albumCell = row.getCell(MafiaExcelColumnType.ALBUM_NAME.getIndex());
         if (!albumCell.getStringCellValue().isBlank()) {
@@ -109,7 +112,7 @@ public class ExcelFileDBMigrationProcessManager implements ProcessManager {
 //                log.info("albumCell = {}", albumCell.getStringCellValue());
 //                log.info("trackCell = {}", trackCell.getStringCellValue());
 //                log.info("amountCell = {}", amountCell.getNumericCellValue());
-                migrate(new ArrayList<>(), albumNameInMafia, trackNameInMafia, amountCell.getNumericCellValue(), originalTransaction);
+                migrate(artistNames, albumNameInMafia, trackNameInMafia, amountCell.getNumericCellValue(), originalTransaction);
             }
         }
     }
