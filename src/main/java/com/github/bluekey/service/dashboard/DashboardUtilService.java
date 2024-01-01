@@ -222,7 +222,7 @@ public class DashboardUtilService {
 
 	public Map<Long, Double> getAmountGroupedByMemberId(List<Transaction> transactions) {
 		return transactions.stream()
-				.filter((this::isMemberNotNull))
+				.filter((this::isMemberNotNullInArtist))
 				.flatMap(transaction -> transaction.getTrack().getTrackMembers().stream()
 						.map(trackMember -> new AbstractMap.SimpleEntry<>(trackMember.getMemberId(), transaction.getAmount())))
 				.collect(Collectors.groupingBy(
@@ -278,6 +278,11 @@ public class DashboardUtilService {
 	public boolean isMemberNotNull(Transaction transaction) {
 		return transaction.getTrack().getTrackMembers().stream()
 				.anyMatch(trackMember -> trackMember.getMemberId() != null);
+	}
+
+	public boolean isMemberNotNullInArtist(Transaction transaction) {
+		return transaction.getTrack().getTrackMembers().stream()
+				.allMatch(trackMember -> trackMember.getMemberId() != null);
 	}
 
 	public boolean hasMemberIdInTrackMembers(Transaction transaction, Long memberId) {
